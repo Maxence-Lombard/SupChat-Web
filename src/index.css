@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Open Sans', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 16px;
+
+  color-scheme: light dark;
+  color: rgba(0, 0, 0);
+  background-color: #F9FAFC;
+
+  --primary-color: #6B8AFD;
+  --main-color-500: #6B8AFD;
+  --main-color-600: #687BEC;
+  --main-color-400: #719BFF;
+  --main-color-300: #7CAEFF;
+  --main-color-200: #9AC6FF;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*html {*/
+/*  height: 100%;*/
+/*  width: 100%;*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*}*/
+
+body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #DEE1E8;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.p-inputtext {
+  border: 0.5px solid black;
+  width: 100%;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.p-password-input {
+  border: 0.5px solid black;
+  width: 100%;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.customCheckbox {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.customCheckbox:checked {
+  background-color: var(--main-color-500);
+  border-color: var(--main-color-500);
+}
+
+.customCheckbox:checked::after {
+  content: "✔";
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
