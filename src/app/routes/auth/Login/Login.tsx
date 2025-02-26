@@ -1,21 +1,28 @@
 import Lottie from "lottie-react";
-import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
-import googleIcon from "../../../../assets/icons/google.svg";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { useEffect, useState } from "react";
 import facebookIcon from "../../../../assets/icons/facebook.svg";
-import {InputText} from "primereact/inputtext";
-import {Password} from "primereact/password";
-import {Button} from "primereact/button";
-import {useEffect, useState} from "react";
-import {login} from "../../../api/auth-api.ts";
+import googleIcon from "../../../../assets/icons/google.svg";
+import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
+import { LoginDto, useLoginMutation } from "../../../api/auth/auth.api";
 
 function Login() {
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>();
     const [checked, setChecked] = useState<boolean>(false);
+    const [login] = useLoginMutation();
 
     const handleLogin = async () => {
+        const body: LoginDto = {
+            username: email ?? 'bcrepin@supinfo.com', //TODO: add additional checks and remove fallback username
+            password: password ?? 'Soleil123!', //TODO: add additional checks and remove fallback password
+            grant_type: 'password',
+        }
+
         try {
-            const response = await login();
+            const response = await login(body);
             console.log('Login successful:', response);
         } catch (error) {
             console.log('Login failed:', error);
@@ -57,7 +64,7 @@ function Login() {
                                     id="firstname"
                                     className='w-full border rounded border-black px-2 py-1'
                                     placeholder='Email'
-                                    value={email} onChange={(e) => setEmail(e.target.value)}
+                                    value={email} onChange={(e) => setEmail(e.target.value ?? '')}
                                 />
                             </div>
                             <div className='flex flex-col gap-1 items-end'>
@@ -67,7 +74,7 @@ function Login() {
                                         id="password"
                                         placeholder="Password"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) => setPassword(e.target.value ?? '')}
                                         feedback={false}
                                         tabIndex={1}/>
                                 </div>
