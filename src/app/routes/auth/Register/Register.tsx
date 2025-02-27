@@ -6,30 +6,33 @@ import {InputText} from "primereact/inputtext";
 import {useState} from "react";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
+import {useNavigate} from "react-router-dom";
 
 function Register() {
     const [email, setEmail] = useState<string>();
     const [username, setUsername] = useState<string>();
     const [password, setPassword] = useState<string>();
     const [confirmPassword, setConfirmPassword] = useState<string>();
+    const navigate = useNavigate();
 
     return (
         <>
-            <div className='flex justify-center items-center min-h-screen'>
+            <div className='flex justify-center items-center'>
                 <div className='inline-flex flex-row justify-center p-10 bg-white gap-16'>
-                    <div className='flex flex-col px-8 py-6 gap-12'>
+                    <div className='flex flex-col gap-12 w-[480px]'>
                         <div className='gap-12'>
                             <div className='flex flex-row gap-1'>
                                 <h1 className='text-4xl font-bold'> Welcome ! </h1>
                                 {/*<img src={handWave} alt="Hello"/>*/}
                             </div>
-                            <div className=''>
+                            <div className='flex'>
                                 <p className='text-[#000000]/50'> Please enter your register informations </p>
                             </div>
                         </div>
                         <div className='flex flex-col gap-4'>
                             <div className='flex flex-1 bg-[#EEEEEE] rounded-lg border border-[#EEEEEE] p-1'>
                                 <button
+                                    onClick={() => navigate("/login")}
                                     className='flex-1 p-2 bg-inherit text-black rounded-r-lg'>
                                     Sign in
                                 </button>
@@ -40,7 +43,7 @@ function Register() {
                             </div>
                             <div className='flex gap-4'>
                                 <div className='flex flex-col gap-1'>
-                                    <label htmlFor="email">Email</label>
+                                    <label className='flex' htmlFor="email">Email</label>
                                     <InputText
                                         id="email"
                                         className='w-full border rounded border-black px-2 py-1'
@@ -49,7 +52,7 @@ function Register() {
                                     />
                                 </div>
                                 <div className='flex flex-col gap-1'>
-                                    <label htmlFor="username">Username</label>
+                                    <label className='flex' htmlFor="username">Username</label>
                                     <InputText
                                         id="username"
                                         className='w-full border rounded border-black px-2 py-1'
@@ -59,7 +62,7 @@ function Register() {
                                 </div>
                             </div>
                             <div className='flex flex-col gap-1'>
-                                <label htmlFor="password">Password</label>
+                                <label className='flex' htmlFor="password">Password</label>
                                 <Password
                                     id="password"
                                     placeholder="Password"
@@ -69,8 +72,9 @@ function Register() {
                                     tabIndex={1}/>
                             </div>
                             <div className='flex flex-col gap-1'>
-                                <label htmlFor="password">Confirm Password</label>
+                                <label className='flex' htmlFor="password">Confirm Password</label>
                                 <Password
+
                                     id="confirmPassword"
                                     placeholder="Confirm Password"
                                     value={confirmPassword}
@@ -80,7 +84,7 @@ function Register() {
                             </div>
                         </div>
                         <div className='flex flex-col gap-1'>
-                            <p className='m-0 text-red-500'>Please enter a valid email</p>
+                            <p className='flex m-0 text-red-500'>Please enter a valid email</p>
                             <Button label="Continue"
                                     className='w-full h-12 text-white bg-[#6B8AFD]'/>
                         </div>
