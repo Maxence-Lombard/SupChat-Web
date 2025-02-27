@@ -88,19 +88,22 @@ function Login() {
                             <div className='flex flex-col gap-1 items-end'>
                                 <div className='flex flex-col w-full gap-1'>
                                     <label className='flex' htmlFor="password">Password</label>
-                                    <Password
-                                        name="email"
-                                        id="password"
-                                        placeholder="Password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        toggleMask
-                                        feedback={false}
-                                        tabIndex={1}/>
+                                    <div className='flex flex-col gap-1'>
+                                        <Password
+                                            name="email"
+                                            id="password"
+                                            placeholder="Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            toggleMask
+                                            feedback={false}
+                                            tabIndex={1}/>
+                                        <p className='text-[#6B8AFD] text-sm cursor-pointer self-end'>Forgot password ?</p>
+                                    </div>
                                 </div>
                             </div>
                             <div className='flex items-center gap-2'>
-                                <input
+                            <input
                                     type="checkbox"
                                     id="remember"
                                     checked={checked}
@@ -114,13 +117,10 @@ function Login() {
                             {(formStatus === 'error') && (
                                 <p className='flex m-0 text-red-500'>{errorMessage}</p>
                             )}
-                            <div className='flex flex-col gap-1'>
-                                <Button label="Continue"
-                                        disabled={formStatus === 'pending'}
-                                        type='submit'
-                                        className='w-full h-12 text-white bg-[#6B8AFD]'/>
-                                <p className='"text-(--main-color-500) cursor-pointer self-end'>I forgot my password</p>
-                            </div>
+                            <Button label="Continue"
+                                    disabled={formStatus === 'pending'}
+                                    type='submit'
+                                    className='w-full h-12 text-white bg-[#6B8AFD]'/>
                         </div>
                         <div className='flex items-center gap-1 text-black/30'>
                         <hr className='flex-1'/>
