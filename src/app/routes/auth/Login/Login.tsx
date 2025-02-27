@@ -9,8 +9,8 @@ import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json"
 import { LoginDto, useLoginMutation } from "../../../api/auth/auth.api";
 
 function Login() {
-    const [email, setEmail] = useState<string>();
-    const [password, setPassword] = useState<string>();
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const [checked, setChecked] = useState<boolean>(false);
     const [login] = useLoginMutation();
 
