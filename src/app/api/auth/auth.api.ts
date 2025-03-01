@@ -12,9 +12,14 @@ export type LoginResponse = {
   token_type: 'Bearer';
 };
 
-export const ArtistsApi = api.injectEndpoints({
+export type Response<T> = {
+    status: number;
+    data: T;
+}
+
+export const AuthApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginDto>({
+    login: builder.mutation<Response<LoginResponse>, LoginDto>({
       query: (data: LoginDto) => ({
         url: `/connect/token`,
         method: 'POST',
@@ -32,4 +37,4 @@ export const ArtistsApi = api.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation } = ArtistsApi;
+export const { useLoginMutation } = AuthApi;

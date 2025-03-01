@@ -8,7 +8,6 @@ import facebookIcon from "../../../../assets/icons/facebook.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
 import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
 import { LoginDto, useLoginMutation } from "../../../api/auth/auth.api";
-import { LoginForm } from "./model/LoginInterface.ts";
 
 function Login() {
     const [email, setEmail] = useState<string>("");
@@ -23,27 +22,27 @@ function Login() {
 
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData: LoginForm = { email, password };
-        console.log('Login form submitted:', formData.email, formData.password);
-        if (!formData.email || !formData.password) {
+        if (!email || !password) {
             setFormStatus('error');
             setErrorMessage('Please fill all the fields');
             return;
         }
         setFormStatus('pending');
         const body: LoginDto = {
-            username: email ?? 'bcrepin@supinfo.com', //TODO: add additional checks and remove fallback username
-            password: password ?? 'Soleil123!', //TODO: add additional checks and remove fallback password
+            username: email,
+            password: password,
             grant_type: 'password',
         }
 
         try {
             const response = await login(body);
 
-            console.log('Login successful:', response);
-            if (response && response.data?.access_token) {
+            if (response.data?.status === 200 || response.data?.status === 201) {
+                console.log('Login successful:', response);
+            }
+            if (response && response.data?.data.access_token) {
                 setFormStatus('submitted');
-                setToken(response.data?.access_token);
+                setToken(response.data?.data.access_token);
             } else {
                 console.log('Login failed : username or password');
                 setFormStatus('error');
@@ -54,8 +53,6 @@ function Login() {
             setFormStatus('error');
         }
     }
-
-
 
     return (
         <>
