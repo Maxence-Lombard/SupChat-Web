@@ -12,14 +12,20 @@ export type LoginResponse = {
   token_type: 'Bearer';
 };
 
-export type Response<T> = {
-    status: number;
-    data: T;
-}
+export type RegisterDto = {
+  userName: string;
+  email: string;
+  password: string;
+};
+
+export type RegisterResponse = {
+  access_token: string;
+  expires_in: number;
+};
 
 export const AuthApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<Response<LoginResponse>, LoginDto>({
+    login: builder.mutation<LoginResponse, LoginDto>({
       query: (data: LoginDto) => ({
         url: `/connect/token`,
         method: 'POST',
@@ -32,9 +38,20 @@ export const AuthApi = api.injectEndpoints({
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       }),
-      invalidatesTags: ['Auth'],
+      // invalidatesTags: ['Auth'],
+    }),
+    register: builder.mutation<RegisterResponse, RegisterDto>({
+      query: (data: RegisterDto) => ({
+        url: `/connect/register`,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+      // invalidatesTags: ['Auth'],
     }),
   }),
 });
 
-export const { useLoginMutation } = AuthApi;
+export const { useLoginMutation, useRegisterMutation } = AuthApi;

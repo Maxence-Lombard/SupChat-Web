@@ -3,21 +3,80 @@ import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json"
 import googleIcon from "../../../../assets/icons/google.svg";
 import facebookIcon from "../../../../assets/icons/facebook.svg";
 import {InputText} from "primereact/inputtext";
-import {useState} from "react";
+import {use, useState} from "react";
 import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {useNavigate} from "react-router-dom";
+import {LoginDto, RegisterDto, useRegisterMutation} from "../../../api/auth/auth.api.ts";
+import {useDispatch} from "react-redux";
+import {loginSuccess} from "../../../store/authSlice.ts";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
 
 function Register() {
-    const [email, setEmail] = useState<string>();
-    const [username, setUsername] = useState<string>();
-    const [password, setPassword] = useState<string>();
-    const [confirmPassword, setConfirmPassword] = useState<string>();
+    const [email, setEmail] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [formStatus, setFormStatus] = useState<'submitted' | 'pending' | 'error' | undefined>(undefined);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+    const [register] = useRegisterMutation();
+
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!email || !username || !password) {
+            setFormStatus('error');
+            setErrorMessage('Please fill all the fields');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setFormStatus('error');
+            setErrorMessage('Passwords do not match');
+            return;
+        }
+
+        setFormStatus('pending');
+        const body: RegisterDto = {
+            email: email,
+            userName: username,
+            password: password,
+        }
+
+        try {
+            const response = await register(body);
+            if (response.data === null) {
+                setFormStatus('submitted');
+                console.log('ntm', response);
+
+                navigate('/login', {state: { email: email }});
+
+                // dispatch(register(response.data.access_token));
+            }else{
+                // console.log('error', response.error);
+                if (response.error && 'status' in response.error) {
+                    setFormStatus('error');
+                    const fetchError = response.error as FetchBaseQueryError;
+                    const status = fetchError.status;
+
+                    if (status === 409) {
+                        setErrorMessage('Email already used');
+                    }
+                }
+            }
+        }catch (error) {
+            setFormStatus('error');
+            console.log('Register failed:', error);
+            setErrorMessage('An error occurred during register');
+        }
+    };
 
     return (
         <>
-            <div className='flex justify-center items-center'>
+            <form onSubmit={handleRegister}>
+                <div className='flex justify-center items-center'>
                 <div className='inline-flex flex-row justify-center p-10 bg-white gap-16'>
                     <div className='flex flex-col gap-12 w-[480px]'>
                         <div className='gap-12'>
@@ -84,7 +143,9 @@ function Register() {
                             </div>
                         </div>
                         <div className='flex flex-col gap-1'>
-                            <p className='flex m-0 text-red-500'>Please enter a valid email</p>
+                            <p className={`flex m-0 min-h-6 text-red-500 ${formStatus === 'error' ? 'visible' : 'invisible'}`}>
+                                {errorMessage}
+                            </p>
                             <Button label="Continue"
                                     className='w-full h-12 text-white bg-[#6B8AFD]'/>
                         </div>
@@ -109,6 +170,7 @@ function Register() {
                     <Lottie animationData={welcomeAnimation} className=''/>
                 </div>
             </div>
+            </form>
         </>
     )
 }

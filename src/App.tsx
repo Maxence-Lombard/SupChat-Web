@@ -1,20 +1,32 @@
 import './App.css'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Home from "./app/routes/Home.tsx";
-import Login from "./app/routes/auth/Login/Login.tsx";
-import Register from "./app/routes/auth/Register/Register.tsx";
+import Home from "./app/components/Home.tsx";
+import Login from "./app/components/auth/Login/Login.tsx";
+import Register from "./app/components/auth/Register/Register.tsx";
+import MainLayout from "./app/layouts/MainLayout.tsx";
+import AuthLayout from "./app/layouts/AuthLayout.tsx";
 
 function App() {
 
   return (
       <>
-          <div className="App">
+          <div className="App h-full">
               <BrowserRouter>
                   <Routes>
-                      <Route path="/" element={<Home/>}/>
-                      <Route path="login" element={<Login/>}/>
-                      <Route path="register" element={<Register/>}/>
+                      <Route element={<MainLayout />}>
+                          <Route path="/" element={<Home />} />
+
+                      </Route>
+                      <Route element={<AuthLayout />}>
+                          <Route path="login" element={<Login />} />
+                          <Route path="register" element={<Register />} />
+                      </Route>
                   </Routes>
+                  {/*<Routes>*/}
+                  {/*    <Route path="/" element={<Home/>}/>*/}
+                  {/*    <Route path="login" element={<Login/>}/>*/}
+                  {/*    <Route path="register" element={<Register/>}/>*/}
+                  {/*</Routes>*/}
               </BrowserRouter>
           </div>
       </>

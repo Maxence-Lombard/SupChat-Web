@@ -2,23 +2,34 @@ import Lottie from "lottie-react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
 import facebookIcon from "../../../../assets/icons/facebook.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
 import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
 import { LoginDto, useLoginMutation } from "../../../api/auth/auth.api";
+import {loginSuccess} from "../../../store/authSlice.ts";
+import {useDispatch} from "react-redux";
 
 function Login() {
-    const [email, setEmail] = useState<string>("");
+    const location = useLocation();
+
+    const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>("");
     const [checked, setChecked] = useState<boolean>(false);
-    const [token, setToken] = useState<string | undefined>(undefined);
     const [formStatus, setFormStatus] = useState<'submitted' | 'pending' | 'error' | undefined>(undefined);
-    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const [login] = useLoginMutation();
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const state = location.state as { email?: string };
+        if (state?.email) {
+            setEmail(state.email);
+        }
+    }, [location]);
 
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -36,28 +47,31 @@ function Login() {
 
         try {
             const response = await login(body);
-
-            if (response.data?.status === 200 || response.data?.status === 201) {
-                console.log('Login successful:', response);
-            }
-            if (response && response.data?.data.access_token) {
+            if (response.data?.access_token) {
                 setFormStatus('submitted');
-                setToken(response.data?.data.access_token);
+                console.log('Login successful:', response);
+
+                dispatch(loginSuccess(response.data.access_token)); // à voir si on l'utilise ou le local storage
+                localStorage.setItem('access_token', response.data.access_token);
+
+                // TODO: changer pr la main page
+                // navigate('/login');
             } else {
-                console.log('Login failed : username or password');
                 setFormStatus('error');
                 setErrorMessage('Invalid email or password');
+                console.log('Login failed : username or password');
             }
         } catch (error) {
-            console.log('Login failed:', error);
             setFormStatus('error');
+            console.log('Login failed:', error);
+            setErrorMessage('An error occurred during login');
         }
-    }
+    };
 
     return (
         <>
             <form onSubmit={handleLogin}>
-                <div className='flex justify-center items-center'>
+                <div className='flex justify-center items-center border rounded'>
                     <div className='inline-flex flex-row justify-center p-10 bg-white gap-16'>
                         <div className='flex flex-col gap-12 w-[480px]'>
                             <div className='gap-12'>
@@ -121,9 +135,9 @@ function Login() {
                                 </div>
                             </div >
                             <div className='flex flex-col gap-1'>
-                                {(formStatus === 'error') && (
-                                    <p className='flex m-0 text-red-500'>{errorMessage}</p>
-                                )}
+                                <p className={`flex m-0 min-h-6 text-red-500 ${formStatus === 'error' ? 'visible' : 'invisible'}`}>
+                                    {errorMessage}
+                                </p>
                                 <Button label="Continue"
                                     disabled={formStatus === 'pending'}
                                     type='submit'

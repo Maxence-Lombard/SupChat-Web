@@ -4,9 +4,14 @@ const baseQuery = fetchBaseQuery({
   baseUrl: `http://localhost:5263`,
   mode: 'cors',
   prepareHeaders: (headers) => {
+  //   const token = localStorage.getItem('access_token');
+  //   if (token) {
+  //     headers.set('Authorization', `Bearer ${token}`);
+  //   }
     return headers;
   },
 });
+
 
 const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
 
