@@ -4,10 +4,18 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import facebookIcon from "../../../../assets/icons/facebook.svg";
+import GitHubIcon from "../../../../assets/icons/github.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
+import microsoftIcon from "../../../../assets/icons/microsoft.svg";
 import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
 import { LoginDto, useLoginMutation } from "../../../api/auth/auth.api";
+
+enum Providers {
+    GOOGLE = "google",
+    Microsoft = "microsoft",
+    Facebook = "facebook",
+    GitHub = "github",
+}
 
 function Login() {
     const [email, setEmail] = useState<string>("");
@@ -53,6 +61,11 @@ function Login() {
             setFormStatus('error');
         }
     }
+
+    const HandleProviderLogin = (provider: string) => {
+        const returnUrl = encodeURIComponent("http://localhost:5173/callback");
+        window.location.href = `http://localhost:5263/login/${provider}?returnUrl=${returnUrl}`;
+    };
 
     return (
         <>
@@ -135,15 +148,20 @@ function Login() {
                                 <hr className='flex-1' />
                             </div>
                             <div className='flex gap-4'>
-                                <button
+                                <button onClick={() => HandleProviderLogin(Providers.GOOGLE)}
                                     className='flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg'>
                                     <img src={googleIcon} alt="Google" />
                                     <span>Google</span>
                                 </button>
-                                <button
+                                <button onClick={() => HandleProviderLogin(Providers.Microsoft)}
                                     className='flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg'>
-                                    <img src={facebookIcon} alt="Google" />
-                                    <span>Facebook</span>
+                                    <img src={microsoftIcon} alt="Microsoft" />
+                                    <span>Microsoft</span>
+                                </button>
+                                <button onClick={() => HandleProviderLogin(Providers.GitHub)}
+                                    className='flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg'>
+                                    <img src={GitHubIcon} alt="GitHub" />
+                                    <span>GitHub</span>
                                 </button>
                             </div>
                         </div >

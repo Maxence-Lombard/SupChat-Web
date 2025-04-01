@@ -1,12 +1,13 @@
 import Lottie from "lottie-react";
-import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import GitHubIcon from "../../../../assets/icons/github.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
-import facebookIcon from "../../../../assets/icons/facebook.svg";
-import {InputText} from "primereact/inputtext";
-import {useState} from "react";
-import {Password} from "primereact/password";
-import {Button} from "primereact/button";
-import {useNavigate} from "react-router-dom";
+import microsoftIcon from "../../../../assets/icons/microsoft.svg";
+import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
 
 function Register() {
     const [email, setEmail] = useState<string>();
@@ -69,7 +70,7 @@ function Register() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     feedback={false}
-                                    tabIndex={1}/>
+                                    tabIndex={1} />
                             </div>
                             <div className='flex flex-col gap-1'>
                                 <label className='flex' htmlFor="password">Confirm Password</label>
@@ -80,33 +81,38 @@ function Register() {
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     feedback={false}
-                                    tabIndex={1}/>
+                                    tabIndex={1} />
                             </div>
                         </div>
                         <div className='flex flex-col gap-1'>
                             <p className='flex m-0 text-red-500'>Please enter a valid email</p>
                             <Button label="Continue"
-                                    className='w-full h-12 text-white bg-[#6B8AFD]'/>
+                                className='w-full h-12 text-white bg-[#6B8AFD]' />
                         </div>
                         <div className='flex items-center gap-1 text-black/30'>
-                            <hr className='flex-1'/>
+                            <hr className='flex-1' />
                             <span className='inline'> Or connect with </span>
-                            <hr className='flex-1'/>
+                            <hr className='flex-1' />
                         </div>
                         <div className='flex gap-4'>
                             <button
                                 className='flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg'>
-                                <img src={googleIcon} alt="Google"/>
+                                <img src={googleIcon} alt="Google" />
                                 <span>Google</span>
                             </button>
                             <button
                                 className='flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg'>
-                                <img src={facebookIcon} alt="Google"/>
-                                <span>Facebook</span>
+                                <img src={microsoftIcon} alt="Microsoft" />
+                                <span>Microsoft</span>
+                            </button>
+                            <button
+                                className='flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg'>
+                                <img src={GitHubIcon} alt="GitHub" />
+                                <span>GitHub</span>
                             </button>
                         </div>
                     </div>
-                    <Lottie animationData={welcomeAnimation} className=''/>
+                    <Lottie animationData={welcomeAnimation} className='' />
                 </div>
             </div>
         </>
