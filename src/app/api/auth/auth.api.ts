@@ -13,20 +13,19 @@ export type LoginResponse = {
 };
 
 export type Response<T> = {
-    status: number;
-    data: T;
+  status: number;
+  data: T;
 }
 
 export const AuthApi = api.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<Response<LoginResponse>, LoginDto>({
       query: (data: LoginDto) => ({
-        url: `/connect/token`,
+        url: `/login`,
         method: 'POST',
         body: new URLSearchParams({
-          username: data.username,
-          password: data.password,
-          grant_type: data.grant_type,
+          email: data.username,
+          password: data.password
         }).toString(),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
