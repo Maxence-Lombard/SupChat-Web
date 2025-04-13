@@ -98,6 +98,7 @@ function Login() {
                                 <div className='flex flex-col gap-1'>
                                     <label className='flex' htmlFor="firstname">Email</label>
                                     <InputText
+                                        keyfilter="email"
                                         invalid={formStatus === 'error'}
                                         name="email"
                                         id="firstname"
