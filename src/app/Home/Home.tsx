@@ -16,6 +16,7 @@ function Home() {
                 <div className='flex flex-col gap-8 '>
                     <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
                         <img
+                            className='w-6 h-6'
                             src={searchIcon}
                             alt="search"
                         />
@@ -49,6 +50,7 @@ function Home() {
                     </div>
                         <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
                             <img
+                                className='w-6 h-6'
                                 src={searchIcon}
                                 alt="search"
                             />

@@ -40,26 +40,25 @@ function Login() {
         }
         setFormStatus('pending');
         const body: LoginDto = {
-            username: email,
+            email: email,
             password: password,
             grant_type: 'password',
         }
 
         try {
             const response = await login(body);
-            if (response.data?.access_token) {
+            if (response.data?.accessToken) {
                 setFormStatus('submitted');
                 console.log('Login successful:', response);
 
-                dispatch(loginSuccess(response.data.access_token)); // à voir si on l'utilise ou le local storage
-                localStorage.setItem('access_token', response.data.access_token);
+                dispatch(loginSuccess(response.data.accessToken)); // à voir si on l'utilise ou le local storage
+                localStorage.setItem('access_token', response.data.accessToken);
 
                 // TODO: changer pr la main page
-                // navigate('/login');
+                navigate('/');
             } else {
                 setFormStatus('error');
                 setErrorMessage('Invalid email or password');
-                console.log('Login failed : username or password');
             }
         } catch (error) {
             setFormStatus('error');
