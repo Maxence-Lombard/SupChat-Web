@@ -31,8 +31,7 @@ export const AuthApi = api.injectEndpoints({
         method: 'POST',
         body: new URLSearchParams({
           email: data.email,
-          password: data.password,
-          grant_type: data.grant_type,
+          password: data.password
         }).toString(),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

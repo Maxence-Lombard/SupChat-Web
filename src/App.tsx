@@ -5,6 +5,7 @@ import Login from "./app/components/auth/Login/Login.tsx";
 import Register from "./app/components/auth/Register/Register.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import AuthLayout from "./app/layouts/AuthLayout.tsx";
+import Callback from './app/components/Callback.tsx';
 import Conversation from "./app/components/conversation/Conversation.tsx";
 
 function App() {
@@ -23,11 +24,12 @@ function App() {
                           <Route path="login" element={<Login />} />
                           <Route path="register" element={<Register />} />
                       </Route>
-                  </Routes>
-              </BrowserRouter>
-          </div>
-      </>
-  )
+                        <Route path="callback" element={<Callback />} />
+                    </Routes>
+                </BrowserRouter>
+            </div>
+        </>
+    )
 }
 
 export default App
