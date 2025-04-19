@@ -1,24 +1,27 @@
 import { api } from "../api";
+import {visibility} from "../../Models/Workspace.ts";
 
 export type WorkspaceDto = {
-  id: string;
+  id: number;
   username: string;
   password: string;
-  grant_type: 'password';
 };
 
-export type WorkspaceResponse = {
-  access_token: string;
-  expires_in: number;
-  token_type: 'Bearer';
+export type GetWorkspaceResponse = {
+  id: number,
+  name: string,
+  image: string,
+  visibility: visibility,
+  visibilityLocalized: string,
+  ownerId: number
 };
 
 export const AuthApi = api.injectEndpoints({
   endpoints: (builder) => ({
 
-    getWorkspaces: builder.query<WorkspaceResponse, WorkspaceDto>({
+    getWorkspaces: builder.query<GetWorkspaceResponse[], undefined>({
       query: () => ({
-        url: `/Workspace`,
+        url: `/api/Workspace`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -26,20 +29,20 @@ export const AuthApi = api.injectEndpoints({
       }),
     }),
 
-    getWorkspaceById: builder.query<WorkspaceResponse, WorkspaceDto>({
-      query: (data) => ({
-        url: `/Workspace/${data.id}`,
+    getWorkspaceById: builder.query<GetWorkspaceResponse, number>({
+      query: (Id) => ({
+        url: `/api/Workspace/${Id}`,
         method: 'GET',
-        body: JSON.stringify(data),
+        body: JSON.stringify(Id),
         headers: {
           'Content-Type': 'application/json',
         },
       }),
     }),
 
-    createWorkspace: builder.mutation<WorkspaceResponse, WorkspaceDto>({
+    createWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: () => ({
-        url: `/Workspace`,
+        url: `/api/Workspace`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,9 +51,9 @@ export const AuthApi = api.injectEndpoints({
       // invalidatesTags: ['Auth'],
     }),
 
-    modifyWorkspace: builder.mutation<WorkspaceResponse, WorkspaceDto>({
+    modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
-        url: `/Workspace/${data.id}`,
+        url: `/api/Workspace/${data.id}`,
         method: 'PUT',
         body: JSON.stringify(data),
         headers: {
@@ -60,9 +63,9 @@ export const AuthApi = api.injectEndpoints({
       // invalidatesTags: ['Auth'],
     }),
 
-    deleteWorkspace: builder.mutation<WorkspaceResponse, WorkspaceDto>({
+    deleteWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
-        url: `/Workspace/${data.id}`,
+        url: `/api/Workspace/${data.id}`,
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -8,8 +8,10 @@ export type LoginDto = {
 
 export type LoginResponse = {
   accessToken: string;
-  expires_in: number;
+  expires_at: number;
   token_type: 'Bearer';
+  refreshToken: string;
+  refreshExpiresAt: Date
 };
 
 export type RegisterDto = {

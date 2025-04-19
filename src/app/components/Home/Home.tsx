@@ -1,10 +1,10 @@
 import {useState} from "react";
 import './Home.css'
 //ICONS
-import searchIcon from '../../assets/icons/search.svg';
+import searchIcon from '../../../assets/icons/search.svg';
 //COMPONENTS
-import UserCard from "../components/shared/userCard/UserCard.tsx";
-import ShortInfoUserCard from "../components/shared/short-info-user-card/ShortInfoUserCard.tsx";
+import UserCard from "../shared/userCard/UserCard.tsx";
+import ShortInfoUserCard from "../shared/short-info-user-card/ShortInfoUserCard.tsx";
 
 function Home() {
     const [search, setSearch] = useState<string>('');

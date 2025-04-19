@@ -1,10 +1,15 @@
 import user from '../../../../assets/placeholder/user2.svg'
+import {useNavigate} from "react-router-dom";
 
 function UserCard() {
+    const navigate = useNavigate();
+    const handleNavigation = () => {
+        navigate('/conversation');
+    };
 
     return (
         <>
-            <div className='flex gap-3'>
+            <div className='flex gap-3' onClick={handleNavigation}>
                 <div className='inline-block relative'>
                     <img src={user} alt='user' />
                     <div className='status-indicator'></div>

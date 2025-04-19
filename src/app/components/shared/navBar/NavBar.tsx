@@ -1,12 +1,25 @@
+import workspacePH from '../../../../assets/icons/workspacePH.svg'
 import messages from '../../../../assets/icons/messages.svg'
 import activities from '../../../../assets/icons/activities.svg'
 import settings from '../../../../assets/icons/settings.svg'
-import workspacePH from '../../../../assets/icons/workspacePH.svg'
 import add from '../../../../assets/icons/add.svg'
 import user from '../../../../assets/placeholder/user1.svg'
+import {useGetWorkspacesQuery} from "../../../api/workspaces/workspaces.api.ts";
+import {useEffect} from "react";
 
 function NavBar() {
-    return (
+    const { data: workspaces, error } = useGetWorkspacesQuery(undefined);
+
+    useEffect(() => {
+        if (workspaces) {
+            console.log('Fetched workspaces:', workspaces);
+        }
+        if (error) {
+            console.error('Error fetching workspaces:', error);
+        }
+    }, [workspaces, error]);
+
+        return (
         <>
             <div className='flex flex-col justify-between items-center w-28 h-full px-4 py-10'>
                 <div className='flex flex-col gap-10'>
@@ -30,21 +43,14 @@ function NavBar() {
                     </div>
                     <hr className='w-full border border-black/50 '/>
                     <div className='flex flex-col items-center gap-4'>
-                        <img
-                            className='w-12 h-12 cursor-pointer rounded-lg'
-                            src={workspacePH}
-                            alt="workspacePH"
-                        />
-                        <img
-                            className='w-12 h-12 cursor-pointer rounded-lg'
-                            src={workspacePH}
-                            alt="workspacePH"
-                        />
-                        <img
-                            className='w-12 h-12 cursor-pointer rounded-lg'
-                            src={workspacePH}
-                            alt="workspacePH"
-                        />
+                        {workspaces?.map((workspace) => (
+                            <img
+                                key={workspace.id}
+                                className='w-12 h-12 cursor-pointer rounded-lg'
+                                src={workspacePH}
+                                alt="workspacePH"
+                            />
+                        ))}
                         <button className='flex items-center justify-center w-12 h-12 bg-white border border-[#ECECEC] rounded-lg'>
                             <img
                                 src={add}

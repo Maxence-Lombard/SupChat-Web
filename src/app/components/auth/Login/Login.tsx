@@ -8,14 +8,14 @@ import GitHubIcon from "../../../../assets/icons/github.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
 import microsoftIcon from "../../../../assets/icons/microsoft.svg";
 import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
-import { LoginDto, useLoginMutation } from "../../../api/auth/auth.api";
+import { LoginDto } from "../../../api/auth/auth.api";
 import {loginSuccess} from "../../../store/authSlice.ts";
 import {useDispatch} from "react-redux";
+import { useAuth } from "../../../hooks/useAuth.tsx";
 
 enum Providers {
     GOOGLE = "google",
     Microsoft = "microsoft",
-    Facebook = "facebook",
     GitHub = "github",
 }
 
@@ -27,8 +27,8 @@ function Login() {
     const [checked, setChecked] = useState<boolean>(false);
     const [formStatus, setFormStatus] = useState<'submitted' | 'pending' | 'error' | undefined>(undefined);
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const [login] = useLoginMutation();
 
+    const { login } = useAuth();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -55,14 +55,10 @@ function Login() {
 
         try {
             const response = await login(body);
-            if (response.data?.accessToken) {
+            if (response.accessToken) {
                 setFormStatus('submitted');
-                console.log('Login successful:', response);
+                dispatch(loginSuccess(response.accessToken));
 
-                dispatch(loginSuccess(response.data.accessToken)); // à voir si on l'utilise ou le local storage
-                localStorage.setItem('access_token', response.data.accessToken);
-
-                // TODO: changer pr la main page
                 navigate('/');
             } else {
                 setFormStatus('error');
@@ -70,13 +66,12 @@ function Login() {
             }
         } catch (error) {
             setFormStatus('error');
-            console.log('Login failed:', error);
             setErrorMessage('An error occurred during login');
         }
     };
 
     const HandleProviderLogin = (provider: string) => {
-        const returnUrl = encodeURIComponent("http://localhost:5173/callback");
+        const returnUrl = encodeURIComponent("http://localhost:5173/");
         window.location.href = `http://localhost:5263/login/${provider}?returnUrl=${returnUrl}`;
     };
 

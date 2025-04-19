@@ -9,7 +9,6 @@ import {Password} from "primereact/password";
 import {Button} from "primereact/button";
 import {useNavigate} from "react-router-dom";
 import {RegisterDto, useRegisterMutation} from "../../../api/auth/auth.api.ts";
-import {useDispatch} from "react-redux";
 import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
 
 function Register() {
@@ -21,7 +20,6 @@ function Register() {
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [register] = useRegisterMutation();
 
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
