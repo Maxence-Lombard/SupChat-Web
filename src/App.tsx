@@ -6,8 +6,17 @@ import Register from "./app/components/auth/Register/Register.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import AuthLayout from "./app/layouts/AuthLayout.tsx";
 import Conversation from "./app/components/conversation/Conversation.tsx";
+import Workspace from "./app/components/Workspace/Workspace.tsx";
+import { useEffect } from 'react';
+import {useDispatch} from "react-redux";
 
 function App() {
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch({ type: 'auth/checkAuth' });
+    }, [dispatch]);
 
   return (
       <>
@@ -17,6 +26,7 @@ function App() {
                       <Route element={<MainLayout />}>
                           <Route path="/" element={<Home />} />
                           <Route path="/conversation" element={<Conversation />} />
+                          <Route path="/workspace" element={<Workspace />} />
 
                       </Route>
                       <Route element={<AuthLayout />}>

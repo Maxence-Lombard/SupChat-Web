@@ -6,9 +6,15 @@ import add from '../../../../assets/icons/add.svg'
 import user from '../../../../assets/placeholder/user1.svg'
 import {useGetWorkspacesQuery} from "../../../api/workspaces/workspaces.api.ts";
 import {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 function NavBar() {
     const { data: workspaces, error } = useGetWorkspacesQuery(undefined);
+    const navigate = useNavigate();
+
+    const handleNavigation = () => {
+        navigate('/workspace');
+    };
 
     useEffect(() => {
         if (workspaces) {
@@ -45,6 +51,7 @@ function NavBar() {
                     <div className='flex flex-col items-center gap-4'>
                         {workspaces?.map((workspace) => (
                             <img
+                                onClick={handleNavigation}
                                 key={workspace.id}
                                 className='w-12 h-12 cursor-pointer rounded-lg'
                                 src={workspacePH}

@@ -4,13 +4,23 @@ import {RootState} from "../store/store.ts";
 const baseQuery = fetchBaseQuery({
   baseUrl: `http://localhost:5263`,
   mode: 'cors',
-  prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.accessToken;
+  prepareHeaders: async (headers, { getState }) => {
+    const state = getState() as RootState;
+
+    let token = state.auth.accessToken;
+    const maxRetries = 5;
+    let retries = 0;
+
+    while (!token && retries < maxRetries) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      token = (getState() as RootState).auth.accessToken;
+      retries++;
+    }
+
     headers.set('Authorization', `Bearer ${token}`);
     return headers;
-  },
+  }
 });
-
 
 const baseQueryWithRetry = retry(baseQuery, { maxRetries: 0 });
 
