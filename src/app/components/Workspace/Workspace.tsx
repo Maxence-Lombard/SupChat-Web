@@ -1,3 +1,4 @@
+// ASSETS
 import user from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
 import plus from "../../../assets/icons/main-color/plus.svg";
@@ -9,20 +10,23 @@ import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
-import {useEffect, useState} from "react";
 import workspacePH from "../../../assets/icons/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channel from "../../../assets/icons/channel.svg";
 import addChannel from "../../../assets/icons/main-color/plus.svg";
 import settings from "../../../assets/icons/settings.svg";
 import {AvatarGroup} from "primereact/avatargroup";
+
+import { useParams } from 'react-router-dom';
+import {useEffect, useState} from "react";
 import {Avatar} from "primereact/avatar";
 import {useGetWorkspaceByIdQuery} from "../../api/workspaces/workspaces.api.ts";
 
 function Workspace() {
+    const { id } = useParams();
     const [search, setSearch] = useState<string>('');
 
-    const { data: workspace, error } = useGetWorkspaceByIdQuery(1);
+    const { data: workspace, error } = useGetWorkspaceByIdQuery(id);
 
     useEffect(() => {
         console.log('Fetched workspaces:', workspace);

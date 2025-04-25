@@ -12,8 +12,8 @@ function NavBar() {
     const { data: workspaces, error } = useGetWorkspacesQuery(undefined);
     const navigate = useNavigate();
 
-    const handleNavigation = () => {
-        navigate('/workspace');
+    const handleNavigation = (id: number) => {
+        navigate(`/workspace/${id}`);
     };
 
     useEffect(() => {
@@ -51,7 +51,7 @@ function NavBar() {
                     <div className='flex flex-col items-center gap-4'>
                         {workspaces?.map((workspace) => (
                             <img
-                                onClick={handleNavigation}
+                                onClick={() => handleNavigation(workspace.id)}
                                 key={workspace.id}
                                 className='w-12 h-12 cursor-pointer rounded-lg'
                                 src={workspacePH}

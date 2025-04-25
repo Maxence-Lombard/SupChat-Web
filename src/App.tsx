@@ -26,7 +26,8 @@ function App() {
                       <Route element={<MainLayout />}>
                           <Route path="/" element={<Home />} />
                           <Route path="/conversation" element={<Conversation />} />
-                          <Route path="/workspace" element={<Workspace />} />
+                          <Route path="/workspace/:id" element={<Workspace />} />
+                          <Route path="*" element={<Home />} />
 
                       </Route>
                       <Route element={<AuthLayout />}>
