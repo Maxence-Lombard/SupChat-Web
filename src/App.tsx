@@ -9,6 +9,7 @@ import Conversation from "./app/components/conversation/Conversation.tsx";
 import Workspace from "./app/components/Workspace/Workspace.tsx";
 import { useEffect } from 'react';
 import {useDispatch} from "react-redux";
+import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
       <>
           <div className="App h-full">
               <BrowserRouter>
+                  <AuthRedirect />
                   <Routes>
                       <Route element={<MainLayout />}>
                           <Route path="/" element={<Home />} />
