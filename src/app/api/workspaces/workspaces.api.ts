@@ -33,7 +33,6 @@ export const AuthApi = api.injectEndpoints({
       query: (Id) => ({
         url: `/api/Workspace/${Id}`,
         method: 'GET',
-        body: JSON.stringify(Id),
         headers: {
           'Content-Type': 'application/json',
         },

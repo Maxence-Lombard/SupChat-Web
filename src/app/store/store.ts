@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from './authSlice';
 import { api } from "../api/api";
+import authMiddleware from "../middlewares/authMiddleware.ts";
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +18,7 @@ export const store = configureStore({
     })
       // .concat(thunk)
       // .concat(createRouterMiddleware(routerHistory))
-      .concat(api.middleware),
+      .concat(api.middleware, authMiddleware),
   devTools: true,
 });
 

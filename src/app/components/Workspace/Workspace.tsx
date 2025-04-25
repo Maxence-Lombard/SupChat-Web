@@ -1,3 +1,4 @@
+// ASSETS
 import user from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
 import plus from "../../../assets/icons/main-color/plus.svg";
@@ -9,11 +10,33 @@ import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
-import {useState} from "react";
-import UserCard from "../shared/userCard/UserCard.tsx";
+import workspacePH from "../../../assets/icons/workspacePH.svg";
+import channelMainColor from "../../../assets/icons/main-color/channel.svg";
+import channel from "../../../assets/icons/channel.svg";
+import addChannel from "../../../assets/icons/main-color/plus.svg";
+import settings from "../../../assets/icons/settings.svg";
+import {AvatarGroup} from "primereact/avatargroup";
 
-function Conversation() {
+import { useParams } from 'react-router-dom';
+import {useEffect, useState} from "react";
+import {Avatar} from "primereact/avatar";
+import {useGetWorkspaceByIdQuery} from "../../api/workspaces/workspaces.api.ts";
+
+function Workspace() {
+    const { id } = useParams();
     const [search, setSearch] = useState<string>('');
+
+    const { data: workspace, error } = useGetWorkspaceByIdQuery(id);
+
+    useEffect(() => {
+        console.log('Fetched workspaces:', workspace);
+        if (workspace) {
+            console.log('Fetched workspaces:', workspace);
+        }
+        if (error) {
+            console.error('Error fetching workspaces:', error);
+        }
+    }, [workspace, error]);
 
     return (
         <>
@@ -33,31 +56,160 @@ function Conversation() {
                             value={search} onChange={(e) => setSearch(e.target.value ?? '')}
                         />
                     </div>
-                    <div className='flex flex-col gap-5 h-full overflow-y-auto'>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
+                    <div className='flex flex-col p-2 gap-6 h-full overflow-y-auto bg-[#EBEBEB]/50 rounded-lg'>
+                        <div className='flex gap-3'>
+                            <img
+                                className='w-12 h-12 cursor-pointer rounded'
+                                src={workspacePH}
+                                alt="workspacePH"
+                            />
+                            <div className='flex flex-col h-full gap-auto'>
+                                <p className='font-semibold'> { workspace?.name } </p>
+                                <div className='flex items-center gap-1'>
+                                    <p className='text-black/50'>Settings</p>
+                                    <img
+                                        className='w-4 h-4'
+                                        src={settings}
+                                        alt="settings"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <hr className='w-full border border-[#EBEBEB]'/>
+                        <div className='flex flex-col gap-6'>
+                            {/* LIST OF CHANNELS */}
+                            <div className='flex flex-col gap-2'>
+                                <div className='flex gap-2'>
+                                    <div className='flex flex-col h-full items-center gap-4'>
+                                        <img
+                                            className='w-6 h-6 rounded-lg'
+                                            src={channelMainColor}
+                                            alt="channelMainColor"
+                                        />
+                                        <div className="w-[1px] h-full rounded-lg bg-black"></div>
+                                    </div>
+                                    <div className='flex flex-col gap-3'>
+                                        <div className='flex gap-3'>
+                                            <p className='font-semibold text-[#6B8AFD]'>Main Channels</p>
+                                            {/*<img*/}
+                                            {/*    className='w-6 h-6'*/}
+                                            {/*    src={channel}*/}
+                                            {/*    alt="channel"*/}
+                                            {/*/>*/}
+                                        </div>
+                                        <div className='flex gap-3'>
+                                            <div className='flex items-center gap-1'>
+                                                <img
+                                                    className='w-6 h-6'
+                                                    src={channel}
+                                                    alt="channel"
+                                                />
+                                                <p>announcements</p>
+                                            </div>
+                                            {/* icone notifs  */}
+                                        </div>
+                                        <div className='flex gap-3'>
+                                            <div className='flex items-center gap-1'>
+                                                <img
+                                                    className='w-6 h-6'
+                                                    src={channel}
+                                                    alt="channel"
+                                                />
+                                                <p>announcements</p>
+                                            </div>
+                                            {/* icone notifs  */}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='flex items-center gap-3 ml-1'>
+                                    <img
+                                        className='w-4 h-4'
+                                        src={addChannel}
+                                        alt="addChannel"
+                                    />
+                                    <p>Add Channel</p>
+                                </div>
+                            </div>
+                            <div className='flex flex-col gap-2'>
+                                <div className='flex gap-2'>
+                                    <div className='flex flex-col h-full items-center gap-4'>
+                                        <img
+                                            className='w-6 h-6 rounded-lg'
+                                            src={channelMainColor}
+                                            alt="channelMainColor"
+                                        />
+                                        <div className="w-[1px] h-full rounded-lg bg-black"></div>
+                                    </div>
+                                    <div className='flex flex-col gap-3'>
+                                        <div className='flex gap-3'>
+                                            <p className='font-semibold text-[#6B8AFD]'>Main Channels</p>
+                                            {/*<img*/}
+                                            {/*    className='w-6 h-6'*/}
+                                            {/*    src={channel}*/}
+                                            {/*    alt="channel"*/}
+                                            {/*/>*/}
+                                        </div>
+                                        <div className='flex gap-3'>
+                                            <div className='flex items-center gap-1'>
+                                                <img
+                                                    className='w-6 h-6'
+                                                    src={channel}
+                                                    alt="channel"
+                                                />
+                                                <p>announcements</p>
+                                            </div>
+                                            {/* icone notifs  */}
+                                        </div>
+                                        <div className='flex gap-3'>
+                                            <div className='flex items-center gap-1'>
+                                                <img
+                                                    className='w-6 h-6'
+                                                    src={channel}
+                                                    alt="channel"
+                                                />
+                                                <p>announcements</p>
+                                            </div>
+                                            {/* icone notifs  */}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='flex items-center gap-3 ml-1'>
+                                    <img
+                                        className='w-4 h-4'
+                                        src={addChannel}
+                                        alt="addChannel"
+                                    />
+                                    <p>Add Channel</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className='flex flex-col flex-1'>
+                    {/* WORKSPACE BANNER */}
                     <div className='flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2'>
                         <div className='flex items-center gap-2'>
-                            <img src={user} alt='user' />
+                            <img className='rounded w-14 h-14' src={workspacePH} alt='workspacePH' />
                             <div>
-                                <p className='font-semibold'>Maria Santa</p>
-                                <p className='text-[#00A000] text-xs'> online </p>
+                                <p className='font-semibold'> { workspace?.name} - general</p>
+                                <div className='flex items-center gap-2'>
+                                    <p className='text-black/50 text-xs'> 5 members </p>
+                                    <div className="w-1 h-1 bg-[#D9D9D9] rounded-full"></div>
+                                    <p className='text-[#00A000] text-xs'> 2 online </p>
+                                </div>
                             </div>
                         </div>
-                        <div className='flex gap-6'>
+                        <div className='flex items-center gap-2 h-full py-1'>
+                            <div className='flex items-center gap-2'>
+                                <AvatarGroup>
+                                    <Avatar image={user} size="large" shape="square" className='rounded-lg' />
+                                    <Avatar image={user} size="large" shape="square" className='rounded-lg' />
+                                    <Avatar image={user} size="large" shape="square" className='rounded-lg' />
+                                    <Avatar label="+2" shape="square" size="large" className='bg-[#6B8AFD] text-white rounded-lg'/>
+                                </AvatarGroup>
+                            </div>
+                            <div className="w-[1px] h-full rounded-lg bg-[#ECECEC]"></div>
+                            <div className='flex gap-6'>
                             <img
                                 className='cursor-pointer w-6 h-6'
                                 src={searchIconMainColor}
@@ -73,6 +225,7 @@ function Conversation() {
                                 src={moreIcon}
                                 alt="search"
                             />
+                        </div>
                         </div>
                     </div>
                     {/* CONVERSATIONS*/}
@@ -181,7 +334,7 @@ function Conversation() {
                                             className='cursor-pointer'
                                             src={discard}
                                             alt="discard"/>
-                                            <p className='text-white'>Discard</p>
+                                        <p className='text-white'>Discard</p>
                                     </button>
                                     <button className='flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg'>
                                         <img
@@ -200,4 +353,4 @@ function Conversation() {
     )
 }
 
-export default Conversation;
+export default Workspace;
