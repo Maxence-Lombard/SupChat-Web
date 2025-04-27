@@ -12,11 +12,17 @@ import moreIcon from "../../../assets/icons/main-color/more.svg";
 import {useEffect, useState} from "react";
 import UserCard from "../shared/userCard/UserCard.tsx";
 import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
+import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
+import {useParams} from "react-router-dom";
 
 function Conversation() {
     const [search, setSearch] = useState<string>('');
 
-    const { data: messages, error } = useGetMessagesByUserIdQuery(2);
+    const { id } = useParams();
+    const { formatDate } = useDateFormatter();
+    const userId = 1;
+
+    const { data: messages, error } = useGetMessagesByUserIdQuery(id);
     useEffect(() => {
         console.log('Fetched messages:', messages);
         if (messages) {
@@ -144,16 +150,28 @@ function Conversation() {
                                 </div>
                                 <hr className='flex-1 border border-[#6B8AFD]'/>
                             </div>
-                            { messages?.slice().reverse().map(messages => (
+                            { messages?.slice().reverse().map(message => (
+                                message.senderId === userId.toString() ? (
                                 <div className='flex justify-end items-end w-full gap-3'>
                                     <div className='flex flex-col gap-1 items-end'>
-                                        <p className='text-black/50'> 15h32 </p>
+                                        <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
                                         <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                            <p className='text-white'> { messages.content } </p>
+                                            <p className='text-white'> { message.content } </p>
                                         </div>
                                     </div>
                                     <img src={user2} alt='user' />
                                 </div>
+                                ) : (
+                                    <div className='flex items-end gap-3'>
+                                        <img src={user} alt='user' />
+                                        <div className='flex flex-col gap-1'>
+                                            <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
+                                            <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
+                                                <p className='text-black'> { message.content } </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
                             ))}
                         </div>
                     </div>
