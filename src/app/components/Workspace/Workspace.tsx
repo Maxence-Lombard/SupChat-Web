@@ -12,7 +12,7 @@ import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
 import workspacePH from "../../../assets/icons/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
-import channel from "../../../assets/icons/channel.svg";
+import channelIcon from "../../../assets/icons/channel.svg";
 import addChannel from "../../../assets/icons/main-color/plus.svg";
 import settings from "../../../assets/icons/settings.svg";
 import {AvatarGroup} from "primereact/avatargroup";
@@ -20,21 +20,22 @@ import {AvatarGroup} from "primereact/avatargroup";
 import { useParams } from 'react-router-dom';
 import {useEffect, useState} from "react";
 import {Avatar} from "primereact/avatar";
-import {useGetWorkspaceByIdQuery} from "../../api/workspaces/workspaces.api.ts";
+import {useGetChannelsByWorkspaceIdQuery, useGetWorkspaceByIdQuery} from "../../api/workspaces/workspaces.api.ts";
 
 function Workspace() {
     const { id } = useParams();
     const [search, setSearch] = useState<string>('');
 
-    const { data: workspace, error } = useGetWorkspaceByIdQuery(id);
+    const { data: workspace } = useGetWorkspaceByIdQuery(id);
+    const { data: channels, error } = useGetChannelsByWorkspaceIdQuery(id);
 
     useEffect(() => {
-        console.log('Fetched workspaces:', workspace);
-        if (workspace) {
-            console.log('Fetched workspaces:', workspace);
+        console.log('Fetched channels:', channels);
+        if (channels) {
+            console.log('Fetched channels:', channels);
         }
         if (error) {
-            console.error('Error fetching workspaces:', error);
+            console.error('Error fetching channels:', error);
         }
     }, [workspace, error]);
 
@@ -90,86 +91,19 @@ function Workspace() {
                                     </div>
                                     <div className='flex flex-col gap-3'>
                                         <div className='flex gap-3'>
-                                            <p className='font-semibold text-[#6B8AFD]'>Main Channels</p>
-                                            {/*<img*/}
-                                            {/*    className='w-6 h-6'*/}
-                                            {/*    src={channel}*/}
-                                            {/*    alt="channel"*/}
-                                            {/*/>*/}
+                                            <p className='font-semibold text-[#6B8AFD]'>Channels</p>
                                         </div>
-                                        <div className='flex gap-3'>
-                                            <div className='flex items-center gap-1'>
-                                                <img
-                                                    className='w-6 h-6'
-                                                    src={channel}
-                                                    alt="channel"
-                                                />
-                                                <p>announcements</p>
-                                            </div>
-                                            {/* icone notifs  */}
-                                        </div>
-                                        <div className='flex gap-3'>
-                                            <div className='flex items-center gap-1'>
-                                                <img
-                                                    className='w-6 h-6'
-                                                    src={channel}
-                                                    alt="channel"
-                                                />
-                                                <p>announcements</p>
-                                            </div>
-                                            {/* icone notifs  */}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='flex items-center gap-3 ml-1'>
-                                    <img
-                                        className='w-4 h-4'
-                                        src={addChannel}
-                                        alt="addChannel"
-                                    />
-                                    <p>Add Channel</p>
-                                </div>
-                            </div>
-                            <div className='flex flex-col gap-2'>
-                                <div className='flex gap-2'>
-                                    <div className='flex flex-col h-full items-center gap-4'>
-                                        <img
-                                            className='w-6 h-6 rounded-lg'
-                                            src={channelMainColor}
-                                            alt="channelMainColor"
-                                        />
-                                        <div className="w-[1px] h-full rounded-lg bg-black"></div>
-                                    </div>
-                                    <div className='flex flex-col gap-3'>
-                                        <div className='flex gap-3'>
-                                            <p className='font-semibold text-[#6B8AFD]'>Main Channels</p>
-                                            {/*<img*/}
-                                            {/*    className='w-6 h-6'*/}
-                                            {/*    src={channel}*/}
-                                            {/*    alt="channel"*/}
-                                            {/*/>*/}
-                                        </div>
-                                        <div className='flex gap-3'>
-                                            <div className='flex items-center gap-1'>
-                                                <img
-                                                    className='w-6 h-6'
-                                                    src={channel}
-                                                    alt="channel"
-                                                />
-                                                <p>announcements</p>
-                                            </div>
-                                            {/* icone notifs  */}
-                                        </div>
-                                        <div className='flex gap-3'>
-                                            <div className='flex items-center gap-1'>
-                                                <img
-                                                    className='w-6 h-6'
-                                                    src={channel}
-                                                    alt="channel"
-                                                />
-                                                <p>announcements</p>
-                                            </div>
-                                            {/* icone notifs  */}
+                                        <div className='flex flex-col gap-3'>
+                                            {channels?.map((channel) => (
+                                                <div className='flex items-center gap-1'>
+                                                    <img
+                                                        className='w-6 h-6'
+                                                        src={channelIcon}
+                                                        alt="channelIcon"
+                                                    />
+                                                    <p>{channel.name}</p>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>

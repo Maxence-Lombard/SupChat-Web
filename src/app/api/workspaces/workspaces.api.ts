@@ -16,9 +16,18 @@ export type GetWorkspaceResponse = {
   ownerId: number
 };
 
-export const AuthApi = api.injectEndpoints({
+export type GetChannelResponse = {
+  id: number,
+  name: string,
+  visibility: visibility,
+  visibilityLocalized: string,
+  workspaceId: number
+};
+
+export const WorkspaceApi = api.injectEndpoints({
   endpoints: (builder) => ({
 
+    // GET
     getWorkspaces: builder.query<GetWorkspaceResponse[], undefined>({
       query: () => ({
         url: `/api/Workspace`,
@@ -39,6 +48,17 @@ export const AuthApi = api.injectEndpoints({
       }),
     }),
 
+    getChannelsByWorkspaceId: builder.query<GetChannelResponse[], number>({
+      query: (Id) => ({
+        url: `/api/Workspace/${Id}/Channels`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
+    // POST
     createWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: () => ({
         url: `/api/Workspace`,
@@ -78,7 +98,8 @@ export const AuthApi = api.injectEndpoints({
 export const {
   useGetWorkspacesQuery,
   useGetWorkspaceByIdQuery,
+  useGetChannelsByWorkspaceIdQuery,
   useCreateWorkspaceMutation,
   useModifyWorkspaceMutation,
   useDeleteWorkspaceMutation,
-} = AuthApi;
+} = WorkspaceApi;

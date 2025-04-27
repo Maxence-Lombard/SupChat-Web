@@ -1,7 +1,4 @@
-export enum visibility {
-    "Public" = 0,
-    "Private" = 1,
-}
+import {visibility} from "./Visibility.ts";
 
 export interface WORKSPACE {
     id: number;
