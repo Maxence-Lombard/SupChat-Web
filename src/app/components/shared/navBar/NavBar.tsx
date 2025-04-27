@@ -5,27 +5,34 @@ import settings from '../../../../assets/icons/settings.svg'
 import add from '../../../../assets/icons/add.svg'
 import user from '../../../../assets/placeholder/user1.svg'
 import {useGetWorkspacesQuery} from "../../../api/workspaces/workspaces.api.ts";
-import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 
 function NavBar() {
-    const { data: workspaces, error } = useGetWorkspacesQuery(undefined);
+    const { data: workspaces } = useGetWorkspacesQuery(undefined);
     const navigate = useNavigate();
 
-    const handleNavigation = (id: number) => {
-        navigate(`/workspace/${id}`);
+    // TODO: replace by a switch for nav
+    const handleNavigation = (nav: string) => {
+        switch (nav) {
+            case 'messages':
+                navigate(`/`);
+                break;
+            case 'activities':
+                navigate(`/`);
+                break;
+            case 'settings':
+                navigate(`/`);
+                break;
+            default:
+                break;
+        }
+
     };
+    const navigateToWorkspace = (id: number) => {
+        navigate(`/workspace/${id}`);
+    }
 
-    useEffect(() => {
-        if (workspaces) {
-            console.log('Fetched workspaces:', workspaces);
-        }
-        if (error) {
-            console.error('Error fetching workspaces:', error);
-        }
-    }, [workspaces, error]);
-
-        return (
+    return (
         <>
             <div className='flex flex-col justify-between items-center w-28 h-full px-4 py-10'>
                 <div className='flex flex-col gap-10'>
@@ -34,6 +41,7 @@ function NavBar() {
                             className='w-8 h-8 cursor-pointer'
                             src={messages}
                             alt="messages"
+                            onClick={() => handleNavigation('messages')}
                         />
                         <img
                             className='w-8 h-8 cursor-pointer'
@@ -51,7 +59,7 @@ function NavBar() {
                     <div className='flex flex-col items-center gap-4'>
                         {workspaces?.map((workspace) => (
                             <img
-                                onClick={() => handleNavigation(workspace.id)}
+                                onClick={() => navigateToWorkspace(workspace.id)}
                                 key={workspace.id}
                                 className='w-12 h-12 cursor-pointer rounded-lg'
                                 src={workspacePH}

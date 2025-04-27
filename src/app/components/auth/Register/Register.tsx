@@ -125,6 +125,7 @@ function Register() {
                                     placeholder="Password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    toggleMask
                                     feedback={false}
                                     tabIndex={1} />
                             </div>
@@ -136,6 +137,7 @@ function Register() {
                                     placeholder="Confirm Password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
+                                    toggleMask
                                     feedback={false}
                                     tabIndex={1} />
                             </div>

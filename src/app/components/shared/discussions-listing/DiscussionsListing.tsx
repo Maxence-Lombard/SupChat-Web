@@ -1,21 +1,12 @@
 import searchIcon from "../../../../assets/icons/search.svg";
 import UserCard from "../userCard/UserCard.tsx";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useGetUserWithMessagesQuery} from "../../../api/user/user.api.ts";
 
 function DiscussionsListing() {
     const [search, setSearch] = useState<string>('');
 
-    const { data: users, error } = useGetUserWithMessagesQuery(undefined);
-    useEffect(() => {
-        console.log('Fetched users:', users);
-        if (users) {
-            console.log('Fetched users:', users);
-        }
-        if (error) {
-            console.error('Error fetching users:', error);
-        }
-    }, [users, error]);
+    const { data: users } = useGetUserWithMessagesQuery(undefined);
 
     return (
         <>

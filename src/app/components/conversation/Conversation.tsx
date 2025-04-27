@@ -8,7 +8,6 @@ import send from "../../../assets/icons/send.svg";
 import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
 import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
-import {useEffect} from "react";
 import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
 import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
 import {useParams} from "react-router-dom";
@@ -19,16 +18,7 @@ function Conversation() {
     const { formatDate } = useDateFormatter();
     const userId = 1;
 
-    const { data: messages, error } = useGetMessagesByUserIdQuery(id);
-    useEffect(() => {
-        console.log('Fetched messages:', messages);
-        if (messages) {
-            console.log('Fetched messages:', messages);
-        }
-        if (error) {
-            console.error('Error fetching messages:', error);
-        }
-    }, [messages, error]);
+    const { data: messages } = useGetMessagesByUserIdQuery(id);
 
     return (
         <>

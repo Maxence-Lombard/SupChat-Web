@@ -27,17 +27,7 @@ function Workspace() {
     const [search, setSearch] = useState<string>('');
 
     const { data: workspace } = useGetWorkspaceByIdQuery(id);
-    const { data: channels, error } = useGetChannelsByWorkspaceIdQuery(id);
-
-    useEffect(() => {
-        console.log('Fetched channels:', channels);
-        if (channels) {
-            console.log('Fetched channels:', channels);
-        }
-        if (error) {
-            console.error('Error fetching channels:', error);
-        }
-    }, [workspace, error]);
+    const { data: channels } = useGetChannelsByWorkspaceIdQuery(id);
 
     return (
         <>
@@ -95,7 +85,7 @@ function Workspace() {
                                         </div>
                                         <div className='flex flex-col gap-3'>
                                             {channels?.map((channel) => (
-                                                <div className='flex items-center gap-1'>
+                                                <div className='flex items-center gap-1' key={channel.id}>
                                                     <img
                                                         className='w-6 h-6'
                                                         src={channelIcon}
