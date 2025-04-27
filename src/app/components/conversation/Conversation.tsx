@@ -9,15 +9,28 @@ import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import UserCard from "../shared/userCard/UserCard.tsx";
+import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
 
 function Conversation() {
     const [search, setSearch] = useState<string>('');
 
+    const { data: messages, error } = useGetMessagesByUserIdQuery(2);
+    useEffect(() => {
+        console.log('Fetched messages:', messages);
+        if (messages) {
+            console.log('Fetched messages:', messages);
+        }
+        if (error) {
+            console.error('Error fetching messages:', error);
+        }
+    }, [messages, error]);
+
     return (
         <>
             <div className='flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8'>
+                {/*Left Panel*/}
                 <div className='flex flex-col gap-8 min-w-[231px]'>
                     <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
                         <img
@@ -49,6 +62,7 @@ function Conversation() {
                     </div>
                 </div>
                 <div className='flex flex-col flex-1'>
+                    {/* User Banner */}
                     <div className='flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2'>
                         <div className='flex items-center gap-2'>
                             <img src={user} alt='user' />
@@ -130,27 +144,17 @@ function Conversation() {
                                 </div>
                                 <hr className='flex-1 border border-[#6B8AFD]'/>
                             </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Sorry did’t saw your mess. Yea that’s ok for me lets do it like that </p>
+                            { messages?.slice().reverse().map(messages => (
+                                <div className='flex justify-end items-end w-full gap-3'>
+                                    <div className='flex flex-col gap-1 items-end'>
+                                        <p className='text-black/50'> 15h32 </p>
+                                        <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
+                                            <p className='text-white'> { messages.content } </p>
+                                        </div>
                                     </div>
+                                    <img src={user2} alt='user' />
                                 </div>
-                                <img src={user2} alt='user' />
-
-                            </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis </p>
-                                    </div>
-                                </div>
-                                <img src={user2} alt='user' />
-
-                            </div>
-
+                            ))}
                         </div>
                     </div>
                     <div className='flex flex-col mt-1 gap-2 w-full'>
