@@ -6,18 +6,15 @@ import emoji from "../../../assets/icons/main-color/emoji.svg";
 import discard from "../../../assets/icons/discard.svg";
 import send from "../../../assets/icons/send.svg";
 import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
-import searchIcon from "../../../assets/icons/search.svg";
 import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
-import {useEffect, useState} from "react";
-import UserCard from "../shared/userCard/UserCard.tsx";
+import {useEffect} from "react";
 import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
 import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
 import {useParams} from "react-router-dom";
+import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 
 function Conversation() {
-    const [search, setSearch] = useState<string>('');
-
     const { id } = useParams();
     const { formatDate } = useDateFormatter();
     const userId = 1;
@@ -37,36 +34,7 @@ function Conversation() {
         <>
             <div className='flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8'>
                 {/*Left Panel*/}
-                <div className='flex flex-col gap-8 min-w-[231px]'>
-                    <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
-                        <img
-                            className='w-6 h-6'
-                            src={searchIcon}
-                            alt="search"
-                        />
-                        <input
-                            className='bg-white focus:outline-none w-full'
-                            name="search"
-                            id="firstname"
-                            placeholder='Search'
-                            value={search} onChange={(e) => setSearch(e.target.value ?? '')}
-                        />
-                    </div>
-                    <div className='flex flex-col gap-5 h-full overflow-y-auto'>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                    </div>
-                </div>
+                <DiscussionsListing />
                 <div className='flex flex-col flex-1'>
                     {/* User Banner */}
                     <div className='flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2'>
@@ -152,7 +120,7 @@ function Conversation() {
                             </div>
                             { messages?.slice().reverse().map(message => (
                                 message.senderId === userId.toString() ? (
-                                <div className='flex justify-end items-end w-full gap-3'>
+                                <div className='flex justify-end items-end w-full gap-3' key={message.id}>
                                     <div className='flex flex-col gap-1 items-end'>
                                         <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
                                         <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
@@ -162,7 +130,7 @@ function Conversation() {
                                     <img src={user2} alt='user' />
                                 </div>
                                 ) : (
-                                    <div className='flex items-end gap-3'>
+                                    <div className='flex items-end gap-3' key={message.id}>
                                         <img src={user} alt='user' />
                                         <div className='flex flex-col gap-1'>
                                             <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>

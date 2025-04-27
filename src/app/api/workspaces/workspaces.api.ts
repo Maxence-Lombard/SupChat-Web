@@ -1,5 +1,5 @@
 import { api } from "../api";
-import {visibility} from "../../Models/Workspace.ts";
+import {visibility} from "../../Models/Enums.ts";
 
 export type WorkspaceDto = {
   id: number;
