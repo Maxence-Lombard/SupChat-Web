@@ -1,4 +1,4 @@
-import user from "../../../assets/placeholder/user4.svg";
+import userIcon from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
 import plus from "../../../assets/icons/main-color/plus.svg";
 import mention from "../../../assets/icons/main-color/mention.svg";
@@ -6,55 +6,44 @@ import emoji from "../../../assets/icons/main-color/emoji.svg";
 import discard from "../../../assets/icons/discard.svg";
 import send from "../../../assets/icons/send.svg";
 import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
-import searchIcon from "../../../assets/icons/search.svg";
 import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
-import {useState} from "react";
-import UserCard from "../shared/userCard/UserCard.tsx";
+import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
+import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
+import {useLocation, useParams} from "react-router-dom";
+import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
+import {useEffect} from "react";
+import {User, UserProps} from "../../Models/User.ts";
 
 function Conversation() {
-    const [search, setSearch] = useState<string>('');
+    const { id } = useParams();
+    const { formatDate } = useDateFormatter();
+
+    //TODO : replace by get user/id
+    const location = useLocation();
+    const user: User = location.state?.user;
+
+    const userId = 1; //id of the connected user
+
+    const { data: messages } = useGetMessagesByUserIdQuery(id);
+
+    useEffect(() => {
+        console.log('conv', user);
+    }, [user]);
 
     return (
         <>
             <div className='flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8'>
-                <div className='flex flex-col gap-8 min-w-[231px]'>
-                    <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
-                        <img
-                            className='w-6 h-6'
-                            src={searchIcon}
-                            alt="search"
-                        />
-                        <input
-                            className='bg-white focus:outline-none w-full'
-                            name="search"
-                            id="firstname"
-                            placeholder='Search'
-                            value={search} onChange={(e) => setSearch(e.target.value ?? '')}
-                        />
-                    </div>
-                    <div className='flex flex-col gap-5 h-full overflow-y-auto'>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                        <UserCard></UserCard>
-                    </div>
-                </div>
+                {/*Left Panel*/}
+                <DiscussionsListing />
                 <div className='flex flex-col flex-1'>
+                    {/* User Banner */}
                     <div className='flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2'>
                         <div className='flex items-center gap-2'>
-                            <img src={user} alt='user' />
+                            <img src={userIcon} alt='userIcon' />
                             <div>
-                                <p className='font-semibold'>Maria Santa</p>
-                                <p className='text-[#00A000] text-xs'> online </p>
+                                <p className='font-semibold'>  { user.firstName } </p>
+                                <p className='text-[#00A000] text-xs'> { user.status } </p>
                             </div>
                         </div>
                         <div className='flex gap-6'>
@@ -83,7 +72,7 @@ function Conversation() {
                         </div>
                         <div className='flex flex-col items-start gap-4'>
                             <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
+                                <img src={userIcon} alt='userIcon' />
                                 <div className='flex flex-col gap-1 items-end'>
                                     <p className='text-black/50'> 15h32 </p>
                                     <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
@@ -92,7 +81,7 @@ function Conversation() {
                                 </div>
                             </div>
                             <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
+                                <img src={userIcon} alt='userIcon' />
                                 <div className='flex flex-col gap-1 items-end'>
                                     <p className='text-black/50'> 15h32 </p>
                                     <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
@@ -115,7 +104,7 @@ function Conversation() {
                                 <hr className='flex-1 border border-black'/>
                             </div>
                             <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
+                                <img src={userIcon} alt='userIcon' />
                                 <div className='flex flex-col gap-1 items-end'>
                                     <p className='text-black/50'> 15h32 </p>
                                     <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
@@ -130,27 +119,29 @@ function Conversation() {
                                 </div>
                                 <hr className='flex-1 border border-[#6B8AFD]'/>
                             </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Sorry did’t saw your mess. Yea that’s ok for me lets do it like that </p>
+                            { messages?.slice().reverse().map(message => (
+                                message.senderId === userId.toString() ? (
+                                <div className='flex justify-end items-end w-full gap-3' key={message.id}>
+                                    <div className='flex flex-col gap-1 items-end'>
+                                        <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
+                                        <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
+                                            <p className='text-white'> { message.content } </p>
+                                        </div>
                                     </div>
+                                    <img src={user2} alt='user' />
                                 </div>
-                                <img src={user2} alt='user' />
-
-                            </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis </p>
+                                ) : (
+                                    <div className='flex items-end gap-3' key={message.id}>
+                                        <img src={userIcon} alt='userIcon' />
+                                        <div className='flex flex-col gap-1'>
+                                            <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
+                                            <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
+                                                <p className='text-black'> { message.content } </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <img src={user2} alt='user' />
-
-                            </div>
-
+                                )
+                            ))}
                         </div>
                     </div>
                     <div className='flex flex-col mt-1 gap-2 w-full'>

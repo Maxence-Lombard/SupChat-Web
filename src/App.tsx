@@ -27,7 +27,7 @@ function App() {
                   <Routes>
                       <Route element={<MainLayout />}>
                           <Route path="/" element={<Home />} />
-                          <Route path="/conversation" element={<Conversation />} />
+                          <Route path="/conversation/:id" element={<Conversation />} />
                           <Route path="/workspace/:id" element={<Workspace />} />
                           <Route path="*" element={<Home />} />
 

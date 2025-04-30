@@ -1,4 +1,4 @@
-import {visibility} from "./Visibility.ts";
+import {visibility} from "./Enums.ts";
 
 export interface WORKSPACE {
     id: number;
