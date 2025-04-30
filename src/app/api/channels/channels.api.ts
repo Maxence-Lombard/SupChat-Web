@@ -8,6 +8,12 @@ export type ChannelDto = {
   workspaceId: number
 };
 
+export type CreateChannelDto = {
+  name: string,
+  visibility: visibility,
+  workspaceId: number
+};
+
 export type GetChannelResponse = {
   id: number,
   name: string,

@@ -18,16 +18,41 @@ import settings from "../../../assets/icons/settings.svg";
 import {AvatarGroup} from "primereact/avatargroup";
 
 import { useParams } from 'react-router-dom';
-import {useEffect, useState} from "react";
+import { useState } from "react";
 import {Avatar} from "primereact/avatar";
-import {useGetChannelsByWorkspaceIdQuery, useGetWorkspaceByIdQuery} from "../../api/workspaces/workspaces.api.ts";
+import {
+    useCreateChannelInWorkspaceMutation,
+    useGetChannelsByWorkspaceIdQuery,
+    useGetWorkspaceByIdQuery
+} from "../../api/workspaces/workspaces.api.ts";
+import {visibility} from "../../Models/Enums.ts";
 
 function Workspace() {
     const { id } = useParams();
     const [search, setSearch] = useState<string>('');
 
+    const [createChannelRequest] = useCreateChannelInWorkspaceMutation();
     const { data: workspace } = useGetWorkspaceByIdQuery(id);
     const { data: channels } = useGetChannelsByWorkspaceIdQuery(id);
+
+    const handleCreateChannel = async () => {
+        if (!id) {
+            console.error("L'ID du workspace est manquant.");
+            return;
+        }
+
+        const channel = {
+            name: 'New channel',
+            visibility: visibility.public,
+            workspaceId: Number(id)
+        };
+        try {
+            await createChannelRequest(channel).unwrap();
+            console.log("Channel créé avec succès !");
+        } catch (error) {
+            console.error("Erreur lors de la création du channel :", error);
+        }
+    }
 
     return (
         <>
@@ -97,7 +122,7 @@ function Workspace() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex items-center gap-3 ml-1'>
+                                <div className='flex items-center gap-3 ml-1 cursor-pointer' onClick={handleCreateChannel}>
                                     <img
                                         className='w-4 h-4'
                                         src={addChannel}

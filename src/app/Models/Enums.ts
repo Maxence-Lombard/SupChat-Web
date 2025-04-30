@@ -1,6 +1,6 @@
 export enum visibility {
-    "Public" = 0,
-    "Private" = 1,
+    "public" = "Public",
+    "private" = "Private",
 }
 
 export enum status {
