@@ -1,18 +1,20 @@
 import userIcon from '../../../../assets/placeholder/user2.svg'
 import {useNavigate} from "react-router-dom";
+import {UserProps} from "../../../Models/User.ts";
 
-interface UserProps {
-    user: {
-        id: number;
-        firstName: string;
-    }
-}
 
-function UserCard({ user }: UserProps) {
+
+function UserCard({ user } : UserProps) {
     const navigate = useNavigate();
     const handleNavigation = () => {
-        navigate(`/conversation/${user.id}`);
+        navigate(`/conversation/${user.id}`, {
+            state: {
+                user: user
+            }
+        });
     };
+
+    // TODO : voir pour envoyer les infos du user vers Conversation
 
     return (
         <>

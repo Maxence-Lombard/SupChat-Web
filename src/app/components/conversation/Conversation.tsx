@@ -1,4 +1,4 @@
-import user from "../../../assets/placeholder/user4.svg";
+import userIcon from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
 import plus from "../../../assets/icons/main-color/plus.svg";
 import mention from "../../../assets/icons/main-color/mention.svg";
@@ -10,15 +10,26 @@ import infoIcon from "../../../assets/icons/main-color/info.svg";
 import moreIcon from "../../../assets/icons/main-color/more.svg";
 import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
 import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
-import {useParams} from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
+import {useEffect} from "react";
+import {User, UserProps} from "../../Models/User.ts";
 
 function Conversation() {
     const { id } = useParams();
     const { formatDate } = useDateFormatter();
-    const userId = 1;
+
+    //TODO : replace by get user/id
+    const location = useLocation();
+    const user: User = location.state?.user;
+
+    const userId = 1; //id of the connected user
 
     const { data: messages } = useGetMessagesByUserIdQuery(id);
+
+    useEffect(() => {
+        console.log('conv', user);
+    }, [user]);
 
     return (
         <>
@@ -29,10 +40,10 @@ function Conversation() {
                     {/* User Banner */}
                     <div className='flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2'>
                         <div className='flex items-center gap-2'>
-                            <img src={user} alt='user' />
+                            <img src={userIcon} alt='userIcon' />
                             <div>
-                                <p className='font-semibold'>Maria Santa</p>
-                                <p className='text-[#00A000] text-xs'> online </p>
+                                <p className='font-semibold'>  { user.firstName } </p>
+                                <p className='text-[#00A000] text-xs'> { user.status } </p>
                             </div>
                         </div>
                         <div className='flex gap-6'>
@@ -61,7 +72,7 @@ function Conversation() {
                         </div>
                         <div className='flex flex-col items-start gap-4'>
                             <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
+                                <img src={userIcon} alt='userIcon' />
                                 <div className='flex flex-col gap-1 items-end'>
                                     <p className='text-black/50'> 15h32 </p>
                                     <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
@@ -70,7 +81,7 @@ function Conversation() {
                                 </div>
                             </div>
                             <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
+                                <img src={userIcon} alt='userIcon' />
                                 <div className='flex flex-col gap-1 items-end'>
                                     <p className='text-black/50'> 15h32 </p>
                                     <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
@@ -93,7 +104,7 @@ function Conversation() {
                                 <hr className='flex-1 border border-black'/>
                             </div>
                             <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
+                                <img src={userIcon} alt='userIcon' />
                                 <div className='flex flex-col gap-1 items-end'>
                                     <p className='text-black/50'> 15h32 </p>
                                     <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
@@ -121,7 +132,7 @@ function Conversation() {
                                 </div>
                                 ) : (
                                     <div className='flex items-end gap-3' key={message.id}>
-                                        <img src={user} alt='user' />
+                                        <img src={userIcon} alt='userIcon' />
                                         <div className='flex flex-col gap-1'>
                                             <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
                                             <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>

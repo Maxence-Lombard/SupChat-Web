@@ -1,13 +1,19 @@
 import searchIcon from "../../../../assets/icons/search.svg";
 import UserCard from "../userCard/UserCard.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useGetUserWithMessagesQuery} from "../../../api/user/user.api.ts";
 
 function DiscussionsListing() {
     const [search, setSearch] = useState<string>('');
 
     const { data: users } = useGetUserWithMessagesQuery(undefined);
-
+    useEffect(() => {
+        if (users) {
+            console.log(users);
+        } else {
+            console.log('no users');
+        }
+    }, [users]);
     return (
         <>
             <div className='flex flex-col gap-8 min-w-[231px]'>
@@ -29,18 +35,6 @@ function DiscussionsListing() {
                     { users?.map(user =>(
                         <UserCard user={user} key={user.id} />
                     )) }
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
-                    {/*<UserCard></UserCard>*/}
                 </div>
             </div>
         </>
