@@ -1,4 +1,5 @@
 import './App.css'
+import 'primeicons/primeicons.css';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Home from "./app/components/Home/Home.tsx";
 import Login from "./app/components/auth/Login/Login.tsx";

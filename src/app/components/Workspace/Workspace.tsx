@@ -16,18 +16,27 @@ import channelIcon from "../../../assets/icons/channel.svg";
 import addChannel from "../../../assets/icons/main-color/plus.svg";
 import settings from "../../../assets/icons/settings.svg";
 import {AvatarGroup} from "primereact/avatargroup";
-
 import { useParams } from 'react-router-dom';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Avatar} from "primereact/avatar";
-import {useGetChannelsByWorkspaceIdQuery, useGetWorkspaceByIdQuery} from "../../api/workspaces/workspaces.api.ts";
+import {
+    useGetChannelsByWorkspaceIdQuery,
+    useGetWorkspaceByIdQuery
+} from "../../api/workspaces/workspaces.api.ts";
+import {Dialog} from "primereact/dialog";
+import CreateChannelPopup from "../shared/popups/createChannelPopup/CreateChannelPopup.tsx";
 
 function Workspace() {
     const { id } = useParams();
     const [search, setSearch] = useState<string>('');
+    const [visible, setVisible] = useState<boolean>(false);
 
     const { data: workspace } = useGetWorkspaceByIdQuery(id);
-    const { data: channels } = useGetChannelsByWorkspaceIdQuery(id);
+    const { data: channels, refetch: refetchChannels } = useGetChannelsByWorkspaceIdQuery(id);
+
+    const refreshChannels = () => {
+        refetchChannels();
+    };
 
     return (
         <>
@@ -97,7 +106,8 @@ function Workspace() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex items-center gap-3 ml-1'>
+                                <div className='flex items-center gap-3 ml-1 cursor-pointer'
+                                     onClick={() => setVisible(true)}>
                                     <img
                                         className='w-4 h-4'
                                         src={addChannel}
@@ -105,6 +115,18 @@ function Workspace() {
                                     />
                                     <p>Add Channel</p>
                                 </div>
+                                <Dialog
+                                    visible={visible}
+                                    modal
+                                    onHide={() => {if (!visible) return; setVisible(false); }}
+                                    content={({ hide }) => (
+                                        <CreateChannelPopup
+                                            hide={hide}
+                                            workspaceId={Number(id)}
+                                            onChannelCreated={refreshChannels}
+                                        />
+                                    )}
+                                ></Dialog>
                             </div>
                         </div>
                     </div>
@@ -134,22 +156,22 @@ function Workspace() {
                             </div>
                             <div className="w-[1px] h-full rounded-lg bg-[#ECECEC]"></div>
                             <div className='flex gap-6'>
-                            <img
-                                className='cursor-pointer w-6 h-6'
-                                src={searchIconMainColor}
-                                alt="search"
-                            />
-                            <img
-                                className='cursor-pointer w-6 h-6'
-                                src={infoIcon}
-                                alt="search"
-                            />
-                            <img
-                                className='cursor-pointer w-6 h-6'
-                                src={moreIcon}
-                                alt="search"
-                            />
-                        </div>
+                                <img
+                                    className='cursor-pointer w-6 h-6'
+                                    src={searchIconMainColor}
+                                    alt="search"
+                                />
+                                <img
+                                    className='cursor-pointer w-6 h-6'
+                                    src={infoIcon}
+                                    alt="search"
+                                />
+                                <img
+                                    className='cursor-pointer w-6 h-6'
+                                    src={moreIcon}
+                                    alt="search"
+                                />
+                            </div>
                         </div>
                     </div>
                     {/* CONVERSATIONS*/}

@@ -1,5 +1,6 @@
 import { api } from "../api";
 import {visibility} from "../../Models/Enums.ts";
+import {CreateChannelDto} from "../channels/channels.api.ts";
 
 export type WorkspaceDto = {
   id: number;
@@ -67,7 +68,17 @@ export const WorkspaceApi = api.injectEndpoints({
           'Content-Type': 'application/json',
         },
       }),
-      // invalidatesTags: ['Auth'],
+    }),
+
+    createChannelInWorkspace: builder.mutation<GetChannelResponse, CreateChannelDto>({
+      query: (channel) => ({
+        url: `/api/Workspace/${channel.workspaceId}/Channels`,
+        method: 'POST',
+        body: JSON.stringify(channel),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
     }),
 
     modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
@@ -100,6 +111,7 @@ export const {
   useGetWorkspaceByIdQuery,
   useGetChannelsByWorkspaceIdQuery,
   useCreateWorkspaceMutation,
+  useCreateChannelInWorkspaceMutation,
   useModifyWorkspaceMutation,
   useDeleteWorkspaceMutation,
 } = WorkspaceApi;

@@ -78,6 +78,11 @@ h1 {
   color: black;
 }
 
+.p-dialog {
+  background-color: white;
+}
+
+/* CHECKBOX */
 .customCheckbox {
   width: 20px;
   height: 20px;
@@ -103,4 +108,40 @@ h1 {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+/* SWITCH */
+.customSwitch {
+  --toggle-size: 24px;
+  appearance: none;
+  width: 64px;
+  height: 32px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 99em;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--toggle-size);
+  border: 1px solid #6B8AFD;
+}
+
+.customSwitch::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  background-color: #6B8AFD;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+.customSwitch:checked {
+  background-color: #6B8AFD;
+}
+
+.customSwitch:checked::before {
+  left: calc(100% - 24px - 4px);
+  background-color: white;
 }
