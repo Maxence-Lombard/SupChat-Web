@@ -7,9 +7,10 @@ import {CreateChannelDto} from "../../../../api/channels/channels.api.ts";
 interface CreateChannelPopupProps {
     hide: () => void;
     workspaceId: number;
+    onChannelCreated: () => void;
 }
 
-function CreateChannelPopup({hide, workspaceId }: CreateChannelPopupProps) {
+function CreateChannelPopup({hide, workspaceId, onChannelCreated }: CreateChannelPopupProps) {
     const [newChannelName, setNewChannelName] = useState<string>('');
     const [isPublic, setIsPublic] = useState<boolean>(true);
     const [createChannelRequest] = useCreateChannelInWorkspaceMutation();
@@ -33,11 +34,10 @@ function CreateChannelPopup({hide, workspaceId }: CreateChannelPopupProps) {
 
         try {
             await createChannelRequest(newChannel).unwrap();
-            console.log("Channel créé avec succès !");
+            onChannelCreated();
             hide();
         } catch (error) {
-            console.error("Erreur lors de la création du channel :", error);
-            hide();
+            console.log("Error creating channel:", error);
         }
     }
 

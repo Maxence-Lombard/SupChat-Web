@@ -32,8 +32,11 @@ function Workspace() {
     const [visible, setVisible] = useState<boolean>(false);
 
     const { data: workspace } = useGetWorkspaceByIdQuery(id);
-    const { data: channels } = useGetChannelsByWorkspaceIdQuery(id);
+    const { data: channels, refetch: refetchChannels } = useGetChannelsByWorkspaceIdQuery(id);
 
+    const refreshChannels = () => {
+        refetchChannels();
+    };
 
     return (
         <>
@@ -120,6 +123,7 @@ function Workspace() {
                                         <CreateChannelPopup
                                             hide={hide}
                                             workspaceId={Number(id)}
+                                            onChannelCreated={refreshChannels}
                                         />
                                     )}
                                 ></Dialog>
