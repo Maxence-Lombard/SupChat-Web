@@ -1,8 +1,10 @@
 import {InputText} from "primereact/inputtext";
 import {useState} from "react";
+import {useDispatch} from "react-redux";
 import {useCreateChannelInWorkspaceMutation} from "../../../../api/workspaces/workspaces.api.ts";
 import {visibility} from "../../../../Models/Enums.ts";
 import {CreateChannelDto} from "../../../../api/channels/channels.api.ts";
+import {setChannel} from "../../../../store/slices/channelSlice.ts";
 
 interface CreateChannelPopupProps {
     hide: () => void;
@@ -11,6 +13,7 @@ interface CreateChannelPopupProps {
 }
 
 function CreateChannelPopup({hide, workspaceId, onChannelCreated }: CreateChannelPopupProps) {
+    const dispatch = useDispatch();
     const [newChannelName, setNewChannelName] = useState<string>('');
     const [isPublic, setIsPublic] = useState<boolean>(true);
     const [createChannelRequest] = useCreateChannelInWorkspaceMutation();
@@ -33,7 +36,8 @@ function CreateChannelPopup({hide, workspaceId, onChannelCreated }: CreateChanne
         };
 
         try {
-            await createChannelRequest(newChannel).unwrap();
+            const createdChannel = await createChannelRequest(newChannel).unwrap();
+            dispatch(setChannel(createdChannel));
             onChannelCreated();
             hide();
         } catch (error) {

@@ -1,6 +1,6 @@
 import { api } from "../api";
 import {visibility} from "../../Models/Enums.ts";
-import {CreateChannelDto} from "../channels/channels.api.ts";
+import {CreateChannelDto, GetChannelResponse} from "../channels/channels.api.ts";
 
 export type WorkspaceDto = {
   id: number;
@@ -15,14 +15,6 @@ export type GetWorkspaceResponse = {
   visibility: visibility,
   visibilityLocalized: string,
   ownerId: number
-};
-
-export type GetChannelResponse = {
-  id: number,
-  name: string,
-  visibility: visibility,
-  visibilityLocalized: string,
-  workspaceId: number
 };
 
 export const WorkspaceApi = api.injectEndpoints({

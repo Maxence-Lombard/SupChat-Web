@@ -17,10 +17,9 @@ export type CreateChannelDto = {
 export type GetChannelResponse = {
   id: number,
   name: string,
-  image: string,
   visibility: visibility,
   visibilityLocalized: string,
-  ownerId: number
+  workspaceId: number
 };
 
 export const ChannelsApi = api.injectEndpoints({

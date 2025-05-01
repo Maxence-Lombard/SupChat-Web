@@ -1,15 +1,9 @@
 import {useState} from "react";
 import './Home.css'
-//ICONS
-import searchIcon from '../../../assets/icons/search.svg';
-//COMPONENTS
 import ShortInfoUserCard from "../shared/short-info-user-card/ShortInfoUserCard.tsx";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 
 function Home() {
-    const [search, setSearch] = useState<string>('');
-
-
     return (
         <>
             <div className='flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8'>

@@ -17,7 +17,7 @@ import addChannel from "../../../assets/icons/main-color/plus.svg";
 import settings from "../../../assets/icons/settings.svg";
 import {AvatarGroup} from "primereact/avatargroup";
 import { useParams } from 'react-router-dom';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Avatar} from "primereact/avatar";
 import {
     useGetChannelsByWorkspaceIdQuery,
@@ -25,18 +25,31 @@ import {
 } from "../../api/workspaces/workspaces.api.ts";
 import {Dialog} from "primereact/dialog";
 import CreateChannelPopup from "../shared/popups/createChannelPopup/CreateChannelPopup.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {setChannel} from "../../store/slices/channelSlice.ts";
+import {RootState} from "../../store/store.ts";
 
 function Workspace() {
+    const dispatch = useDispatch();
+
     const { id } = useParams();
     const [search, setSearch] = useState<string>('');
     const [visible, setVisible] = useState<boolean>(false);
 
-    const { data: workspace } = useGetWorkspaceByIdQuery(id);
-    const { data: channels, refetch: refetchChannels } = useGetChannelsByWorkspaceIdQuery(id);
+    const channelsFromStore = useSelector((state: RootState) => state.channels.byWorkspaceId);
+    const workspaceChannels = Object.values(channelsFromStore).filter(channel => channel.workspaceId === Number(id));
+    const skip = workspaceChannels.length > 0;
 
-    const refreshChannels = () => {
-        refetchChannels();
-    };
+    const { data: workspace } = useGetWorkspaceByIdQuery(Number(id));
+    const { data: channels, isSuccess } = useGetChannelsByWorkspaceIdQuery(Number(id), { skip });
+
+    useEffect(() => {
+        if (isSuccess && channels) {
+            channels.forEach(channel => {
+                dispatch(setChannel(channel));
+            });
+        }
+    }, [isSuccess, channels, dispatch]);
 
     return (
         <>
@@ -93,7 +106,7 @@ function Workspace() {
                                             <p className='font-semibold text-[#6B8AFD]'>Channels</p>
                                         </div>
                                         <div className='flex flex-col gap-3'>
-                                            {channels?.map((channel) => (
+                                            {workspaceChannels?.map((channel) => (
                                                 <div className='flex items-center gap-1' key={channel.id}>
                                                     <img
                                                         className='w-6 h-6'
@@ -123,7 +136,9 @@ function Workspace() {
                                         <CreateChannelPopup
                                             hide={hide}
                                             workspaceId={Number(id)}
-                                            onChannelCreated={refreshChannels}
+                                            onChannelCreated={() => {
+                                                setVisible(false);
+                                            }}
                                         />
                                     )}
                                 ></Dialog>
