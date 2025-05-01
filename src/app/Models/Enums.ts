@@ -4,12 +4,12 @@ export enum visibility {
 }
 
 export enum status {
-    "Online" = 0,
-    "Away" = 1,
-    "Offline" = 2,
+    "online" = "Online",
+    "away" = "Away",
+    "offline" = "Offline",
 }
 
 export enum theme {
-    "light" = 0,
-    "dark" = 1,
+    "light" = "Light",
+    "dark" = "Dark",
 }

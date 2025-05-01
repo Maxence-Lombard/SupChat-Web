@@ -13,7 +13,7 @@ import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
 import {useLocation, useParams} from "react-router-dom";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 import {useEffect} from "react";
-import {User, UserProps} from "../../Models/User.ts";
+import {User} from "../../Models/User.ts";
 
 function Conversation() {
     const { id } = useParams();

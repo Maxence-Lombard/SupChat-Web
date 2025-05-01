@@ -1,9 +1,21 @@
-import {useState} from "react";
-import './Home.css'
 import ShortInfoUserCard from "../shared/short-info-user-card/ShortInfoUserCard.tsx";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
+import {useGetUserWithMessagesQuery} from "../../api/user/user.api.ts";
+import {useEffect} from "react";
+import {status} from "../../Models/Enums.ts";
 
 function Home() {
+
+    //TODO: à supprimer lorsque liste conv dans le store
+    const { data: users } = useGetUserWithMessagesQuery(undefined);
+    useEffect(() => {
+        if (users) {
+            console.log(users);
+        } else {
+            console.log('no users');
+        }
+    }, [users]);
+
     return (
         <>
             <div className='flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8'>
@@ -11,22 +23,14 @@ function Home() {
                 <div className='flex flex-col gap-6 flex-1'>
                     <div className='flex flex-col gap-2'>
                         <div className='flex justify-center px-4 py-2 border rounded-lg border-[#ECECEC]'>
-                        <p>Conversations actives - 18</p>
-                    </div>
+                            <p>Conversations actives - 18</p>
+                        </div>
                     </div>
                     <div className='flex flex-col gap-2 h-full overflow-y-auto'>
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
-                        <ShortInfoUserCard />
+                        {users?.filter(user => user.status === status.online)
+                            .map(user =>(
+                                <ShortInfoUserCard user={user} key={user.id} />
+                            ))}
                     </div>
                 </div>
             </div>

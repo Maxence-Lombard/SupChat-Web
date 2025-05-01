@@ -9,11 +9,9 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../store/store";
 
 function NavBar() {
-    // const { data: workspaces } = useGetWorkspacesQuery(undefined);
     const workspaces = useSelector((state: RootState) => state.workspaces.list);
     const navigate = useNavigate();
 
-    // TODO: replace by a switch for nav
     const handleNavigation = (nav: string) => {
         switch (nav) {
             case 'messages':
