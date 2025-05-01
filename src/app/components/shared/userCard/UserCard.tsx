@@ -14,7 +14,6 @@ function UserCard({ user } : UserProps) {
         });
     };
 
-    // TODO : voir pour envoyer les infos du user vers Conversation
 
     return (
         <>

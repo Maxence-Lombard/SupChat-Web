@@ -1,8 +1,4 @@
 import workspacePH from '../../../../assets/icons/workspacePH.svg'
-import messages from '../../../../assets/icons/messages.svg'
-import activities from '../../../../assets/icons/activities.svg'
-import settings from '../../../../assets/icons/settings.svg'
-import add from '../../../../assets/icons/add.svg'
 import user from '../../../../assets/placeholder/user1.svg'
 import {useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
@@ -37,22 +33,10 @@ function NavBar() {
             <div className='flex flex-col justify-between items-center w-28 h-full px-4 py-10'>
                 <div className='flex flex-col gap-10'>
                     <div className='flex flex-col items-center gap-4'>
-                        <img
-                            className='w-8 h-8 cursor-pointer'
-                            src={messages}
-                            alt="messages"
-                            onClick={() => handleNavigation('messages')}
-                        />
-                        <img
-                            className='w-8 h-8 cursor-pointer'
-                            src={activities}
-                            alt="activities"
-                        />
-                        <img
-                            className='w-8 h-8 cursor-pointer'
-                            src={settings}
-                            alt="settings"
-                        />
+                        <i className='pi pi-inbox text-2xl cursor-pointer'
+                           onClick={() => handleNavigation('messages')}/>
+                        <i className='pi pi-bell text-2xl cursor-pointer' />
+                        <i className='pi pi-cog text-2xl  cursor-pointer' />
 
                     </div>
                     <hr className='w-full border border-black/50 '/>
@@ -67,10 +51,7 @@ function NavBar() {
                             />
                         ))}
                         <button className='flex items-center justify-center w-12 h-12 bg-white border border-[#ECECEC] rounded-lg'>
-                            <img
-                                src={add}
-                                alt="add"
-                            />
+                            <i className='pi pi-plus'/>
                         </button>
 
                     </div>

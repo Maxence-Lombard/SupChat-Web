@@ -1,7 +1,10 @@
 import userIcon from '../../../../assets/placeholder/user3.svg'
 import message from "../../../../assets/icons/message.svg";
-import close from "../../../../assets/icons/close.svg";
 import {status} from "../../../Models/Enums.ts";
+import { Image } from 'primereact/image';
+import { Tooltip } from 'primereact/tooltip';
+import {useNavigate} from "react-router-dom";
+
 
 interface Props {
     user: {
@@ -12,6 +15,15 @@ interface Props {
 }
 
 function ShortInfoUserCard({ user }: Props) {
+    const navigate = useNavigate();
+    const handleNavigation = () => {
+        navigate(`/conversation/${user.id}`, {
+            state: {
+                user: user
+            }
+        });
+    };
+
     return (
         <>
             <div className='flex py-1 px-2 items-center justify-between border border-[#ECECEC] rounded-lg'>
@@ -26,18 +38,18 @@ function ShortInfoUserCard({ user }: Props) {
                     </div>
                 </div>
                 <div className='flex items-center gap-2'>
-                    <img className='w-7 h-7 cursor-pointer'
-                         src={message}
-                         alt='message'
-                         data-pr-tooltip="No notifications"
-                         data-pr-position="right"
-                         data-pr-at="right+5 top"
-                         data-pr-my="left center-2"
-                    ></img>
-                    <img className='w-9 h-9 cursor-pointer'
-                         src={close}
-                         alt='close'
-                    ></img>
+                    <Tooltip target=".image" />
+                    <Image
+                        src={message}
+                        alt="message"
+                        className='image cursor-pointer'
+                        width="24"
+                        data-pr-tooltip="Send a message"
+                        data-pr-position="left"
+                        onClick={handleNavigation}
+                    />
+
+                    <i className="pi pi-times text-xl cursor-pointer"></i>
                 </div>
             </div>
         </>

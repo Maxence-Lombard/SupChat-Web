@@ -1,13 +1,5 @@
 import userIcon from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
-import plus from "../../../assets/icons/main-color/plus.svg";
-import mention from "../../../assets/icons/main-color/mention.svg";
-import emoji from "../../../assets/icons/main-color/emoji.svg";
-import discard from "../../../assets/icons/discard.svg";
-import send from "../../../assets/icons/send.svg";
-import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
-import infoIcon from "../../../assets/icons/main-color/info.svg";
-import moreIcon from "../../../assets/icons/main-color/more.svg";
 import {useGetMessagesByUserIdQuery} from "../../api/messages/messages.api.ts";
 import {useDateFormatter} from "../../hooks/useDateFormatter.tsx";
 import {useLocation, useParams} from "react-router-dom";
@@ -46,22 +38,10 @@ function Conversation() {
                                 <p className='text-[#00A000] text-xs'> { user.status } </p>
                             </div>
                         </div>
-                        <div className='flex gap-6'>
-                            <img
-                                className='cursor-pointer w-6 h-6'
-                                src={searchIconMainColor}
-                                alt="search"
-                            />
-                            <img
-                                className='cursor-pointer w-6 h-6'
-                                src={infoIcon}
-                                alt="search"
-                            />
-                            <img
-                                className='cursor-pointer w-6 h-6'
-                                src={moreIcon}
-                                alt="search"
-                            />
+                        <div className='flex items-center gap-6'>
+                            <i className='pi pi-search text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} ></i>
+                            <i className='pi pi-info-circle text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} ></i>
+                            <i className='pi pi-ellipsis-v text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} ></i>
                         </div>
                     </div>
                     {/* CONVERSATIONS*/}
@@ -121,15 +101,15 @@ function Conversation() {
                             </div>
                             { messages?.slice().reverse().map(message => (
                                 message.senderId === userId.toString() ? (
-                                <div className='flex justify-end items-end w-full gap-3' key={message.id}>
-                                    <div className='flex flex-col gap-1 items-end'>
-                                        <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
-                                        <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                            <p className='text-white'> { message.content } </p>
+                                    <div className='flex justify-end items-end w-full gap-3' key={message.id}>
+                                        <div className='flex flex-col gap-1 items-end'>
+                                            <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
+                                            <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
+                                                <p className='text-white'> { message.content } </p>
+                                            </div>
                                         </div>
+                                        <img src={user2} alt='user' />
                                     </div>
-                                    <img src={user2} alt='user' />
-                                </div>
                                 ) : (
                                     <div className='flex items-end gap-3' key={message.id}>
                                         <img src={userIcon} alt='userIcon' />
@@ -150,35 +130,17 @@ function Conversation() {
                             <p>Message...</p>
                             <div className='flex justify-between w-full items-center'>
                                 <div className='flex gap-4'>
-                                    <img
-                                        className='cursor-pointer'
-                                        src={plus}
-                                        alt="plus"
-                                    />
-                                    <img
-                                        className='cursor-pointer'
-                                        src={emoji}
-                                        alt="emoji"
-                                    />
-                                    <img
-                                        className='cursor-pointer'
-                                        src={mention}
-                                        alt="mention"
-                                    />
+                                    <i className='pi pi-plus-circle text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
+                                    <i className='pi pi-face-smile text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
+                                    <i className='pi pi-at text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
                                 </div>
                                 <div className='flex gap-2 items-center'>
                                     <button className='flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg'>
-                                        <img
-                                            className='cursor-pointer'
-                                            src={discard}
-                                            alt="discard"/>
-                                            <p className='text-white'>Discard</p>
+                                        <i className='pi pi-times-circle text-white' />
+                                        <p className='text-white'>Discard</p>
                                     </button>
                                     <button className='flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg'>
-                                        <img
-                                            className='cursor-pointer'
-                                            src={send}
-                                            alt="send"/>
+                                        <i className='pi pi-send text-white' />
                                         <p className='text-white'>Send</p>
                                     </button>
                                 </div>

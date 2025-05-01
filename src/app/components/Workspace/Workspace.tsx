@@ -6,15 +6,10 @@ import mention from "../../../assets/icons/main-color/mention.svg";
 import emoji from "../../../assets/icons/main-color/emoji.svg";
 import discard from "../../../assets/icons/discard.svg";
 import send from "../../../assets/icons/send.svg";
-import searchIconMainColor from "../../../assets/icons/main-color/search.svg";
 import searchIcon from "../../../assets/icons/search.svg";
-import infoIcon from "../../../assets/icons/main-color/info.svg";
-import moreIcon from "../../../assets/icons/main-color/more.svg";
 import workspacePH from "../../../assets/icons/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
-import addChannel from "../../../assets/icons/main-color/plus.svg";
-import settings from "../../../assets/icons/settings.svg";
 import {AvatarGroup} from "primereact/avatargroup";
 import { useParams } from 'react-router-dom';
 import {useEffect, useState} from "react";
@@ -80,11 +75,7 @@ function Workspace() {
                                 <p className='font-semibold'> { workspace?.name } </p>
                                 <div className='flex items-center gap-1'>
                                     <p className='text-black/50'>Settings</p>
-                                    <img
-                                        className='w-4 h-4'
-                                        src={settings}
-                                        alt="settings"
-                                    />
+                                    <i className='pi pi-cog text-black/50' />
                                 </div>
                             </div>
                         </div>
@@ -121,11 +112,7 @@ function Workspace() {
                                 </div>
                                 <div className='flex items-center gap-3 ml-1 cursor-pointer'
                                      onClick={() => setVisible(true)}>
-                                    <img
-                                        className='w-4 h-4'
-                                        src={addChannel}
-                                        alt="addChannel"
-                                    />
+                                    <i className='pi pi-plus-circle' style={{ color: 'var(--primary-color)' }} />
                                     <p>Add Channel</p>
                                 </div>
                                 <Dialog
@@ -170,22 +157,10 @@ function Workspace() {
                                 </AvatarGroup>
                             </div>
                             <div className="w-[1px] h-full rounded-lg bg-[#ECECEC]"></div>
-                            <div className='flex gap-6'>
-                                <img
-                                    className='cursor-pointer w-6 h-6'
-                                    src={searchIconMainColor}
-                                    alt="search"
-                                />
-                                <img
-                                    className='cursor-pointer w-6 h-6'
-                                    src={infoIcon}
-                                    alt="search"
-                                />
-                                <img
-                                    className='cursor-pointer w-6 h-6'
-                                    src={moreIcon}
-                                    alt="search"
-                                />
+                            <div className='flex items-center gap-6'>
+                                <i className='pi pi-search text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
+                                <i className='pi pi-info-circle text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
+                                <i className='pi pi-ellipsis-v text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
                             </div>
                         </div>
                     </div>
@@ -273,35 +248,17 @@ function Workspace() {
                             <p>Message...</p>
                             <div className='flex justify-between w-full items-center'>
                                 <div className='flex gap-4'>
-                                    <img
-                                        className='cursor-pointer'
-                                        src={plus}
-                                        alt="plus"
-                                    />
-                                    <img
-                                        className='cursor-pointer'
-                                        src={emoji}
-                                        alt="emoji"
-                                    />
-                                    <img
-                                        className='cursor-pointer'
-                                        src={mention}
-                                        alt="mention"
-                                    />
+                                    <i className='pi pi-plus-circle text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
+                                    <i className='pi pi-face-smile text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
+                                    <i className='pi pi-at text-xl cursor-pointer' style={{ color: 'var(--primary-color)' }} />
                                 </div>
                                 <div className='flex gap-2 items-center'>
                                     <button className='flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg'>
-                                        <img
-                                            className='cursor-pointer'
-                                            src={discard}
-                                            alt="discard"/>
+                                        <i className='pi pi-times-circle text-white' />
                                         <p className='text-white'>Discard</p>
                                     </button>
                                     <button className='flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg'>
-                                        <img
-                                            className='cursor-pointer'
-                                            src={send}
-                                            alt="send"/>
+                                        <i className='pi pi-send text-white' />
                                         <p className='text-white'>Send</p>
                                     </button>
                                 </div>

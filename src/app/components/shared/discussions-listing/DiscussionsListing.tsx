@@ -1,4 +1,3 @@
-import searchIcon from "../../../../assets/icons/search.svg";
 import UserCard from "../userCard/UserCard.tsx";
 import {useEffect, useState} from "react";
 import {useGetUserWithMessagesQuery} from "../../../api/user/user.api.ts";
@@ -17,12 +16,8 @@ function DiscussionsListing() {
     return (
         <>
             <div className='flex flex-col gap-8 min-w-[231px]'>
-                <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
-                    <img
-                        className='w-6 h-6'
-                        src={searchIcon}
-                        alt="search"
-                    />
+                <div className='flex items-center gap-1 p-2 w-full border rounded-lg border-black'>
+                    <i className='pi pi-search text-[#505050]/50'></i>
                     <input
                         className='bg-white focus:outline-none w-full'
                         name="search"
