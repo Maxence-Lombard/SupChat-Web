@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from './authSlice';
 import { api } from "../api/api";
+import authReducer from './slices/authSlice.ts';
+import workspacesReducer from './slices/workspaceSlice.ts';
 import authMiddleware from "../middlewares/authMiddleware.ts";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    workspaces: workspacesReducer,
     // ...createRouterReducerMapObject(routerHistory),
     [api.reducerPath]: api.reducer,
     // app: appReducer,

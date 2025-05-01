@@ -4,11 +4,13 @@ import activities from '../../../../assets/icons/activities.svg'
 import settings from '../../../../assets/icons/settings.svg'
 import add from '../../../../assets/icons/add.svg'
 import user from '../../../../assets/placeholder/user1.svg'
-import {useGetWorkspacesQuery} from "../../../api/workspaces/workspaces.api.ts";
 import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../store/store";
 
 function NavBar() {
-    const { data: workspaces } = useGetWorkspacesQuery(undefined);
+    // const { data: workspaces } = useGetWorkspacesQuery(undefined);
+    const workspaces = useSelector((state: RootState) => state.workspaces.list);
     const navigate = useNavigate();
 
     // TODO: replace by a switch for nav

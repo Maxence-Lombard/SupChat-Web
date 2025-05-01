@@ -9,7 +9,7 @@ import googleIcon from "../../../../assets/icons/google.svg";
 import microsoftIcon from "../../../../assets/icons/microsoft.svg";
 import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
 import { LoginDto } from "../../../api/auth/auth.api";
-import {loginSuccess} from "../../../store/authSlice.ts";
+import {loginSuccess} from "../../../store/slices/authSlice.ts";
 import {useDispatch} from "react-redux";
 import { useAuth } from "../../../hooks/useAuth.tsx";
 

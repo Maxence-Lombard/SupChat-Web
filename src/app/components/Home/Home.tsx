@@ -19,20 +19,6 @@ function Home() {
                         <div className='flex justify-center px-4 py-2 border rounded-lg border-[#ECECEC]'>
                         <p>Conversations actives - 18</p>
                     </div>
-                        <div className='flex gap-1 p-2 w-full border rounded-lg border-black'>
-                            <img
-                                className='w-6 h-6'
-                                src={searchIcon}
-                                alt="search"
-                            />
-                            <input
-                                className='bg-white focus:outline-none w-full'
-                                name="search"
-                                id="firstname"
-                                placeholder='Search'
-                                value={search} onChange={(e) => setSearch(e.target.value ?? '')}
-                            />
-                        </div>
                     </div>
                     <div className='flex flex-col gap-2 h-full overflow-y-auto'>
                         <ShortInfoUserCard />

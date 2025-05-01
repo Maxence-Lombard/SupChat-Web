@@ -1,7 +1,24 @@
 import { Outlet } from "react-router-dom";
 import NavBar from "../components/shared/navBar/NavBar";
+import {useDispatch, useSelector} from "react-redux";
+import {useGetWorkspacesQuery} from "../api/workspaces/workspaces.api.ts";
+import {useEffect} from "react";
+import {setWorkspaces} from "../store/slices/workspaceSlice.ts";
+import {RootState} from "../store/store.ts";
 
 function MainLayout() {
+    const dispatch = useDispatch();
+    const existingWorkspaces = useSelector((state: RootState) => state.workspaces.list);
+    const skip = existingWorkspaces.length > 0;
+
+    const { data: workspaces, isSuccess } = useGetWorkspacesQuery(undefined, { skip });
+
+    useEffect(() => {
+        if (isSuccess && workspaces) {
+            dispatch(setWorkspaces(workspaces));
+        }
+    }, [isSuccess, workspaces]);
+
     return (
         <div className="flex flex-row w-full h-full">
             <NavBar />
