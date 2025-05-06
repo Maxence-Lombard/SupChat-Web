@@ -12,9 +12,9 @@ export type GetMessagesResponse = {
   id: 5,
   content: string,
   sendDate: Date,
-  senderId: string, //TODO: change to number
+  senderId: number,
   channelId: number,
-  receiverId: string, //TODO: change to number
+  receiverId: number,
   parentId: number
 };
 

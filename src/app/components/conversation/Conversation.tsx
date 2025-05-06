@@ -100,7 +100,7 @@ function Conversation() {
                                 <hr className='flex-1 border border-[#6B8AFD]'/>
                             </div>
                             { messages?.slice().reverse().map(message => (
-                                message.senderId === userId.toString() ? (
+                                message.senderId === userId ? (
                                     <div className='flex justify-end items-end w-full gap-3' key={message.id}>
                                         <div className='flex flex-col gap-1 items-end'>
                                             <p className='text-black/50'> { formatDate(message.sendDate, "HH'h'mm") } </p>
