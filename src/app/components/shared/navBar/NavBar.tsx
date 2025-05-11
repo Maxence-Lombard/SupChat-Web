@@ -3,10 +3,17 @@ import user from '../../../../assets/placeholder/user1.svg'
 import {useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../store/store";
+import {useState} from "react";
+import {Dialog} from "primereact/dialog";
+import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
+import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
+import createWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
 
 function NavBar() {
     const workspaces = useSelector((state: RootState) => state.workspaces.list);
     const navigate = useNavigate();
+    const [newWorkspaceVisible, setNewWorkspaceVisible] = useState<boolean>(false);
+    const [createWorkspaceVisible, setCreateWorkspaceVisible] = useState<boolean>(false);
 
     const handleNavigation = (nav: string) => {
         switch (nav) {
@@ -50,10 +57,44 @@ function NavBar() {
                                 alt="workspacePH"
                             />
                         ))}
-                        <button className='flex items-center justify-center w-12 h-12 bg-white border border-[#ECECEC] rounded-lg'>
+                        <button
+                            onClick={() => setNewWorkspaceVisible(true)}
+                            className='flex items-center justify-center w-12 h-12 bg-white border border-[#ECECEC] rounded-lg'>
                             <i className='pi pi-plus'/>
                         </button>
-
+                        {/* New Workspace */}
+                        <Dialog
+                            className='rounded-2xl'
+                            visible={newWorkspaceVisible}
+                            modal
+                            onHide={() => {if (!newWorkspaceVisible) return; setNewWorkspaceVisible(false); }}
+                            content={({ hide }) => (
+                                <NewWorkspaceActionsPopup
+                                    hide={hide}
+                                    onClose={(action?: string) => {
+                                        setNewWorkspaceVisible(false);
+                                        if (action === 'create') {
+                                            setCreateWorkspaceVisible(true);
+                                        }
+                                    }}
+                                />
+                            )}
+                        ></Dialog>
+                        {/* Create Workspace */}
+                        <Dialog
+                            className='rounded-2xl'
+                            visible={createWorkspaceVisible}
+                            modal
+                            onHide={() => {if (!createWorkspaceVisible) return; setCreateWorkspaceVisible(false); }}
+                            content={({ hide }) => (
+                                <CreateWorkspacePopup
+                                    hide={hide}
+                                    onWorkspaceCreated={() => {
+                                        setCreateWorkspaceVisible(false);
+                                    }}
+                                />
+                            )}
+                        ></Dialog>
                     </div>
                 </div>
                 <div>

@@ -4,7 +4,7 @@ import {useDispatch} from "react-redux";
 import {useCreateChannelInWorkspaceMutation} from "../../../../api/workspaces/workspaces.api.ts";
 import {visibility} from "../../../../Models/Enums.ts";
 import {CreateChannelDto} from "../../../../api/channels/channels.api.ts";
-import {setChannel} from "../../../../store/slices/channelSlice.ts";
+import {addChannel} from "../../../../store/slices/channelSlice.ts";
 
 interface CreateChannelPopupProps {
     hide: () => void;
@@ -37,7 +37,7 @@ function CreateChannelPopup({hide, workspaceId, onChannelCreated }: CreateChanne
 
         try {
             const createdChannel = await createChannelRequest(newChannel).unwrap();
-            dispatch(setChannel(createdChannel));
+            dispatch(addChannel(createdChannel));
             onChannelCreated();
             hide();
         } catch (error) {
@@ -56,7 +56,6 @@ function CreateChannelPopup({hide, workspaceId, onChannelCreated }: CreateChanne
                             <div className='flex flex-col gap-1'>
                                 <label className='flex' htmlFor="createChannel">Name of the channel</label>
                                 <InputText
-                                    keyfilter="email"
                                     name="createChannel"
                                     id="createChannel"
                                     className='w-full border rounded border-black px-2 py-1'
@@ -79,7 +78,7 @@ function CreateChannelPopup({hide, workspaceId, onChannelCreated }: CreateChanne
                         </div>
                         <div className='flex self-end gap-4'>
                             <button className='flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg'
-                                    onClick={(e) => hide(e)}>
+                                    onClick={() => hide()}>
                                 <i className="pi pi-times" style={{ color: 'var(--primary-color)' }}></i>
                                 <p className='text-[#687BEC]'>Cancel</p>
                             </button>

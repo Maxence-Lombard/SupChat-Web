@@ -1,11 +1,6 @@
 // ASSETS
 import user from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
-import plus from "../../../assets/icons/main-color/plus.svg";
-import mention from "../../../assets/icons/main-color/mention.svg";
-import emoji from "../../../assets/icons/main-color/emoji.svg";
-import discard from "../../../assets/icons/discard.svg";
-import send from "../../../assets/icons/send.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import workspacePH from "../../../assets/icons/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
@@ -21,7 +16,7 @@ import {
 import {Dialog} from "primereact/dialog";
 import CreateChannelPopup from "../shared/popups/createChannelPopup/CreateChannelPopup.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {setChannel} from "../../store/slices/channelSlice.ts";
+import {addChannel} from "../../store/slices/channelSlice.ts";
 import {RootState} from "../../store/store.ts";
 
 function Workspace() {
@@ -41,7 +36,7 @@ function Workspace() {
     useEffect(() => {
         if (isSuccess && channels) {
             channels.forEach(channel => {
-                dispatch(setChannel(channel));
+                dispatch(addChannel(channel));
             });
         }
     }, [isSuccess, channels, dispatch]);
@@ -116,6 +111,7 @@ function Workspace() {
                                     <p>Add Channel</p>
                                 </div>
                                 <Dialog
+                                    className='rounded-2xl'
                                     visible={visible}
                                     modal
                                     onHide={() => {if (!visible) return; setVisible(false); }}

@@ -54,7 +54,6 @@ export const ChannelsApi = api.injectEndpoints({
           'Content-Type': 'application/json',
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
 
     modifyChannel: builder.mutation<GetChannelResponse, ChannelDto>({
@@ -66,7 +65,6 @@ export const ChannelsApi = api.injectEndpoints({
           'Content-Type': 'application/json',
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
 
     deleteChannel: builder.mutation<GetChannelResponse, ChannelDto>({
@@ -77,7 +75,6 @@ export const ChannelsApi = api.injectEndpoints({
           'Content-Type': 'application/json',
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
   }),
 });

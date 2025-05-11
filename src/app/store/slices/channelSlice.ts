@@ -12,7 +12,7 @@ export const channelsSlice = createSlice({
     name: 'channel',
     initialState: initialState,
     reducers: {
-        setChannel: (state, action: PayloadAction<GetChannelResponse>) => {
+        addChannel: (state, action: PayloadAction<GetChannelResponse>) => {
             state.byWorkspaceId[action.payload.id] = action.payload;
         },
         setChannels: (state, action: PayloadAction<GetChannelResponse[]>) => {
@@ -23,5 +23,5 @@ export const channelsSlice = createSlice({
     },
 })
 
-export const { setChannel, setChannels } = channelsSlice.actions;
+export const { addChannel, setChannels } = channelsSlice.actions;
 export default channelsSlice.reducer;

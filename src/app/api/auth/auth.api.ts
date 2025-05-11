@@ -29,7 +29,7 @@ export const AuthApi = api.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginDto>({
       query: (data: LoginDto) => ({
-        url: `/login`,
+        url: `/api/Authorization/login`,
         method: 'POST',
         body: new URLSearchParams({
           email: data.email,
@@ -43,7 +43,7 @@ export const AuthApi = api.injectEndpoints({
     }),
     register: builder.mutation<RegisterResponse, RegisterDto>({
       query: (data: RegisterDto) => ({
-        url: `/connect/register`,
+        url: `/api/Account/register`,
         method: 'POST',
         body: JSON.stringify(data),
         headers: {

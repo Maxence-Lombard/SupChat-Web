@@ -4,8 +4,15 @@ import {CreateChannelDto, GetChannelResponse} from "../channels/channels.api.ts"
 
 export type WorkspaceDto = {
   id: number;
-  username: string;
-  password: string;
+  name: string;
+  image?: string;
+  visibility: visibility;
+};
+
+export type CreateWorkspaceDto = {
+  name: string;
+  image?: string;
+  visibility: visibility;
 };
 
 export type GetWorkspaceResponse = {
@@ -52,10 +59,11 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     // POST
-    createWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
-      query: () => ({
+    createWorkspace: builder.mutation<GetWorkspaceResponse, CreateWorkspaceDto>({
+      query: (workspace) => ({
         url: `/api/Workspace`,
         method: 'POST',
+        body: JSON.stringify(workspace),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -82,7 +90,6 @@ export const WorkspaceApi = api.injectEndpoints({
           'Content-Type': 'application/json',
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
 
     deleteWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
@@ -93,7 +100,6 @@ export const WorkspaceApi = api.injectEndpoints({
           'Content-Type': 'application/json',
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
   }),
 });
