@@ -38,9 +38,29 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    getWorkspacesJoined: builder.query<GetWorkspaceResponse[], undefined>({
+      query: () => ({
+        url: `/api/Workspace/Joined`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
     getWorkspaceById: builder.query<GetWorkspaceResponse, number>({
       query: (Id) => ({
         url: `/api/Workspace/${Id}`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
+    getWorkspacesAvailable: builder.query<GetWorkspaceResponse[], undefined>({
+      query: () => ({
+        url: `/api/Workspace/Available`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +126,9 @@ export const WorkspaceApi = api.injectEndpoints({
 
 export const {
   useGetWorkspacesQuery,
+  useGetWorkspacesJoinedQuery,
   useGetWorkspaceByIdQuery,
+  useGetWorkspacesAvailableQuery,
   useGetChannelsByWorkspaceIdQuery,
   useCreateWorkspaceMutation,
   useCreateChannelInWorkspaceMutation,

@@ -1,3 +1,4 @@
+import {useNavigate} from "react-router-dom";
 
 interface NewWorkspaceActionProps {
     hide: () => void;
@@ -5,16 +6,20 @@ interface NewWorkspaceActionProps {
 }
 
 function NewWorkspaceActionsPopup({ hide, onClose }: NewWorkspaceActionProps) {
+    const navigate = useNavigate();
 
+    const handleNavigation = () => {
+        navigate('/joinWorkspaces');
+        hide();
+    };
     const handleWorkspaceActions = (action: string) => {
         if (action === 'create') {
-            console.log("Create Workspace");
+            console.log("Create workspace");
             onClose('create');
             hide();
         }
         if (action === 'join') {
-            console.log("Join workspace");
-            hide();
+            handleNavigation();
         }
     }
 
