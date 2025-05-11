@@ -58,7 +58,6 @@ function Login() {
             if (response.accessToken) {
                 setFormStatus('submitted');
                 dispatch(loginSuccess(response.accessToken));
-
                 navigate('/');
             } else {
                 setFormStatus('error');
