@@ -1,12 +1,11 @@
 // ASSETS
 import user from "../../../assets/placeholder/user4.svg";
-import user2 from "../../../assets/placeholder/user3.svg";
 import searchIcon from "../../../assets/icons/search.svg";
 import workspacePH from "../../../assets/icons/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import {AvatarGroup} from "primereact/avatargroup";
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {useEffect, useState} from "react";
 import {Avatar} from "primereact/avatar";
 import {
@@ -18,20 +17,27 @@ import CreateChannelPopup from "../shared/popups/createChannelPopup/CreateChanne
 import {useDispatch, useSelector} from "react-redux";
 import {addChannel} from "../../store/slices/channelSlice.ts";
 import {RootState} from "../../store/store.ts";
+import Channel from "../channel/Channel.tsx";
+import {useGetChannelByIdQuery} from "../../api/channels/channels.api.ts";
 
 function Workspace() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const { id } = useParams();
+    const { workspaceId } = useParams();
     const [search, setSearch] = useState<string>('');
     const [visible, setVisible] = useState<boolean>(false);
+    const [currentChannelId, setCurrentChannelId] = useState<number>(1);
+    const [fetchChannelInfo, setFetchChannelInfo] = useState<boolean>(false);
 
     const channelsFromStore = useSelector((state: RootState) => state.channels.byWorkspaceId);
-    const workspaceChannels = Object.values(channelsFromStore).filter(channel => channel.workspaceId === Number(id));
-    const skip = workspaceChannels.length > 0;
+    const workspaceChannels = Object.values(channelsFromStore).filter(channel => channel.workspaceId === Number(workspaceId));
+    const skipChannels = workspaceChannels.length > 0;
+    const skipFetchChannelInfo = fetchChannelInfo;
 
-    const { data: workspace } = useGetWorkspaceByIdQuery(Number(id));
-    const { data: channels, isSuccess } = useGetChannelsByWorkspaceIdQuery(Number(id), { skip });
+    const { data: workspace } = useGetWorkspaceByIdQuery(Number(workspaceId));
+    const { data: channels, isSuccess } = useGetChannelsByWorkspaceIdQuery(Number(workspaceId), { skip: skipChannels });
+    const { data: channelInfo } = useGetChannelByIdQuery(Number(currentChannelId), { skip: skipFetchChannelInfo });
 
     useEffect(() => {
         if (isSuccess && channels) {
@@ -40,6 +46,11 @@ function Workspace() {
             });
         }
     }, [isSuccess, channels, dispatch]);
+
+     const handleChannelNavigate = (channelId: number) => {
+         setCurrentChannelId(channelId);
+        navigate(`/workspace/${workspaceId}/channel/${channelId}`);
+    }
 
     return (
         <>
@@ -93,7 +104,8 @@ function Workspace() {
                                         </div>
                                         <div className='flex flex-col gap-3'>
                                             {workspaceChannels?.map((channel) => (
-                                                <div className='flex items-center gap-1' key={channel.id}>
+                                                <div className='flex items-center gap-1 cursor-pointer' key={channel.id}
+                                                onClick={() => handleChannelNavigate(channel.id)}>
                                                     <img
                                                         className='w-6 h-6'
                                                         src={channelIcon}
@@ -118,7 +130,7 @@ function Workspace() {
                                     content={({ hide }) => (
                                         <CreateChannelPopup
                                             hide={hide}
-                                            workspaceId={Number(id)}
+                                            workspaceId={Number(workspaceId)}
                                             onChannelCreated={() => {
                                                 setVisible(false);
                                             }}
@@ -135,7 +147,7 @@ function Workspace() {
                         <div className='flex items-center gap-2'>
                             <img className='rounded w-14 h-14' src={workspacePH} alt='workspacePH' />
                             <div>
-                                <p className='font-semibold'> { workspace?.name} - general</p>
+                                <p className='font-semibold'> { workspace?.name} - { channelInfo?.name }</p>
                                 <div className='flex items-center gap-2'>
                                     <p className='text-black/50 text-xs'> 5 members </p>
                                     <div className="w-1 h-1 bg-[#D9D9D9] rounded-full"></div>
@@ -161,83 +173,8 @@ function Workspace() {
                         </div>
                     </div>
                     {/* CONVERSATIONS*/}
-                    <div className='flex flex-col gap-4 h-full overflow-y-auto'>
-                        <div className='flex flex-col gap-1 w-full'>
-                            <p className='font-semibold'> November 15 2024 </p>
-                            <hr className='flex-1 border border-black'/>
-                        </div>
-                        <div className='flex flex-col items-start gap-4'>
-                            <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-black'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-black'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Sure </p>
-                                    </div>
-                                </div>
-                                <img src={user2} alt='user' />
+                    <Channel />
 
-                            </div>
-                            <div className='flex flex-col gap-1 w-full'>
-                                <p className='font-semibold'> Yesterday </p>
-                                <hr className='flex-1 border border-black'/>
-                            </div>
-                            <div className='flex items-end gap-3'>
-                                <img src={user} alt='user' />
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-black'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex flex-col gap-1 w-full'>
-                                <div className='flex justify-between w-full'>
-                                    <p className='font-semibold text-[#6B8AFD]'> Today </p>
-                                    <p className='font-semibold text-[#6B8AFD]'> NEW </p>
-                                </div>
-                                <hr className='flex-1 border border-[#6B8AFD]'/>
-                            </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Sorry did’t saw your mess. Yea that’s ok for me lets do it like that </p>
-                                    </div>
-                                </div>
-                                <img src={user2} alt='user' />
-
-                            </div>
-                            <div className='flex justify-end items-end w-full gap-3'>
-                                <div className='flex flex-col gap-1 items-end'>
-                                    <p className='text-black/50'> 15h32 </p>
-                                    <div className='flex bg-[#687BEC] rounded-lg px-2 max-w-xl'>
-                                        <p className='text-white'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis </p>
-                                    </div>
-                                </div>
-                                <img src={user2} alt='user' />
-
-                            </div>
-
-                        </div>
-                    </div>
                     <div className='flex flex-col mt-1 gap-2 w-full'>
                         <hr className='flex-1 border border-[#EBEBEB]'/>
                         <div className='flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl'>

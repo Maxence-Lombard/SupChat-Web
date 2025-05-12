@@ -31,7 +31,7 @@ function NavBar() {
 
     };
     const navigateToWorkspace = (id: number) => {
-        navigate(`/workspace/${id}`);
+        navigate(`/workspace/${id}/channel/1`);
     }
 
     return (

@@ -31,7 +31,6 @@ function App() {
                           <Route path="/" element={<Home />} />
                           <Route path="/conversation/:id" element={<Conversation />} />
                           <Route path="/workspace/:id" element={<Workspace />} />
-                          <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
                           <Route path="*" element={<Home />} />
 
                       </Route>
