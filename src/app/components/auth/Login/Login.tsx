@@ -2,16 +2,16 @@ import Lottie from "lottie-react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
-import {useEffect, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import GitHubIcon from "../../../../assets/icons/github.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
 import microsoftIcon from "../../../../assets/icons/microsoft.svg";
 import welcomeAnimation from "../../../../assets/lottie-animations/welcome.json";
 import { LoginDto } from "../../../api/auth/auth.api";
-import {loginSuccess} from "../../../store/slices/authSlice.ts";
-import {useDispatch} from "react-redux";
 import { useAuth } from "../../../hooks/useAuth.tsx";
+import { loginSuccess } from "../../../store/slices/authSlice.ts";
 
 enum Providers {
     GOOGLE = "google",
@@ -72,7 +72,7 @@ function Login() {
 
     const HandleProviderLogin = (provider: string) => {
         const returnUrl = encodeURIComponent("http://localhost:5173/");
-        window.location.href = `http://localhost:5263/login/${provider}?returnUrl=${returnUrl}`;
+        window.location.href = `https://localhost:7268/api/Authorization/login/${provider}?returnUrl=${returnUrl}`;
     };
 
     return (
