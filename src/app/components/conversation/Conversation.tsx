@@ -6,6 +6,8 @@ import {useLocation, useParams} from "react-router-dom";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 import {useEffect} from "react";
 import {User} from "../../Models/User.ts";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/store.ts";
 
 function Conversation() {
     const { id } = useParams();
@@ -15,9 +17,9 @@ function Conversation() {
     const location = useLocation();
     const user: User = location.state?.user;
 
-    const userId = 1; //id of the connected user
+    const userId = useSelector((state: RootState) => state.user.id);
 
-    const { data: messages } = useGetMessagesByUserIdQuery(id);
+    const { data: messages } = useGetMessagesByUserIdQuery(Number(id));
 
     useEffect(() => {
         console.log('conv', user);

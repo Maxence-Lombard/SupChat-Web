@@ -1,7 +1,8 @@
+import { visibility } from "../../Models/Enums.ts";
 import { api } from "../api";
-import {visibility} from "../../Models/Enums.ts";
-import {CreateChannelDto, GetChannelResponse} from "../channels/channels.api.ts";
+import { CreateChannelDto, GetChannelResponse } from "../channels/channels.api.ts";
 
+//DTO
 export type WorkspaceDto = {
   id: number;
   name: string;
@@ -15,6 +16,12 @@ export type CreateWorkspaceDto = {
   visibility: visibility;
 };
 
+export type addMemberDto = {
+  workspaceId: number,
+  userId: number
+}
+
+//Response
 export type GetWorkspaceResponse = {
   id: number,
   name: string,
@@ -38,9 +45,29 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    getWorkspacesJoined: builder.query<GetWorkspaceResponse[], undefined>({
+      query: () => ({
+        url: `/api/Workspace/Joined`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
     getWorkspaceById: builder.query<GetWorkspaceResponse, number>({
       query: (Id) => ({
         url: `/api/Workspace/${Id}`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
+    getWorkspacesAvailable: builder.query<GetWorkspaceResponse[], undefined>({
+      query: () => ({
+        url: `/api/Workspace/Available`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -81,6 +108,27 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    joinWorkspace: builder.mutation<GetWorkspaceResponse, number>({
+      query: (workspaceId: number) => ({
+        url: `/api/Workspace/${workspaceId}/Join`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
+    addMemberInWorkspace: builder.mutation<GetWorkspaceResponse, addMemberDto>({
+      query: (member) => ({
+        url: `/api/Workspace/AddMember`,
+        method: 'POST',
+        body: JSON.stringify(member),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
     modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
@@ -106,10 +154,14 @@ export const WorkspaceApi = api.injectEndpoints({
 
 export const {
   useGetWorkspacesQuery,
+  useGetWorkspacesJoinedQuery,
   useGetWorkspaceByIdQuery,
+  useGetWorkspacesAvailableQuery,
   useGetChannelsByWorkspaceIdQuery,
   useCreateWorkspaceMutation,
   useCreateChannelInWorkspaceMutation,
+  useAddMemberInWorkspaceMutation,
+  useJoinWorkspaceMutation,
   useModifyWorkspaceMutation,
   useDeleteWorkspaceMutation,
 } = WorkspaceApi;

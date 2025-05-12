@@ -1,5 +1,6 @@
 import { api } from "../api";
 import {status, theme, visibility} from "../../Models/Enums.ts";
+import {User} from "../../Models/User.ts";
 
 export type UserMpDto = {
   id: number;
@@ -23,6 +24,15 @@ export type GetUserMpResponse = {
 
 export const MessagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getUserInfos: builder.query<User, undefined>({
+      query: () => ({
+        url: '/api/Account/Own',
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
 
     getUserWithMessages: builder.query<GetUserMpResponse[], undefined>({
       query: () => ({
@@ -37,5 +47,6 @@ export const MessagesApi = api.injectEndpoints({
 });
 
 export const {
+  useGetUserInfosQuery,
   useGetUserWithMessagesQuery
 } = MessagesApi;

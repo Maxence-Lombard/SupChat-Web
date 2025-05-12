@@ -7,7 +7,6 @@ import {useState} from "react";
 import {Dialog} from "primereact/dialog";
 import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
-import createWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
 
 function NavBar() {
     const workspaces = useSelector((state: RootState) => state.workspaces.list);
@@ -62,7 +61,7 @@ function NavBar() {
                             className='flex items-center justify-center w-12 h-12 bg-white border border-[#ECECEC] rounded-lg'>
                             <i className='pi pi-plus'/>
                         </button>
-                        {/* New Workspace */}
+                        {/* New workspace */}
                         <Dialog
                             className='rounded-2xl'
                             visible={newWorkspaceVisible}
@@ -80,7 +79,7 @@ function NavBar() {
                                 />
                             )}
                         ></Dialog>
-                        {/* Create Workspace */}
+                        {/* Create workspace */}
                         <Dialog
                             className='rounded-2xl'
                             visible={createWorkspaceVisible}

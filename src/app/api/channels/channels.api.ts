@@ -1,6 +1,7 @@
 import { api } from "../api";
 import {visibility} from "../../Models/Enums.ts";
 
+//DTO
 export type ChannelDto = {
   id: number;
   name: string,
@@ -14,6 +15,7 @@ export type CreateChannelDto = {
   workspaceId: number
 };
 
+//Response
 export type GetChannelResponse = {
   id: number,
   name: string,
