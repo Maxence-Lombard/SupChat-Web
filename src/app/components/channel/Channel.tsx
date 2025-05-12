@@ -3,10 +3,12 @@ import user2 from "../../../assets/placeholder/user3.svg";
 import {useParams} from "react-router-dom";
 import {useGetMessagesByChannelIdQuery} from "../../api/messages/messages.api.ts";
 import {formatDate} from "date-fns";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store/store.ts";
 
 function Channel () {
     const { channelId } = useParams();
-    const userId = 2
+    const userId = useSelector((state: RootState) => state.user.id);
 
     const { data: messages } = useGetMessagesByChannelIdQuery(Number(channelId));
 

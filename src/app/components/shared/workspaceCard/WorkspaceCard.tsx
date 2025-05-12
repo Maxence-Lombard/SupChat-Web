@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import workspacePH from "../../../../assets/icons/workspacePH.svg";
 import {
     GetWorkspaceResponse,
-    useGetWorkspacesJoinedQuery,
     useJoinWorkspaceMutation
 } from "../../../api/workspaces/workspaces.api.ts";
-import { setWorkspaces } from "../../../store/slices/workspaceSlice.ts";
+import {addWorkspace} from "../../../store/slices/workspaceSlice.ts";
 import { RootState } from "../../../store/store.ts";
 
 interface Workspace {
@@ -18,15 +16,7 @@ function WorkspaceCard({ workspace }: Workspace) {
     const userId = useSelector((state: RootState) => state.user.id);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [shouldFetch, setShouldFetch] = useState(false);
     const [AddMemberInWorkspace] = useJoinWorkspaceMutation();
-    const { data: workspaces, isSuccess } = useGetWorkspacesJoinedQuery(undefined, { skip: !shouldFetch });
-
-    useEffect(() => {
-        if (isSuccess && workspaces) {
-            dispatch(setWorkspaces(workspaces));
-        }
-    }, [isSuccess, workspaces])
 
     const handleNavigation = () => {
         navigate(`/workspace/${workspace.id}/channel/1`);
@@ -43,7 +33,7 @@ function WorkspaceCard({ workspace }: Workspace) {
         }
         try {
             await AddMemberInWorkspace(workspace.id).unwrap();
-            setShouldFetch(true);
+            dispatch(addWorkspace(workspace));
             handleNavigation();
         } catch (error) {
             console.log("Error creating channel:", error);

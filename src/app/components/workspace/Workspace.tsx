@@ -122,6 +122,7 @@ function Workspace() {
                                     <i className='pi pi-plus-circle' style={{ color: 'var(--primary-color)' }} />
                                     <p>Add Channel</p>
                                 </div>
+                                {/* CREATE CHANNEL POPUP */}
                                 <Dialog
                                     className='rounded-2xl'
                                     visible={visible}
@@ -172,7 +173,7 @@ function Workspace() {
                             </div>
                         </div>
                     </div>
-                    {/* CONVERSATIONS*/}
+                    {/* CHANNEL CONVERSATIONS */}
                     <Channel />
 
                     <div className='flex flex-col mt-1 gap-2 w-full'>

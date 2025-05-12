@@ -30,6 +30,7 @@ function NavBar() {
         }
 
     };
+    // TODO: pb avec le /1 il renvoie sur le mauvais channel, il faut trouver un autre id
     const navigateToWorkspace = (id: number) => {
         navigate(`/workspace/${id}/channel/1`);
     }
