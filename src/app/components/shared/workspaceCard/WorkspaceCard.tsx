@@ -29,7 +29,7 @@ function WorkspaceCard({ workspace }: Workspace) {
     }, [isSuccess, workspaces])
 
     const handleNavigation = () => {
-        navigate(`/workspace/${workspace.id}`);
+        navigate(`/workspace/${workspace.id}/channel/1`);
     }
 
     const handleJoinWorkspace = async () => {
@@ -42,8 +42,7 @@ function WorkspaceCard({ workspace }: Workspace) {
             return;
         }
         try {
-            const memberAdded = await AddMemberInWorkspace(workspace.id).unwrap();
-            console.log("Member added to workspace:", memberAdded);
+            await AddMemberInWorkspace(workspace.id).unwrap();
             setShouldFetch(true);
             handleNavigation();
         } catch (error) {

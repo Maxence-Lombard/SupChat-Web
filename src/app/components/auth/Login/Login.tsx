@@ -65,13 +65,13 @@ function Login() {
             }
         } catch (error) {
             setFormStatus('error');
-            setErrorMessage('An error occurred during login');
+            setErrorMessage('Invalid email or password');
         }
     };
 
     const HandleProviderLogin = (provider: string) => {
         const returnUrl = encodeURIComponent("http://localhost:5173/");
-        window.location.href = `https://localhost:7268/login/${provider}?returnUrl=${returnUrl}`;
+        window.location.href = `http://localhost:5263/login/${provider}?returnUrl=${returnUrl}`;
     };
 
     return (
