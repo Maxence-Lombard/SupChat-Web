@@ -26,7 +26,7 @@ export const MessagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getUserInfos: builder.query<User, undefined>({
       query: () => ({
-        url: '/Own',
+        url: '/api/Account/Own',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
