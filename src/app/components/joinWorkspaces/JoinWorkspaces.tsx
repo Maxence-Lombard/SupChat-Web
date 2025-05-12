@@ -1,10 +1,10 @@
+import { useGetWorkspacesAvailableQuery } from "../../api/workspaces/workspaces.api.ts";
 import WorkspaceCard from "../shared/workspaceCard/WorkspaceCard.tsx";
-import {useGetWorkspacesAvailableQuery} from "../../api/workspaces/workspaces.api.ts";
 
 function JoinWorkspaces() {
     const { data: workspaces } = useGetWorkspacesAvailableQuery(undefined);
 
-    return(
+    return (
         <>
             <div className='flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8'>
                 <div className='flex flex-col flex-1 gap-10'>

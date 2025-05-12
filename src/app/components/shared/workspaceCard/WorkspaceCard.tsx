@@ -1,25 +1,25 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import workspacePH from "../../../../assets/icons/workspacePH.svg";
 import {
     GetWorkspaceResponse,
-    useAddMemberInWorkspaceMutation,
-    useGetWorkspacesJoinedQuery
+    useGetWorkspacesJoinedQuery,
+    useJoinWorkspaceMutation
 } from "../../../api/workspaces/workspaces.api.ts";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../../store/store.ts";
-import {useNavigate} from "react-router-dom";
-import {setWorkspaces} from "../../../store/slices/workspaceSlice.ts";
-import {useEffect, useState} from "react";
+import { setWorkspaces } from "../../../store/slices/workspaceSlice.ts";
+import { RootState } from "../../../store/store.ts";
 
 interface Workspace {
     workspace: GetWorkspaceResponse;
 }
 
-function WorkspaceCard ({workspace}: Workspace) {
+function WorkspaceCard({ workspace }: Workspace) {
     const userId = useSelector((state: RootState) => state.user.id);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [shouldFetch, setShouldFetch] = useState(false);
-    const [ AddMemberInWorkspace ] = useAddMemberInWorkspaceMutation();
+    const [AddMemberInWorkspace] = useJoinWorkspaceMutation();
     const { data: workspaces, isSuccess } = useGetWorkspacesJoinedQuery(undefined, { skip: !shouldFetch });
 
     useEffect(() => {
@@ -32,21 +32,17 @@ function WorkspaceCard ({workspace}: Workspace) {
         navigate(`/workspace/${workspace.id}`);
     }
 
-    const  handleJoinWorkspace = async () => {
+    const handleJoinWorkspace = async () => {
         if (!userId) {
             console.error("User ID is not defined");
             return;
         }
-        if (!workspace.id){
+        if (!workspace.id) {
             console.error("Workspace ID is not defined");
             return;
         }
-        const data = {
-            workspaceId: workspace.id,
-            userId: userId
-        };
         try {
-            const memberAdded = await AddMemberInWorkspace(data).unwrap();
+            const memberAdded = await AddMemberInWorkspace(workspace.id).unwrap();
             console.log("Member added to workspace:", memberAdded);
             setShouldFetch(true);
             handleNavigation();
@@ -64,13 +60,13 @@ function WorkspaceCard ({workspace}: Workspace) {
                     alt="workspacePH"
                 />
                 <div className='flex flex-col'>
-                    <p className='font-semibold'> { workspace.name } </p>
+                    <p className='font-semibold'> {workspace.name} </p>
                     <p className='text-[#A0A0A0]'> 5 members </p> {/* TODO: change with the get membersByWorkspace route */}
                 </div>
             </div>
             <p className='h-full'> Join us to discus about the final project and help us improve it. </p> {/* TODO: change with description */}
             <button className='flex self-end gap-2 px-4 py-2 items-center bg-[#687BEC] rounded-lg'
-                    onClick={handleJoinWorkspace}>
+                onClick={handleJoinWorkspace}>
                 <p className='text-white'> Join us </p>
                 <i className='pi pi-external-link text-white' />
             </button>
