@@ -17,7 +17,7 @@ function Conversation() {
 
     const userId = 1; //id of the connected user
 
-    const { data: messages } = useGetMessagesByUserIdQuery(id);
+    const { data: messages } = useGetMessagesByUserIdQuery(Number(id));
 
     useEffect(() => {
         console.log('conv', user);

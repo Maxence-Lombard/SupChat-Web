@@ -30,9 +30,19 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    getMessagesByChannelId: builder.query<GetMessagesResponse[], number>({
+      query: (Id, pageNumber = 1, pageSize= 10) => ({
+        url: `/api/Message/ByChannel?channelId=${Id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
   }),
 });
 
 export const {
-  useGetMessagesByUserIdQuery
+  useGetMessagesByUserIdQuery,
+  useGetMessagesByChannelIdQuery,
 } = MessagesApi;
