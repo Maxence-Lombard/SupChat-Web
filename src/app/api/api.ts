@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react';
 import { RootState } from "../store/store.ts";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: `http://localhost:5263`,
+  baseUrl: `https://localhost:7268`,
   mode: 'cors',
   prepareHeaders: async (headers, { getState }) => {
     const state = getState() as RootState;

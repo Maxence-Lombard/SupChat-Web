@@ -71,7 +71,7 @@ function Login() {
 
     const HandleProviderLogin = (provider: string) => {
         const returnUrl = encodeURIComponent("http://localhost:5173/");
-        window.location.href = `http://localhost:5263/login/${provider}?returnUrl=${returnUrl}`;
+        window.location.href = `http://localhost:5263/api/authorization/login/${provider}?returnUrl=${returnUrl}`;
     };
 
     return (
