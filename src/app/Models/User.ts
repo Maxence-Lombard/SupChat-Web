@@ -1,35 +1,67 @@
-import {status, theme} from "./Enums.ts";
+import { status, theme } from "./Enums.ts";
 
 export interface UserInitialState {
-    id?: number;
-    firstName?: string;
-    lastName?: string,
-    image?: string,
-    status?: status;
-    statusLocalized?: string,
-    theme?: theme,
-    themeLocalized?: string,
-    language?: string,
-    languageLocalized?: string
+  id?: string;
+  normalizedUserName?: string;
+  email?: string;
+  normalizedEmail?: string;
+  emailConfirmed?: boolean;
+  concurrencyStamp?: string;
+  phoneNumber?: string;
+  phoneNumberConfirmed?: boolean;
+  twoFactorEnabled?: boolean;
+  lockoutEnd?: string;
+  lockoutEnabled?: boolean;
+  accessFailedCount?: number;
+  applicationUser: ApplicationUserInitialState;
+}
+
+export interface ApplicationUserInitialState {
+  id?: number;
+  firstName?: string;
+  lastName?: string;
+  image?: string;
+  status?: status;
+  statusLocalized?: string;
+  theme?: theme;
+  themeLocalized?: string;
+  language?: string;
+  languageLocalized?: string;
+}
+
+export interface ApplicationUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  image: string;
+  status: status;
+  statusLocalized: string;
+  theme: theme;
+  themeLocalized: string;
+  language: string;
+  languageLocalized: string;
 }
 
 export interface User {
-    id: number;
-    firstName: string;
-    lastName: string,
-    image: string,
-    status: status;
-    statusLocalized: string,
-    theme: theme,
-    themeLocalized: string,
-    language: string,
-    languageLocalized: string
+  id: string;
+  normalizedUserName: string;
+  email: string;
+  normalizedEmail: string;
+  emailConfirmed: boolean;
+  concurrencyStamp: string;
+  phoneNumber: string;
+  phoneNumberConfirmed: boolean;
+  twoFactorEnabled: boolean;
+  lockoutEnd: string;
+  lockoutEnabled: boolean;
+  accessFailedCount: number;
+  applicationUser: ApplicationUser;
 }
 
 export interface UserProps {
-    user: {
-        id: number;
-        firstName: string;
-        status: status;
-    }
+  user: {
+    id: number;
+    firstName: string;
+    status: status;
+  };
 }

@@ -1,7 +1,20 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {User, UserInitialState} from "../../Models/User.ts";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User, UserInitialState } from "../../Models/User.ts";
 
 const initialState: UserInitialState = {
+  id: undefined,
+  normalizedUserName: undefined,
+  email: undefined,
+  normalizedEmail: undefined,
+  emailConfirmed: undefined,
+  concurrencyStamp: undefined,
+  phoneNumber: undefined,
+  phoneNumberConfirmed: undefined,
+  twoFactorEnabled: undefined,
+  lockoutEnd: undefined,
+  lockoutEnabled: undefined,
+  accessFailedCount: undefined,
+  applicationUser: {
     id: undefined,
     firstName: undefined,
     lastName: undefined,
@@ -12,24 +25,22 @@ const initialState: UserInitialState = {
     themeLocalized: undefined,
     language: undefined,
     languageLocalized: undefined,
+  },
 };
 
 const userSlice = createSlice({
-    name: 'user',
-    initialState,
-    reducers: {
-        setUserInfos: (state, action: PayloadAction<User>) => {
-            return { ...state, ...action.payload };
-        },
-        clearUserInfos: () => initialState,
+  name: "user",
+  initialState,
+  reducers: {
+    setUserInfos: (state, action: PayloadAction<User>) => {
+      return { ...state, ...action.payload };
     },
+    clearUserInfos: () => initialState,
+  },
 });
 
 export const selectUser = (state: { user: User }) => state.user;
 
-export const {
-    setUserInfos,
-    clearUserInfos,
-} = userSlice.actions;
+export const { setUserInfos, clearUserInfos } = userSlice.actions;
 
 export default userSlice.reducer;
