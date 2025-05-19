@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store/store.ts";
+import { selectAccessToken } from "../store/slices/authSlice.ts";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `http://localhost:5263`,
@@ -7,7 +8,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: async (headers, { getState }) => {
     const state = getState() as RootState;
 
-    let token = state.auth.accessToken;
+    let token = selectAccessToken(state);
     const maxRetries = 5;
     let retries = 0;
 
