@@ -4,14 +4,20 @@ import { useGetMessagesByUserIdQuery } from "../../api/messages/messages.api.ts"
 import { useDateFormatter } from "../../hooks/useDateFormatter.tsx";
 import { useLocation, useParams } from "react-router-dom";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ApplicationUser } from "../../Models/User.ts";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
+import { addMessage } from "../../store/slices/messageSlice.ts";
+import useSignalR from "../../hooks/useSignalR.tsx";
+import { InputText } from "primereact/inputtext";
 
 function Conversation() {
   const { id } = useParams();
   const { formatDate } = useDateFormatter();
+  const { sendUserMessage } = useSignalR();
+  const [messageInput, setMessageInput] = useState("");
+  const dispatch = useDispatch();
 
   //TODO : replace by get user/id
   const location = useLocation();
@@ -21,11 +27,22 @@ function Conversation() {
     (state: RootState) => state.user.applicationUser.id,
   );
 
-  const { data: messages } = useGetMessagesByUserIdQuery(Number(id));
+  const { data: oldMessages } = useGetMessagesByUserIdQuery(Number(id));
+
+  const conversationKey = [userId, id].sort((a, b) => a - b).join("_");
+  const messages = useSelector((state: RootState) =>
+    (state.messages.privateMessages[Number(conversationKey)] || [])
+      .slice()
+      .sort((a, b) => a.id - b.id),
+  );
 
   useEffect(() => {
-    console.log("conv", user);
-  }, [user]);
+    if (oldMessages) {
+      oldMessages.forEach((message) => {
+        dispatch(addMessage(message));
+      });
+    }
+  }, [oldMessages, dispatch]);
 
   return (
     <>
@@ -57,7 +74,7 @@ function Conversation() {
               ></i>
             </div>
           </div>
-          {/* CONVERSATIONS*/}
+          {/* Conversations */}
           <div className="flex flex-col gap-4 h-full overflow-y-auto">
             <div className="flex flex-col gap-1 w-full">
               <p className="font-semibold"> November 15 2024 </p>
@@ -126,47 +143,52 @@ function Conversation() {
                 </div>
                 <hr className="flex-1 border border-[#6B8AFD]" />
               </div>
-              {messages
-                ?.slice()
-                .reverse()
-                .map((message) =>
-                  message.senderId === userId ? (
-                    <div
-                      className="flex justify-end items-end w-full gap-3"
-                      key={message.id}
-                    >
-                      <div className="flex flex-col gap-1 items-end">
-                        <p className="text-black/50">
-                          {" "}
-                          {formatDate(message.sendDate, "HH'h'mm")}{" "}
-                        </p>
-                        <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
-                          <p className="text-white"> {message.content} </p>
-                        </div>
-                      </div>
-                      <img src={user2} alt="user" />
-                    </div>
-                  ) : (
-                    <div className="flex items-end gap-3" key={message.id}>
-                      <img src={userIcon} alt="userIcon" />
-                      <div className="flex flex-col gap-1">
-                        <p className="text-black/50">
-                          {" "}
-                          {formatDate(message.sendDate, "HH'h'mm")}{" "}
-                        </p>
-                        <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
-                          <p className="text-black"> {message.content} </p>
-                        </div>
+              {messages?.slice().map((message) =>
+                message.senderId === userId ? (
+                  <div
+                    className="flex justify-end items-end w-full gap-3"
+                    key={message.id}
+                  >
+                    <div className="flex flex-col gap-1 items-end">
+                      <p className="text-black/50">
+                        {" "}
+                        {formatDate(message.sendDate, "HH'h'mm")}{" "}
+                      </p>
+                      <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
+                        <p className="text-white"> {message.content} </p>
                       </div>
                     </div>
-                  ),
-                )}
+                    <img src={user2} alt="user" />
+                  </div>
+                ) : (
+                  <div className="flex items-end gap-3" key={message.id}>
+                    <img src={userIcon} alt="userIcon" />
+                    <div className="flex flex-col gap-1">
+                      <p className="text-black/50">
+                        {" "}
+                        {formatDate(message.sendDate, "HH'h'mm")}{" "}
+                      </p>
+                      <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
+                        <p className="text-black"> {message.content} </p>
+                      </div>
+                    </div>
+                  </div>
+                ),
+              )}
             </div>
           </div>
+          {/* Message input */}
           <div className="flex flex-col mt-1 gap-2 w-full">
             <hr className="flex-1 border border-[#EBEBEB]" />
             <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
-              <p>Message...</p>
+              <InputText
+                name="messageInput"
+                id="firstname"
+                className="w-full border rounded border-black px-2 py-1"
+                placeholder="Message..."
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+              />
               <div className="flex justify-between w-full items-center">
                 <div className="flex gap-4">
                   <i
@@ -187,7 +209,18 @@ function Conversation() {
                     <i className="pi pi-times-circle text-white" />
                     <p className="text-white">Discard</p>
                   </button>
-                  <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
+                  <button
+                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                    onClick={() => {
+                      if (messageInput.trim()) {
+                        sendUserMessage({
+                          content: messageInput,
+                          receiverId: Number(id),
+                        });
+                        setMessageInput("");
+                      }
+                    }}
+                  >
                     <i className="pi pi-send text-white" />
                     <p className="text-white">Send</p>
                   </button>

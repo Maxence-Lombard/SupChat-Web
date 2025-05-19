@@ -21,6 +21,11 @@ function App() {
     dispatch({ type: "auth/checkAuth" });
   }, [dispatch]);
 
+  const users = ["user1", "user2", "user3", "user4", "user5"];
+  users.map((user) => {
+    return user;
+  });
+
   return (
     <>
       <div className="App h-full">
