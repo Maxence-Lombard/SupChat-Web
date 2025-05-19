@@ -11,6 +11,7 @@ import { Message } from "../api/messages/messages.api.ts";
 
 const useSignalR = () => {
   const [isConnected, setIsConnected] = useState(false);
+  const [currentChannel, setCurrentChannel] = useState<number | null>(null);
   const token = useSelector(selectAccessToken);
   const dispatch = useDispatch();
   const connectionRef = useRef<HubConnection | null>(null);
@@ -62,6 +63,18 @@ const useSignalR = () => {
     };
   }, [token]);
 
+  const joinChannel = async (channelId: number) => {
+    if (connectionRef.current && isConnected && currentChannel !== channelId) {
+      try {
+        await connectionRef.current.invoke("JoinChannel", channelId);
+        console.log("Connected to the channel :", channelId);
+        setCurrentChannel(channelId);
+      } catch (err) {
+        console.error("Error when joining channel :", err);
+      }
+    }
+  };
+
   const sendUserMessage = async (data: {
     content: string;
     receiverId: number;
@@ -88,7 +101,7 @@ const useSignalR = () => {
     if (connectionRef.current && isConnected) {
       try {
         await connectionRef.current.invoke(
-          "SendUserMessage",
+          "SendChannelMessage",
           data.content,
           data.channelId,
         );
@@ -98,7 +111,7 @@ const useSignalR = () => {
     }
   };
 
-  return { isConnected, sendUserMessage, sendChannelMessage };
+  return { isConnected, joinChannel, sendUserMessage, sendChannelMessage };
 };
 
 export default useSignalR;

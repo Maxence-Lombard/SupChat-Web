@@ -1,29 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Open Sans', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-size: 16px;
+    font-family: 'Open Sans', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-size: 16px;
 
-  color-scheme: light dark;
-  color: rgba(0, 0, 0);
-  background-color: #F9FAFC;
+    color-scheme: light dark;
+    color: rgba(0, 0, 0);
+    background-color: #F9FAFC;
 
-  --primary-color: #6B8AFD;
-  --main-color-500: #6B8AFD;
-  --main-color-600: #687BEC;
-  --main-color-400: #719BFF;
-  --main-color-300: #7CAEFF;
-  --main-color-200: #9AC6FF;
+    --primary-color: #6B8AFD;
+    --main-color-500: #6B8AFD;
+    --main-color-600: #687BEC;
+    --main-color-400: #719BFF;
+    --main-color-300: #7CAEFF;
+    --main-color-200: #9AC6FF;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /*html {*/
@@ -34,114 +35,121 @@
 /*}*/
 
 body {
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: #DEE1E8;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: #DEE1E8;
 }
 
 #root {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+    font-size: 3.2em;
+    line-height: 1.1;
+}
+
+.messageTextArea {
+    background: transparent;
+    outline: none;
+    border: none;
+    resize: none;
 }
 
 .p-inputtext {
-  border: 0.5px solid black;
-  width: 100%;
-  border-radius: 4px;
-  padding: 4px 8px;
-  background: white;
+    border: 0.5px solid black;
+    width: 100%;
+    border-radius: 4px;
+    padding: 4px 8px;
+    background: white;
 }
 
 .p-password-input {
-  border: 0.5px solid black;
-  width: 100%;
-  border-radius: 4px;
-  padding: 4px 8px;
+    border: 0.5px solid black;
+    width: 100%;
+    border-radius: 4px;
+    padding: 4px 8px;
 }
 
 .p-icon-field {
-  width: 100%;
+    width: 100%;
 }
 
-.p-input-icon{
-  display: flex;
-  color: black;
+.p-input-icon {
+    display: flex;
+    color: black;
 }
 
 .p-dialog {
-  background-color: white;
+    background-color: white;
 }
 
 /* CHECKBOX */
 .customCheckbox {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #000000;
-  border-radius: 4px;
-  appearance: none;
-  outline: none;
-  cursor: pointer;
-  position: relative;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
 }
 
 .customCheckbox:checked {
-  background-color: var(--main-color-500);
-  border-color: var(--main-color-500);
+    background-color: var(--main-color-500);
+    border-color: var(--main-color-500);
 }
 
 .customCheckbox:checked::after {
-  content: "✔";
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+    content: "✔";
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* SWITCH */
 .customSwitch {
-  --toggle-size: 24px;
-  appearance: none;
-  width: 64px;
-  height: 32px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 99em;
-  position: relative;
-  cursor: pointer;
-  font-size: var(--toggle-size);
-  border: 1px solid #6B8AFD;
+    --toggle-size: 24px;
+    appearance: none;
+    width: 64px;
+    height: 32px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 99em;
+    position: relative;
+    cursor: pointer;
+    font-size: var(--toggle-size);
+    border: 1px solid #6B8AFD;
 }
 
 .customSwitch::before {
-  content: "";
-  width: 24px;
-  height: 24px;
-  position: absolute;
-  top: 3px;
-  left: 4px;
-  background-color: #6B8AFD;
-  border-radius: 50%;
-  transition: 0.4s;
+    content: "";
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    background-color: #6B8AFD;
+    border-radius: 50%;
+    transition: 0.4s;
 }
 
 .customSwitch:checked {
-  background-color: #6B8AFD;
+    background-color: #6B8AFD;
 }
 
 .customSwitch:checked::before {
-  left: calc(100% - 24px - 4px);
-  background-color: white;
+    left: calc(100% - 24px - 4px);
+    background-color: white;
 }

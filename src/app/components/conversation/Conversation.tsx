@@ -4,13 +4,12 @@ import { useGetMessagesByUserIdQuery } from "../../api/messages/messages.api.ts"
 import { useDateFormatter } from "../../hooks/useDateFormatter.tsx";
 import { useLocation, useParams } from "react-router-dom";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ApplicationUser } from "../../Models/User.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
-import { InputText } from "primereact/inputtext";
 
 function Conversation() {
   const { id } = useParams();
@@ -18,8 +17,8 @@ function Conversation() {
   const { sendUserMessage } = useSignalR();
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  //TODO : replace by get user/id
   const location = useLocation();
   const user: ApplicationUser = location.state?.user;
 
@@ -42,7 +41,12 @@ function Conversation() {
         dispatch(addMessage(message));
       });
     }
-  }, [oldMessages, dispatch]);
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height =
+        textAreaRef.current.scrollHeight + "px";
+    }
+  }, [oldMessages, dispatch, messageInput]);
 
   return (
     <>
@@ -176,54 +180,55 @@ function Conversation() {
                 ),
               )}
             </div>
-          </div>
-          {/* Message input */}
-          <div className="flex flex-col mt-1 gap-2 w-full">
-            <hr className="flex-1 border border-[#EBEBEB]" />
-            <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
-              <InputText
-                name="messageInput"
-                id="firstname"
-                className="w-full border rounded border-black px-2 py-1"
-                placeholder="Message..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-              />
-              <div className="flex justify-between w-full items-center">
-                <div className="flex gap-4">
-                  <i
-                    className="pi pi-plus-circle text-xl cursor-pointer"
-                    style={{ color: "var(--primary-color)" }}
-                  />
-                  <i
-                    className="pi pi-face-smile text-xl cursor-pointer"
-                    style={{ color: "var(--primary-color)" }}
-                  />
-                  <i
-                    className="pi pi-at text-xl cursor-pointer"
-                    style={{ color: "var(--primary-color)" }}
-                  />
-                </div>
-                <div className="flex gap-2 items-center">
-                  <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
-                    <i className="pi pi-times-circle text-white" />
-                    <p className="text-white">Discard</p>
-                  </button>
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                    onClick={() => {
-                      if (messageInput.trim()) {
-                        sendUserMessage({
-                          content: messageInput,
-                          receiverId: Number(id),
-                        });
-                        setMessageInput("");
-                      }
-                    }}
-                  >
-                    <i className="pi pi-send text-white" />
-                    <p className="text-white">Send</p>
-                  </button>
+            {/* Message input */}
+            <div className="flex flex-col mt-1 gap-2 w-full">
+              <hr className="flex-1 border border-[#EBEBEB]" />
+              <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
+                <textarea
+                  ref={textAreaRef}
+                  name="messageInput"
+                  id="messageInput"
+                  className="messageTextArea"
+                  placeholder="Message..."
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                />
+                <div className="flex justify-between w-full items-center">
+                  <div className="flex gap-4">
+                    <i
+                      className="pi pi-plus-circle text-xl cursor-pointer"
+                      style={{ color: "var(--primary-color)" }}
+                    />
+                    <i
+                      className="pi pi-face-smile text-xl cursor-pointer"
+                      style={{ color: "var(--primary-color)" }}
+                    />
+                    <i
+                      className="pi pi-at text-xl cursor-pointer"
+                      style={{ color: "var(--primary-color)" }}
+                    />
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
+                      <i className="pi pi-times-circle text-white" />
+                      <p className="text-white">Discard</p>
+                    </button>
+                    <button
+                      className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                      onClick={() => {
+                        if (messageInput.trim()) {
+                          sendUserMessage({
+                            content: messageInput,
+                            receiverId: Number(id),
+                          });
+                          setMessageInput("");
+                        }
+                      }}
+                    >
+                      <i className="pi pi-send text-white" />
+                      <p className="text-white">Send</p>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
