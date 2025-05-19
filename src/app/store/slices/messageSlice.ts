@@ -40,7 +40,7 @@ const messageSlice = createSlice({
           (m) => m.id === message.id,
         );
         if (!exists) {
-          state.channelMessages[channelId].push(message);
+          state.channelMessages[channelId].unshift(message);
         }
       }
     },

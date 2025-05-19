@@ -19,7 +19,6 @@ function Conversation() {
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
 
-  //TODO : replace by get user/id
   const location = useLocation();
   const user: ApplicationUser = location.state?.user;
 
