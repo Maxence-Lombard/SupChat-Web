@@ -6,9 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import { useDateFormatter } from "../../hooks/useDateFormatter.tsx";
 import useSignalR from "../../hooks/useSignalR.tsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { addMessage } from "../../store/slices/messageSlice.ts";
-import { InputText } from "primereact/inputtext";
 
 function Channel() {
   const { channelId } = useParams();
@@ -16,6 +15,7 @@ function Channel() {
   const { joinChannel, sendChannelMessage } = useSignalR();
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const userId = useSelector(
     (state: RootState) => state.user.applicationUser.id,
@@ -39,7 +39,12 @@ function Channel() {
         dispatch(addMessage(message));
       });
     }
-  }, [channelId, joinChannel, oldMessages, dispatch]);
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height =
+        textAreaRef.current.scrollHeight + "px";
+    }
+  }, [channelId, joinChannel, oldMessages, dispatch, messageInput]);
 
   return (
     <>
@@ -146,10 +151,11 @@ function Channel() {
           <div className="flex flex-col mt-1 gap-2 w-full">
             <hr className="flex-1 border border-[#EBEBEB]" />
             <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
-              <InputText
+              <textarea
+                ref={textAreaRef}
                 name="messageInput"
-                id="firstname"
-                className="w-full border rounded border-black px-2 py-1"
+                id="messageInput"
+                className="messageTextArea"
                 placeholder="Message..."
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
