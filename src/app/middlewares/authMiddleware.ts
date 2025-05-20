@@ -1,9 +1,10 @@
 import { Middleware } from "@reduxjs/toolkit";
 import { getCookie } from "../../helpers/cookieHelper.ts";
+import { cookieConstants } from "../constants/cookieConstants.ts";
 
 const authMiddleware: Middleware = (storeAPI) => (next) => (action) => {
   if (action.type === "auth/checkAuth") {
-    const token = getCookie("ACCESS_TOKEN");
+    const token = getCookie(cookieConstants.accessToken);
     // TODO: ajouter vérification si le token est expiré pour le renouveler
     if (token) {
       storeAPI.dispatch({ type: "auth/loginSuccess", payload: token });

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getCookie } from "../../../helpers/cookieHelper.ts";
+import { cookieConstants } from "../../constants/cookieConstants.ts";
 
 interface AuthState {
   accessToken: string | null;
@@ -18,13 +19,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state) => {
-      state.accessToken = getCookie("ACCESS_TOKEN");
+      state.accessToken = getCookie(cookieConstants.accessToken);
       state.isAuthenticated = true;
     },
     redirectToLogin(state) {
       state.shouldRedirect = false;
     },
-    logout: (state) => {
+    logoutSuccess: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
     },
@@ -36,6 +37,7 @@ export const selectAccessToken = (state: { auth: AuthState }) =>
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>
   state.auth.isAuthenticated;
 
-export const { loginSuccess, logout, redirectToLogin } = authSlice.actions;
+export const { loginSuccess, logoutSuccess, redirectToLogin } =
+  authSlice.actions;
 
 export default authSlice.reducer;

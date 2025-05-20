@@ -82,7 +82,6 @@ function Login() {
   };
 
   const HandleProviderLogin = (provider: string) => {
-    // TODO: créer un page de callback pour enregistrer le token puis rediriger vers la page d'accueil
     const returnUrl = encodeURIComponent(
       "http://localhost:5173/login/callback",
     );
@@ -98,7 +97,6 @@ function Login() {
               <div className="gap-12">
                 <div className="flex flex-row gap-1">
                   <h1 className="text-4xl font-bold"> Welcome Back ! </h1>
-                  {/*<img src={handWave} alt="Hello"/>*/}
                 </div>
                 <div className="flex">
                   <p className="text-[#000000]/50">
@@ -127,6 +125,7 @@ function Login() {
                     keyfilter="email"
                     invalid={formStatus === "error"}
                     name="email"
+                    type="email"
                     id="firstname"
                     className="w-full border rounded border-black px-2 py-1"
                     placeholder="Email"

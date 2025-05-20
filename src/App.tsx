@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 import JoinWorkspaces from "./app/components/joinWorkspaces/JoinWorkspaces.tsx";
 import Callback from "./app/components/callback/Callback.tsx";
+import ConfirmEmail from "./app/components/confirmEmail/ConfirmEmail.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ function App() {
               />
               <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
             </Route>
+            <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
             <Route path="/login/callback" element={<Callback />} />
 
             <Route element={<AuthLayout />}>

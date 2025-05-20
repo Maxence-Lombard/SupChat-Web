@@ -7,6 +7,9 @@ import {
   LoginResponse,
   useLoginMutation,
 } from "../api/auth/auth.api.ts";
+import { useDispatch } from "react-redux";
+import { logoutSuccess } from "../store/slices/authSlice.ts";
+import { cookieConstants } from "../constants/cookieConstants.ts";
 
 interface AuthContextType {
   token: string | null;
@@ -18,16 +21,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useCookieStorage("token", "");
-  const [cookies, setCookie] = useCookies(["ACCESS_TOKEN", "REFRESH_TOKEN"]);
+  const [cookies, setCookie] = useCookies([
+    cookieConstants.accessToken,
+    cookieConstants.refreshToken,
+  ]);
   const [loginRequest] = useLoginMutation();
+  const dispatch = useDispatch();
 
   const login = async (credentials: LoginDto) => {
     const response = await loginRequest(credentials);
 
     if (response.data?.accessToken) {
       //TODO : ajouter date expiration
-      setCookie("ACCESS_TOKEN", response.data.accessToken);
-      setCookie("REFRESH_TOKEN", response.data.refreshToken);
+      setCookie(cookieConstants.accessToken, response.data.accessToken);
+      setCookie(cookieConstants.refreshToken, response.data.refreshToken);
       return response.data;
     } else {
       throw new Error("Invalid login response");
@@ -36,8 +43,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     setToken("");
-    setCookie("ACCESS_TOKEN", "", { path: "/", maxAge: -1 });
-    setCookie("REFRESH_TOKEN", "", { path: "/", maxAge: -1 });
+    dispatch(logoutSuccess());
+    setCookie(cookieConstants.accessToken, "", { path: "/", maxAge: -1 });
+    setCookie(cookieConstants.refreshToken, "", { path: "/", maxAge: -1 });
   };
 
   const value = useMemo(
