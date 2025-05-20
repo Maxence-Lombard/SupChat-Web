@@ -1,6 +1,9 @@
 import { visibility } from "../../Models/Enums.ts";
 import { api } from "../api";
-import { CreateChannelDto, GetChannelResponse } from "../channels/channels.api.ts";
+import {
+  CreateChannelDto,
+  GetChannelResponse,
+} from "../channels/channels.api.ts";
 
 //DTO
 export type WorkspaceDto = {
@@ -17,30 +20,29 @@ export type CreateWorkspaceDto = {
 };
 
 export type addMemberDto = {
-  workspaceId: number,
-  userId: number
-}
+  workspaceId: number;
+  userId: number;
+};
 
 //Response
 export type GetWorkspaceResponse = {
-  id: number,
-  name: string,
-  image: string,
-  visibility: visibility,
-  visibilityLocalized: string,
-  ownerId: number
+  id: number;
+  name: string;
+  image: string;
+  visibility: visibility;
+  visibilityLocalized: string;
+  ownerId: number;
 };
 
 export const WorkspaceApi = api.injectEndpoints({
   endpoints: (builder) => ({
-
     // GET
     getWorkspaces: builder.query<GetWorkspaceResponse[], undefined>({
       query: () => ({
         url: `/api/Workspace`,
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -48,9 +50,9 @@ export const WorkspaceApi = api.injectEndpoints({
     getWorkspacesJoined: builder.query<GetWorkspaceResponse[], undefined>({
       query: () => ({
         url: `/api/Workspace/Joined`,
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -58,9 +60,9 @@ export const WorkspaceApi = api.injectEndpoints({
     getWorkspaceById: builder.query<GetWorkspaceResponse, number>({
       query: (Id) => ({
         url: `/api/Workspace/${Id}`,
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -68,9 +70,19 @@ export const WorkspaceApi = api.injectEndpoints({
     getWorkspacesAvailable: builder.query<GetWorkspaceResponse[], undefined>({
       query: () => ({
         url: `/api/Workspace/Available`,
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getFirstChannel: builder.query<GetChannelResponse, number>({
+      query: (Id) => ({
+        url: `/api/Workspace/${Id}/Channels/First`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -78,32 +90,37 @@ export const WorkspaceApi = api.injectEndpoints({
     getChannelsByWorkspaceId: builder.query<GetChannelResponse[], number>({
       query: (Id) => ({
         url: `/api/Workspace/${Id}/Channels`,
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
 
     // POST
-    createWorkspace: builder.mutation<GetWorkspaceResponse, CreateWorkspaceDto>({
-      query: (workspace) => ({
-        url: `/api/Workspace`,
-        method: 'POST',
-        body: JSON.stringify(workspace),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    }),
+    createWorkspace: builder.mutation<GetWorkspaceResponse, CreateWorkspaceDto>(
+      {
+        query: (workspace) => ({
+          url: `/api/Workspace`,
+          method: "POST",
+          body: JSON.stringify(workspace),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }),
+      },
+    ),
 
-    createChannelInWorkspace: builder.mutation<GetChannelResponse, CreateChannelDto>({
+    createChannelInWorkspace: builder.mutation<
+      GetChannelResponse,
+      CreateChannelDto
+    >({
       query: (channel) => ({
         url: `/api/Workspace/${channel.workspaceId}/Channels`,
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(channel),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -111,9 +128,9 @@ export const WorkspaceApi = api.injectEndpoints({
     joinWorkspace: builder.mutation<GetWorkspaceResponse, number>({
       query: (workspaceId: number) => ({
         url: `/api/Workspace/${workspaceId}/Join`,
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -121,10 +138,10 @@ export const WorkspaceApi = api.injectEndpoints({
     addMemberInWorkspace: builder.mutation<GetWorkspaceResponse, addMemberDto>({
       query: (member) => ({
         url: `/api/Workspace/AddMember`,
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(member),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -132,10 +149,10 @@ export const WorkspaceApi = api.injectEndpoints({
     modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
-        method: 'PUT',
+        method: "PUT",
         body: JSON.stringify(data),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -143,9 +160,9 @@ export const WorkspaceApi = api.injectEndpoints({
     deleteWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
     }),
@@ -157,6 +174,7 @@ export const {
   useGetWorkspacesJoinedQuery,
   useGetWorkspaceByIdQuery,
   useGetWorkspacesAvailableQuery,
+  useGetFirstChannelQuery,
   useGetChannelsByWorkspaceIdQuery,
   useCreateWorkspaceMutation,
   useCreateChannelInWorkspaceMutation,

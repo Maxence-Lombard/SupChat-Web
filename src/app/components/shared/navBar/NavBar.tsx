@@ -3,11 +3,12 @@ import user from "../../../../assets/placeholder/user1.svg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
 import { useAuth } from "../../../hooks/useAuth.tsx";
+import { useGetFirstChannelQuery } from "../../../api/workspaces/workspaces.api.ts";
 
 function NavBar() {
   const workspaces = useSelector((state: RootState) => state.workspaces.list);
@@ -16,7 +17,11 @@ function NavBar() {
     useState<boolean>(false);
   const [createWorkspaceVisible, setCreateWorkspaceVisible] =
     useState<boolean>(false);
+  const [channelId, setChannelId] = useState<number>(undefined);
   const { logout } = useAuth();
+  const { data: channel } = useGetFirstChannelQuery(channelId, {
+    skip: !channelId,
+  });
 
   const handleLogout = () => {
     logout();
@@ -38,10 +43,15 @@ function NavBar() {
         break;
     }
   };
-  // TODO: pb avec le /1 il renvoie sur le mauvais channel, il faut trouver un autre id
   const navigateToWorkspace = (id: number) => {
-    navigate(`/workspace/${id}/channel/1`);
+    setChannelId(id);
   };
+
+  useEffect(() => {
+    if (channel) {
+      navigate(`/workspace/${channel.workspaceId}/channel/${channel!.id}`);
+    }
+  }, [channel]);
 
   return (
     <>
