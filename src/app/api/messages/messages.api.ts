@@ -1,11 +1,15 @@
 import { api } from "../api";
-import { visibility } from "../../Models/Enums.ts";
 
-export type MessageDto = {
-  id: number;
-  name: string;
-  visibility: visibility;
-  workspaceId: number;
+export type MessageForUserDto = {
+  content: string;
+  receiverId: number;
+  parentId?: number;
+};
+
+export type MessageInChannelDto = {
+  content: string;
+  channelId: number;
+  parentId?: number;
 };
 
 export type Message = {
@@ -38,8 +42,32 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    MessagesForUser: builder.mutation<Message, MessageForUserDto>({
+      query: (data) => ({
+        url: `/api/Message/PostForUser`,
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+    MessagesInChannel: builder.mutation<Message, MessageInChannelDto>({
+      query: (data) => ({
+        url: `/api/Message/PostInChannel`,
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetMessagesByUserIdQuery, useGetMessagesByChannelIdQuery } =
-  MessagesApi;
+export const {
+  useGetMessagesByUserIdQuery,
+  useGetMessagesByChannelIdQuery,
+  useMessagesForUserMutation,
+  useMessagesInChannelMutation,
+} = MessagesApi;

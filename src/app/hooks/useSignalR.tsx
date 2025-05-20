@@ -7,7 +7,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../store/slices/messageSlice.ts";
 import { selectAccessToken } from "../store/slices/authSlice.ts";
-import { Message } from "../api/messages/messages.api.ts";
+import {
+  Message,
+  MessageForUserDto,
+  MessageInChannelDto,
+  useMessagesForUserMutation,
+  useMessagesInChannelMutation,
+} from "../api/messages/messages.api.ts";
 
 const useSignalR = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -15,6 +21,9 @@ const useSignalR = () => {
   const token = useSelector(selectAccessToken);
   const dispatch = useDispatch();
   const connectionRef = useRef<HubConnection | null>(null);
+
+  const [sendMessageForUser] = useMessagesForUserMutation();
+  const [sendMessagesInChannel] = useMessagesInChannelMutation();
 
   useEffect(() => {
     if (!token) return;
@@ -75,36 +84,20 @@ const useSignalR = () => {
     }
   };
 
-  const sendUserMessage = async (data: {
-    content: string;
-    receiverId: number;
-    parentId?: number;
-  }) => {
+  const sendUserMessage = async (data: MessageForUserDto) => {
     if (connectionRef.current && isConnected) {
       try {
-        await connectionRef.current.invoke(
-          "SendUserMessage",
-          data.content,
-          data.receiverId,
-        );
+        await sendMessageForUser(data).unwrap();
       } catch (err) {
         console.error("Error when sending message :", err);
       }
     }
   };
 
-  const sendChannelMessage = async (data: {
-    content: string;
-    channelId: number;
-    parentId?: number;
-  }) => {
+  const sendChannelMessage = async (data: MessageInChannelDto) => {
     if (connectionRef.current && isConnected) {
       try {
-        await connectionRef.current.invoke(
-          "SendChannelMessage",
-          data.content,
-          data.channelId,
-        );
+        await sendMessagesInChannel(data).unwrap();
       } catch (err) {
         console.error("Error when sending message :", err);
       }
