@@ -3,31 +3,13 @@ import { useEffect, useState } from "react";
 import { useGetUserWithMessagesQuery } from "../../../api/user/user.api.ts";
 import { addUser } from "../../../store/slices/usersSlice.ts";
 import { useDispatch } from "react-redux";
-import { ApplicationUser } from "../../../Models/User.ts";
+import { mapUser } from "../../../api/utils/mapUser.ts";
 
 function DiscussionsListing() {
   const [search, setSearch] = useState<string>("");
   const dispatch = useDispatch();
 
   const { data: users } = useGetUserWithMessagesQuery(undefined);
-
-  function mapUser(user: ApplicationUser) {
-    return {
-      id: "",
-      normalizedUserName: "",
-      email: "",
-      normalizedEmail: "",
-      emailConfirmed: false,
-      concurrencyStamp: "",
-      phoneNumber: "",
-      phoneNumberConfirmed: false,
-      twoFactorEnabled: false,
-      lockoutEnd: "",
-      lockoutEnabled: false,
-      accessFailedCount: 0,
-      applicationUser: user,
-    };
-  }
 
   useEffect(() => {
     if (users) {

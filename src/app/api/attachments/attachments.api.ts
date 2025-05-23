@@ -21,7 +21,7 @@ export const AttachmentsApi = api.injectEndpoints({
         const formData = new FormData();
         formData.append("file", data.file);
         return {
-          url: `/api/Attachment/upload?attachmentType=${data.type}`,
+          url: `/api/Attachment?attachmentType=${data.type}`,
           method: "POST",
           body: formData,
         };
@@ -31,7 +31,7 @@ export const AttachmentsApi = api.injectEndpoints({
     downloadFile: builder.mutation<Blob, string>({
       query: (fileUuid) => {
         return {
-          url: `/api/Attachment/download/${fileUuid}`,
+          url: `/api/Attachment/${fileUuid}`,
           method: "GET",
           responseHandler: (response) => response.blob(),
         };
@@ -41,7 +41,7 @@ export const AttachmentsApi = api.injectEndpoints({
     deleteFile: builder.mutation<string, string>({
       query: (fileUuid) => {
         return {
-          url: `/api/Attachment/delete/${fileUuid}`,
+          url: `/api/Attachment/${fileUuid}`,
           method: "DELETE",
         };
       },

@@ -1,8 +1,13 @@
-import { useSelector } from "react-redux";
-import useUserProfilePicture from "../../../hooks/useUserProfilePicture";
+import { useDispatch, useSelector } from "react-redux";
 import { useDateFormatter } from "../../../hooks/useDateFormatter.tsx";
 import { RootState } from "../../../store/store.ts";
 import { Message } from "../../../api/messages/messages.api.ts";
+import { useEffect, useState } from "react";
+import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
+import { User } from "../../../Models/User.ts";
+import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
+import { mapUser } from "../../../api/utils/mapUser.ts";
+import { addUser } from "../../../store/slices/usersSlice.ts";
 
 type MessageProps = {
   message: Message;
@@ -15,13 +20,34 @@ function MessageItem({
   currentUserId,
   currentUserImage,
 }: MessageProps) {
-  const user = useSelector(
+  const dispatch = useDispatch();
+
+  const storeUser = useSelector(
     (state: RootState) => state.users.byId[message.senderId],
   );
-  const userImage = useUserProfilePicture(
+
+  const [user, setUser] = useState<Partial<User> | undefined>(storeUser);
+  const [profilePictureId, setProfilePictureId] = useState<string>(
     user?.applicationUser?.profilePictureId || "",
   );
+
   const { formatDate } = useDateFormatter();
+  const [getUserInfos] = useGetUserInfosByIdMutation();
+
+  useEffect(() => {
+    if (!storeUser) {
+      getUserInfos(message.senderId)
+        .unwrap()
+        .then((data) => {
+          const mappedUser = mapUser(data);
+          setUser(mappedUser);
+          setProfilePictureId(mappedUser.applicationUser.profilePictureId);
+          dispatch(addUser(mappedUser));
+        });
+    }
+  }, [storeUser, message.senderId]);
+
+  const userImage = useUserProfilePicture(profilePictureId);
 
   if (message.senderId === currentUserId) {
     return (
