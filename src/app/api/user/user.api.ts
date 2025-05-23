@@ -1,25 +1,12 @@
 import { api } from "../api";
-import { status, theme, visibility } from "../../Models/Enums.ts";
-import { User } from "../../Models/User.ts";
+import { visibility } from "../../Models/Enums.ts";
+import { ApplicationUser, User } from "../../Models/User.ts";
 
 export type UserMpDto = {
   id: number;
   name: string;
   visibility: visibility;
   workspaceId: number;
-};
-
-export type GetUserMpResponse = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  image: null;
-  status: status;
-  statusLocalized: string;
-  theme: theme;
-  themeLocalized: string;
-  language: string;
-  languageLocalized: string;
 };
 
 export const MessagesApi = api.injectEndpoints({
@@ -34,7 +21,17 @@ export const MessagesApi = api.injectEndpoints({
       }),
     }),
 
-    getUserWithMessages: builder.query<GetUserMpResponse[], undefined>({
+    getUserInfosById: builder.mutation<ApplicationUser, number>({
+      query: (userId) => ({
+        url: `/api/User/${userId}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getUserWithMessages: builder.query<ApplicationUser[], undefined>({
       query: () => ({
         url: "/api/User/Mp",
         method: "GET",
@@ -46,5 +43,8 @@ export const MessagesApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetUserInfosQuery, useGetUserWithMessagesQuery } =
-  MessagesApi;
+export const {
+  useGetUserInfosQuery,
+  useGetUserInfosByIdMutation,
+  useGetUserWithMessagesQuery,
+} = MessagesApi;

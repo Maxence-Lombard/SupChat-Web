@@ -17,6 +17,7 @@ export type CreateWorkspaceDto = {
   name: string;
   image?: string;
   visibility: visibility;
+  profilePictureId: string;
 };
 
 export type addMemberDto = {
@@ -32,6 +33,7 @@ export type GetWorkspaceResponse = {
   visibility: visibility;
   visibilityLocalized: string;
   ownerId: number;
+  profilePictureId: string;
 };
 
 export const WorkspaceApi = api.injectEndpoints({
@@ -77,7 +79,7 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
-    getFirstChannel: builder.query<GetChannelResponse, number>({
+    getFirstChannel: builder.mutation<GetChannelResponse, number>({
       query: (Id) => ({
         url: `/api/Workspace/${Id}/Channels/First`,
         method: "GET",
@@ -146,10 +148,11 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    // PATCH
     modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
-        method: "PUT",
+        method: "PATCH",
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
@@ -157,6 +160,24 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    modifyWorkspaceProfilePicture: builder.mutation<
+      GetWorkspaceResponse,
+      {
+        workspaceId: number;
+        attachmentUuid: string;
+      }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/ProfilePicture`,
+        method: "PATCH",
+        body: JSON.stringify(data.attachmentUuid),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    // DELETE
     deleteWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
@@ -174,12 +195,13 @@ export const {
   useGetWorkspacesJoinedQuery,
   useGetWorkspaceByIdQuery,
   useGetWorkspacesAvailableQuery,
-  useGetFirstChannelQuery,
+  useGetFirstChannelMutation,
   useGetChannelsByWorkspaceIdQuery,
   useCreateWorkspaceMutation,
   useCreateChannelInWorkspaceMutation,
   useAddMemberInWorkspaceMutation,
   useJoinWorkspaceMutation,
   useModifyWorkspaceMutation,
+  useModifyWorkspaceProfilePictureMutation,
   useDeleteWorkspaceMutation,
 } = WorkspaceApi;

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
+import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
 
 function Conversation() {
   const { id } = useParams();
@@ -19,12 +20,20 @@ function Conversation() {
   const dispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  const currentUserPPId = useSelector(
+    (state: RootState) =>
+      state.users.byId[state.users.currentUserId!]?.applicationUser
+        ?.profilePictureId,
+  );
+  const userId = useSelector(
+    (state: RootState) =>
+      state.users.byId[state.users.currentUserId!].applicationUser?.id,
+  );
+
   const location = useLocation();
   const user: ApplicationUser = location.state?.user;
-
-  const userId = useSelector(
-    (state: RootState) => state.user.applicationUser.id,
-  );
+  const userImage = useUserProfilePicture(user.profilePictureId);
+  const currentUserImage = useUserProfilePicture(currentUserPPId || "");
 
   const { data: oldMessages } = useGetMessagesByUserIdQuery(Number(id));
 
@@ -57,7 +66,11 @@ function Conversation() {
           {/* User Banner */}
           <div className="flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2">
             <div className="flex items-center gap-2">
-              <img src={userIcon} alt="userIcon" />
+              <img
+                src={userImage}
+                alt="userImage"
+                className="w-14 h-14 rounded-lg"
+              />
               <div>
                 <p className="font-semibold"> {user.firstName} </p>
                 <p className="text-[#00A000] text-xs"> {user.status} </p>
@@ -162,11 +175,19 @@ function Conversation() {
                         <p className="text-white"> {message.content} </p>
                       </div>
                     </div>
-                    <img src={user2} alt="user" />
+                    <img
+                      src={currentUserImage}
+                      alt="currentUserImage"
+                      className="w-14 h-14 rounded-lg"
+                    />
                   </div>
                 ) : (
                   <div className="flex items-end gap-3" key={message.id}>
-                    <img src={userIcon} alt="userIcon" />
+                    <img
+                      src={userImage}
+                      alt="userImage"
+                      className="w-14 h-14 rounded-lg"
+                    />
                     <div className="flex flex-col gap-1">
                       <p className="text-black/50">
                         {" "}

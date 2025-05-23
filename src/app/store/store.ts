@@ -1,19 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { api } from "../api/api";
 import authReducer from "./slices/authSlice.ts";
-import userReducer from "./slices/userSlice.ts";
+import userReducer from "./slices/usersSlice.ts";
 import workspacesReducer from "./slices/workspaceSlice.ts";
 import channelsReducer from "./slices/channelSlice.ts";
 import messageReducer from "./slices/messageSlice.ts";
+import profilePictureReducer from "./slices/profilePictureSlice.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    user: userReducer,
+    users: userReducer,
     workspaces: workspacesReducer,
     channels: channelsReducer,
     messages: messageReducer,
+    profilePictures: profilePictureReducer,
     // ...createRouterReducerMapObject(routerHistory),
     [api.reducerPath]: api.reducer,
     // app: appReducer,
