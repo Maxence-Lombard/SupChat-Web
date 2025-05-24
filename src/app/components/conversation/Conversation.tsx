@@ -1,7 +1,6 @@
 import userIcon from "../../../assets/placeholder/user4.svg";
 import user2 from "../../../assets/placeholder/user3.svg";
 import { useGetMessagesByUserIdQuery } from "../../api/messages/messages.api.ts";
-import { useDateFormatter } from "../../hooks/useDateFormatter.tsx";
 import { useLocation, useParams } from "react-router-dom";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 import { useEffect, useRef, useState } from "react";
@@ -11,10 +10,10 @@ import { RootState } from "../../store/store.ts";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
 import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
+import MessageItem from "../shared/message/MessageItem.tsx";
 
 function Conversation() {
   const { id } = useParams();
-  const { formatDate } = useDateFormatter();
   const { sendUserMessage } = useSignalR();
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
@@ -160,46 +159,14 @@ function Conversation() {
                 </div>
                 <hr className="flex-1 border border-[#6B8AFD]" />
               </div>
-              {messages?.slice().map((message) =>
-                message.senderId === userId ? (
-                  <div
-                    className="flex justify-end items-end w-full gap-3"
-                    key={message.id}
-                  >
-                    <div className="flex flex-col gap-1 items-end">
-                      <p className="text-black/50">
-                        {" "}
-                        {formatDate(message.sendDate, "HH'h'mm")}{" "}
-                      </p>
-                      <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
-                        <p className="text-white"> {message.content} </p>
-                      </div>
-                    </div>
-                    <img
-                      src={currentUserImage}
-                      alt="currentUserImage"
-                      className="w-14 h-14 rounded-lg"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex items-end gap-3" key={message.id}>
-                    <img
-                      src={userImage}
-                      alt="userImage"
-                      className="w-14 h-14 rounded-lg"
-                    />
-                    <div className="flex flex-col gap-1">
-                      <p className="text-black/50">
-                        {" "}
-                        {formatDate(message.sendDate, "HH'h'mm")}{" "}
-                      </p>
-                      <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
-                        <p className="text-black"> {message.content} </p>
-                      </div>
-                    </div>
-                  </div>
-                ),
-              )}
+              {messages.map((message) => (
+                <MessageItem
+                  key={message.id}
+                  message={message}
+                  currentUserId={userId!}
+                  currentUserImage={currentUserImage}
+                />
+              ))}
             </div>
             {/* Message input */}
             <div className="flex flex-col mt-1 gap-2 w-full">

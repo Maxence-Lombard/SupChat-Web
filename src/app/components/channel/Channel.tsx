@@ -133,6 +133,7 @@ function Channel() {
           </div>
           {messages.map((message) => (
             <MessageItem
+              key={message.id}
               message={message}
               currentUserId={currentUserId!}
               currentUserImage={currentUserImage}
