@@ -4,22 +4,30 @@ import { useParams } from "react-router-dom";
 import { useGetMessagesByChannelIdQuery } from "../../api/messages/messages.api.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
-import { useDateFormatter } from "../../hooks/useDateFormatter.tsx";
 import useSignalR from "../../hooks/useSignalR.tsx";
 import { useEffect, useRef, useState } from "react";
 import { addMessage } from "../../store/slices/messageSlice.ts";
+import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
+import MessageItem from "../shared/message/MessageItem.tsx";
 
 function Channel() {
   const { channelId } = useParams();
-  const { formatDate } = useDateFormatter();
   const { joinChannel, sendChannelMessage } = useSignalR();
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const userId = useSelector(
-    (state: RootState) => state.user.applicationUser.id,
+  const currentUserPPId = useSelector(
+    (state: RootState) =>
+      state.users.byId[state.users.currentUserId!]?.applicationUser
+        ?.profilePictureId,
   );
+  const currentUserId = useSelector(
+    (state: RootState) =>
+      state.users.byId[state.users.currentUserId!]?.applicationUser?.id,
+  );
+
+  const currentUserImage = useUserProfilePicture(currentUserPPId || "");
 
   const { data: oldMessages } = useGetMessagesByChannelIdQuery(
     Number(channelId),
@@ -44,7 +52,14 @@ function Channel() {
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
-  }, [channelId, joinChannel, oldMessages, dispatch, messageInput]);
+  }, [
+    messages,
+    channelId,
+    oldMessages,
+    messageInput,
+    joinChannel,
+    sendChannelMessage,
+  ]);
 
   return (
     <>
@@ -116,38 +131,14 @@ function Channel() {
             </div>
             <hr className="flex-1 border border-[#6B8AFD]" />
           </div>
-          {messages.map((message) =>
-            message.senderId === userId ? (
-              <div
-                className="flex justify-end items-end w-full gap-3"
-                key={message.id}
-              >
-                <div className="flex flex-col gap-1 items-end">
-                  <p className="text-black/50">
-                    {" "}
-                    {formatDate(message.sendDate, "HH'h'mm")}{" "}
-                  </p>
-                  <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
-                    <p className="text-white"> {message.content} </p>
-                  </div>
-                </div>
-                <img src={user2} alt="user" />
-              </div>
-            ) : (
-              <div className="flex items-end gap-3" key={message.id}>
-                <img src={userIcon} alt="userIcon" />
-                <div className="flex flex-col gap-1">
-                  <p className="text-black/50">
-                    {" "}
-                    {formatDate(message.sendDate, "HH'h'mm")}{" "}
-                  </p>
-                  <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
-                    <p className="text-black"> {message.content} </p>
-                  </div>
-                </div>
-              </div>
-            ),
-          )}
+          {messages.map((message) => (
+            <MessageItem
+              key={message.id}
+              message={message}
+              currentUserId={currentUserId!}
+              currentUserImage={currentUserImage}
+            />
+          ))}
           <div className="flex flex-col mt-1 gap-2 w-full">
             <hr className="flex-1 border border-[#EBEBEB]" />
             <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">

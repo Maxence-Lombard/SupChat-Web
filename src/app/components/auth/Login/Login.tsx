@@ -13,7 +13,7 @@ import { LoginDto } from "../../../api/auth/auth.api";
 import { useAuth } from "../../../hooks/useAuth.tsx";
 import { loginSuccess } from "../../../store/slices/authSlice.ts";
 import { useGetUserInfosQuery } from "../../../api/user/user.api.ts";
-import { setUserInfos } from "../../../store/slices/userSlice.ts";
+import { addUser, setCurrentUserId } from "../../../store/slices/usersSlice.ts";
 
 enum Providers {
   GOOGLE = "google",
@@ -68,7 +68,8 @@ function Login() {
         dispatch(loginSuccess());
         setFetchUserInfos(false);
         if (userInfos) {
-          dispatch(setUserInfos(userInfos));
+          dispatch(setCurrentUserId(String(userInfos.applicationUser.id)));
+          dispatch(addUser(userInfos));
         }
         navigate("/");
       } else {
@@ -78,6 +79,7 @@ function Login() {
     } catch (error) {
       setFormStatus("error");
       setErrorMessage("Invalid email or password");
+      return error;
     }
   };
 

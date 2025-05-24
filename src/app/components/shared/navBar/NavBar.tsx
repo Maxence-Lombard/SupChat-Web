@@ -1,27 +1,43 @@
-import workspacePH from "../../../../assets/icons/workspacePH.svg";
-import user from "../../../../assets/placeholder/user1.svg";
+import workspacePH from "../../../../assets/placeholder/workspacePH.svg";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
 import { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
 import { useAuth } from "../../../hooks/useAuth.tsx";
-import { useGetFirstChannelQuery } from "../../../api/workspaces/workspaces.api.ts";
+import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
+import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
+import { setProfilePicture } from "../../../store/slices/profilePictureSlice.ts";
+import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
 
 function NavBar() {
-  const workspaces = useSelector((state: RootState) => state.workspaces.list);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const workspaces = useSelector((state: RootState) => state.workspaces.list);
+  const profilePictureUrls = useSelector(
+    (state: RootState) => state.profilePictures,
+  );
+  const userProfilePictureId = useSelector(
+    (state: RootState) =>
+      state.users.byId[state.users.currentUserId!]?.applicationUser
+        ?.profilePictureId,
+  );
+
   const [newWorkspaceVisible, setNewWorkspaceVisible] =
     useState<boolean>(false);
   const [createWorkspaceVisible, setCreateWorkspaceVisible] =
     useState<boolean>(false);
-  const [channelId, setChannelId] = useState<number>(undefined);
+  const [workspaceImage, setWorkspaceImage] = useState<{
+    [id: number]: string;
+  }>({});
+  const userImage = useUserProfilePicture(userProfilePictureId || "");
+
   const { logout } = useAuth();
-  const { data: channel } = useGetFirstChannelQuery(channelId, {
-    skip: !channelId,
-  });
+  const [GetProfilePicture] = useDownloadFileMutation();
+  const [GetFirstChannel] = useGetFirstChannelMutation();
 
   const handleLogout = () => {
     logout();
@@ -43,15 +59,43 @@ function NavBar() {
         break;
     }
   };
-  const navigateToWorkspace = (id: number) => {
-    setChannelId(id);
+  const navigateToWorkspace = async (id: number) => {
+    try {
+      const channel = await GetFirstChannel(id).unwrap();
+      navigate(`/workspace/${channel.workspaceId}/channel/${channel!.id}`);
+    } catch (error) {
+      console.error("Error fetching first channel:", error);
+    }
+  };
+
+  const setWorkspaceProfilePicture = async () => {
+    const profilePictures: { [id: number]: string } = {};
+    for (const workspace of workspaces) {
+      const workspacePPId = workspace.profilePictureId;
+      if (profilePictureUrls[workspacePPId]) {
+        profilePictures[workspace.id] = profilePictureUrls[workspacePPId];
+        continue;
+      }
+      try {
+        const blob = await GetProfilePicture(
+          workspace.profilePictureId,
+        ).unwrap();
+        const url = URL.createObjectURL(blob);
+        profilePictures[workspace.id] = url;
+        dispatch(setProfilePicture({ id: workspacePPId, url }));
+      } catch (error) {
+        profilePictures[workspace.id] = workspacePH;
+        console.log("Error downloading file:", error);
+      }
+    }
+    setWorkspaceImage(profilePictures);
   };
 
   useEffect(() => {
-    if (channel) {
-      navigate(`/workspace/${channel.workspaceId}/channel/${channel!.id}`);
+    if (workspaces && workspaces.length > 0) {
+      setWorkspaceProfilePicture();
     }
-  }, [channel]);
+  }, [workspaces]);
 
   return (
     <>
@@ -66,14 +110,14 @@ function NavBar() {
             <i className="pi pi-cog text-2xl  cursor-pointer" />
           </div>
           <hr className="w-full border border-black/50 " />
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 h-full overflow-y-auto">
             {workspaces?.map((workspace) => (
               <img
                 onClick={() => navigateToWorkspace(workspace.id)}
                 key={workspace.id}
                 className="w-12 h-12 cursor-pointer rounded-lg"
-                src={workspacePH}
-                alt="workspacePH"
+                src={workspaceImage[workspace.id]}
+                alt="workspaceImage"
               />
             ))}
             <button
@@ -93,7 +137,7 @@ function NavBar() {
               }}
               content={({ hide }) => (
                 <NewWorkspaceActionsPopup
-                  hide={hide}
+                  hide={() => hide()}
                   onClose={(action?: string) => {
                     setNewWorkspaceVisible(false);
                     if (action === "create") {
@@ -126,8 +170,8 @@ function NavBar() {
         <div>
           <img
             className="w-12 h-12 cursor-pointer rounded-lg"
-            src={user}
-            alt="user"
+            src={userImage}
+            alt="userImage"
           />
           <i
             className="pi pi-sign-out text-2xl text-red-500"

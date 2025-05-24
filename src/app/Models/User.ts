@@ -1,4 +1,5 @@
 import { status, theme } from "./Enums.ts";
+import { GetUserMpResponse } from "../api/user/user.api.ts";
 
 export interface UserInitialState {
   id?: string;
@@ -27,6 +28,7 @@ export interface ApplicationUserInitialState {
   themeLocalized?: string;
   language?: string;
   languageLocalized?: string;
+  profilePictureId?: string;
 }
 
 export interface ApplicationUser {
@@ -40,6 +42,7 @@ export interface ApplicationUser {
   themeLocalized: string;
   language: string;
   languageLocalized: string;
+  profilePictureId: string;
 }
 
 export interface User {
@@ -59,9 +62,5 @@ export interface User {
 }
 
 export interface UserProps {
-  user: {
-    id: number;
-    firstName: string;
-    status: status;
-  };
+  user: GetUserMpResponse;
 }

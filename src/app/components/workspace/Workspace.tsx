@@ -1,7 +1,6 @@
 // ASSETS
 import user from "../../../assets/placeholder/user4.svg";
-import searchIcon from "../../../assets/icons/search.svg";
-import workspacePH from "../../../assets/icons/workspacePH.svg";
+import workspacePH from "../../../assets/placeholder/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import { AvatarGroup } from "primereact/avatargroup";
@@ -29,6 +28,8 @@ function Workspace() {
   const [visible, setVisible] = useState<boolean>(false);
   const [currentChannelId, setCurrentChannelId] = useState<number>(1);
   const [fetchChannelInfo, setFetchChannelInfo] = useState<boolean>(false);
+  const [workspaceProfilePicture, setWorkspaceProfilePicture] =
+    useState<string>(workspacePH);
 
   const channelsFromStore = useSelector(
     (state: RootState) => state.channels.byWorkspaceId,
@@ -36,6 +37,10 @@ function Workspace() {
   const workspaceChannels = Object.values(channelsFromStore).filter(
     (channel) => channel.workspaceId === Number(workspaceId),
   );
+  const profilePictureUrls = useSelector(
+    (state: RootState) => state.profilePictures,
+  );
+
   const skipChannels = workspaceChannels.length > 0;
   const skipFetchChannelInfo = fetchChannelInfo;
 
@@ -50,12 +55,17 @@ function Workspace() {
   );
 
   useEffect(() => {
+    if (workspace && profilePictureUrls[workspace.profilePictureId]) {
+      setWorkspaceProfilePicture(
+        profilePictureUrls[workspace.profilePictureId],
+      );
+    }
     if (isSuccess && channels) {
       channels.forEach((channel) => {
         dispatch(addChannel(channel));
       });
     }
-  }, [isSuccess, channels, dispatch]);
+  }, [isSuccess, channels, dispatch, workspace]);
 
   const handleChannelNavigate = (channelId: number) => {
     setCurrentChannelId(channelId);
@@ -66,8 +76,8 @@ function Workspace() {
     <>
       <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
         <div className="flex flex-col gap-8 min-w-[231px]">
-          <div className="flex gap-1 p-2 w-full border rounded-lg border-black">
-            <img className="w-6 h-6" src={searchIcon} alt="search" />
+          <div className="flex items-center gap-1 p-2 w-full border rounded-lg border-black">
+            <i className="pi pi-search text-[#505050]/50"></i>
             <input
               className="bg-white focus:outline-none w-full"
               name="search"
@@ -81,8 +91,8 @@ function Workspace() {
             <div className="flex gap-3">
               <img
                 className="w-12 h-12 cursor-pointer rounded"
-                src={workspacePH}
-                alt="workspacePH"
+                src={workspaceProfilePicture}
+                alt="workspaceProfilePicture"
               />
               <div className="flex flex-col h-full gap-auto">
                 <p className="font-semibold"> {workspace?.name} </p>
@@ -166,8 +176,8 @@ function Workspace() {
             <div className="flex items-center gap-2">
               <img
                 className="rounded w-14 h-14"
-                src={workspacePH}
-                alt="workspacePH"
+                src={workspaceProfilePicture}
+                alt="workspaceProfilePicture"
               />
               <div>
                 <p className="font-semibold">

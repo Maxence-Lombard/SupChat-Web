@@ -1,32 +1,43 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  UnknownAction,
+} from "@reduxjs/toolkit";
 import { api } from "../api/api";
 import authReducer from "./slices/authSlice.ts";
-import userReducer from "./slices/userSlice.ts";
+import userReducer from "./slices/usersSlice.ts";
 import workspacesReducer from "./slices/workspaceSlice.ts";
 import channelsReducer from "./slices/channelSlice.ts";
 import messageReducer from "./slices/messageSlice.ts";
+import profilePictureReducer from "./slices/profilePictureSlice.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 
+const appReducer = combineReducers({
+  auth: authReducer,
+  users: userReducer,
+  workspaces: workspacesReducer,
+  channels: channelsReducer,
+  messages: messageReducer,
+  profilePictures: profilePictureReducer,
+  [api.reducerPath]: api.reducer,
+});
+
+const rootReducer = (
+  state: ReturnType<typeof appReducer> | undefined,
+  action: UnknownAction,
+) => {
+  if (action.type === "RESET") {
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
+
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    user: userReducer,
-    workspaces: workspacesReducer,
-    channels: channelsReducer,
-    messages: messageReducer,
-    // ...createRouterReducerMapObject(routerHistory),
-    [api.reducerPath]: api.reducer,
-    // app: appReducer,
-    // snackbar: snackbarReducer,
-    // modal: modalReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    })
-      // .concat(thunk)
-      // .concat(createRouterMiddleware(routerHistory))
-      .concat(api.middleware, authMiddleware),
+    }).concat(api.middleware, authMiddleware),
   devTools: true,
 });
 
