@@ -62,7 +62,7 @@ function NavBar() {
   const navigateToWorkspace = async (id: number) => {
     try {
       const channel = await GetFirstChannel(id).unwrap();
-      navigate(`/workspace/${channel.workspaceId}/channel/${channel!.id}`);
+      navigate(`/workspace/${channel.workspaceId}/channel/${channel.id}`);
     } catch (error) {
       console.error("Error fetching first channel:", error);
     }

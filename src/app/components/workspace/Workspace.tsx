@@ -24,9 +24,12 @@ function Workspace() {
   const navigate = useNavigate();
 
   const { workspaceId } = useParams();
+  const { channelId } = useParams();
   const [search, setSearch] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
-  const [currentChannelId, setCurrentChannelId] = useState<number>(1);
+  const [currentChannelId, setCurrentChannelId] = useState<number>(
+    Number(channelId),
+  );
   const [fetchChannelInfo, setFetchChannelInfo] = useState<boolean>(false);
   const [workspaceProfilePicture, setWorkspaceProfilePicture] =
     useState<string>(workspacePH);
@@ -72,6 +75,10 @@ function Workspace() {
     navigate(`/workspace/${workspaceId}/channel/${channelId}`);
   };
 
+  const handleWorkspaceParametersNavigate = (workspaceId: number) => {
+    navigate(`/workspace/settings/${workspaceId}`);
+  };
+
   return (
     <>
       <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
@@ -96,7 +103,12 @@ function Workspace() {
               />
               <div className="flex flex-col h-full gap-auto">
                 <p className="font-semibold"> {workspace?.name} </p>
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1 cursor-pointer"
+                  onClick={() =>
+                    handleWorkspaceParametersNavigate(Number(workspaceId))
+                  }
+                >
                   <p className="text-black/50">Settings</p>
                   <i className="pi pi-cog text-black/50" />
                 </div>
