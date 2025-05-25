@@ -10,7 +10,7 @@ import { RootState } from "../../store/store.ts";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
 import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
-import MessageItem from "../shared/message/MessageItem.tsx";
+import MessageItem from "../shared/messageItem/MessageItem.tsx";
 
 function Conversation() {
   const { id } = useParams();

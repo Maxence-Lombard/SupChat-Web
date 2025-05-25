@@ -8,7 +8,7 @@ import useSignalR from "../../hooks/useSignalR.tsx";
 import { useEffect, useRef, useState } from "react";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
-import MessageItem from "../shared/message/MessageItem.tsx";
+import MessageItem from "../shared/messageItem/MessageItem.tsx";
 
 function Channel() {
   const { channelId } = useParams();
