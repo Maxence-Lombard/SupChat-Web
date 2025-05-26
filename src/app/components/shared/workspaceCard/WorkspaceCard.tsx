@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useJoinWorkspaceMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { addWorkspace } from "../../../store/slices/workspaceSlice.ts";
 import { visibility } from "../../../Models/Enums.ts";
-import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
 interface Workspace {
   workspaceId: number;
@@ -21,7 +21,7 @@ function WorkspaceCard(workspace: Workspace) {
   const dispatch = useDispatch();
   const [AddMemberInWorkspace] = useJoinWorkspaceMutation();
 
-  const profilePicture = useUserProfilePicture(workspace.profilePictureId);
+  const profilePicture = useProfilePicture(workspace.profilePictureId);
 
   const handleNavigation = () => {
     navigate(`/workspace/${workspace.workspaceId}/channel/1`);

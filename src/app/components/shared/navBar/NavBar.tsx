@@ -10,7 +10,7 @@ import { useAuth } from "../../../hooks/useAuth.tsx";
 import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
 import { setProfilePicture } from "../../../store/slices/profilePictureSlice.ts";
-import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
 function NavBar() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ function NavBar() {
   const [workspaceImage, setWorkspaceImage] = useState<{
     [id: number]: string;
   }>({});
-  const userImage = useUserProfilePicture(userProfilePictureId || "");
+  const userImage = useProfilePicture(userProfilePictureId || "");
 
   const { logout } = useAuth();
   const [GetProfilePicture] = useDownloadFileMutation();

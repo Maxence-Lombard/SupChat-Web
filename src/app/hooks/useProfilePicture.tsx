@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
 import { addProfilePicture } from "../store/slices/profilePictureSlice.ts";
 
-const useUserProfilePicture = (profilePictureId: string) => {
+const useProfilePicture = (profilePictureId: string) => {
   const dispatch = useDispatch();
   const [userImage, setUserImage] = useState<string>(userPlaceHolder);
   const [GetProfilePicture] = useDownloadFileMutation();
@@ -34,4 +34,4 @@ const useUserProfilePicture = (profilePictureId: string) => {
   return userImage;
 };
 
-export default useUserProfilePicture;
+export default useProfilePicture;

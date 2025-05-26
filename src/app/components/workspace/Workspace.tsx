@@ -17,7 +17,7 @@ import { addChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
 import Channel from "../channel/Channel.tsx";
 import { useGetChannelByIdQuery } from "../../api/channels/channels.api.ts";
-import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ function Workspace() {
     { skip: skipFetchChannelInfo },
   );
 
-  const workspaceProfilePicture = useUserProfilePicture(
+  const workspaceProfilePicture = useProfilePicture(
     workspace?.profilePictureId ?? "",
   );
 

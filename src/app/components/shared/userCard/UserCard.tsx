@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { UserProps } from "../../../Models/User.ts";
-import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
 function UserCard({ user }: UserProps) {
   const navigate = useNavigate();
-  const userImage = useUserProfilePicture(user.profilePictureId);
+  const userImage = useProfilePicture(user.profilePictureId);
 
   const handleNavigation = () => {
     navigate(`/conversation/${user.id}`, {

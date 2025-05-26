@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
-import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
 
 function Conversation() {
@@ -31,8 +31,8 @@ function Conversation() {
 
   const location = useLocation();
   const user: ApplicationUser = location.state?.user;
-  const userImage = useUserProfilePicture(user.profilePictureId);
-  const currentUserImage = useUserProfilePicture(currentUserPPId || "");
+  const userImage = useProfilePicture(user.profilePictureId);
+  const currentUserImage = useProfilePicture(currentUserPPId || "");
 
   const { data: oldMessages } = useGetMessagesByUserIdQuery(Number(id));
 
