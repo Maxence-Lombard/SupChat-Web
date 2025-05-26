@@ -1,6 +1,5 @@
 .container {
     display: flex;
-    width: fit-content;
     cursor: pointer;
     border-radius: 0.25rem;
     position: relative;

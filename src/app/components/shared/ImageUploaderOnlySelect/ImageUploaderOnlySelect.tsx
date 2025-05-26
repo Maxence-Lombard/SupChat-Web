@@ -27,7 +27,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   return (
     <div className="flex items-center gap-4">
       {/* TODO: ajouter div grise par dessus avec crayon */}
-      <div onClick={handleClick} className="container">
+      <div onClick={handleClick} className="container w-fit">
         {previewUrl ? (
           <img
             src={previewUrl}
