@@ -37,6 +37,7 @@ function Workspace() {
   const channelsFromStore = useSelector(
     (state: RootState) => state.channels.byWorkspaceId,
   );
+  const userId = useSelector((state: RootState) => state.users.currentUserId);
   const workspaceChannels = Object.values(channelsFromStore).filter(
     (channel) => channel.workspaceId === Number(workspaceId),
   );
@@ -68,7 +69,7 @@ function Workspace() {
         dispatch(addChannel(channel));
       });
     }
-  }, [isSuccess, channels, dispatch, workspace]);
+  }, [isSuccess, channels, dispatch, workspace, profilePictureUrls]);
 
   const handleChannelNavigate = (channelId: number) => {
     setCurrentChannelId(channelId);
@@ -109,8 +110,12 @@ function Workspace() {
                     handleWorkspaceParametersNavigate(Number(workspaceId))
                   }
                 >
-                  <p className="text-black/50">Settings</p>
-                  <i className="pi pi-cog text-black/50" />
+                  {userId === workspace?.ownerId ? (
+                    <>
+                      <p className="text-black/50">Settings</p>
+                      <i className="pi pi-cog text-black/50" />
+                    </>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -132,6 +137,7 @@ function Workspace() {
                       <p className="font-semibold text-[#6B8AFD]">Channels</p>
                     </div>
                     <div className="flex flex-col gap-3">
+                      {/* TODO: ajouter un .filter pr récup uniquement ceux dans lequel il est (workspaceMember) */}
                       {workspaceChannels?.map((channel) => (
                         <div
                           className="flex items-center gap-1 cursor-pointer"

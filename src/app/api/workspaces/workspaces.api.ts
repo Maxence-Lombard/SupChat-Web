@@ -9,8 +9,9 @@ import {
 export type WorkspaceDto = {
   id: number;
   name: string;
-  image?: string;
+  description: string;
   visibility: visibility;
+  profilePictureId: string;
 };
 
 export type CreateWorkspaceDto = {
@@ -34,6 +35,7 @@ export type GetWorkspaceResponse = {
   visibilityLocalized: string;
   ownerId: number;
   profilePictureId: string;
+  description: string;
 };
 
 export const WorkspaceApi = api.injectEndpoints({
@@ -67,6 +69,12 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: (result, error, arg) => [
+        {
+          type: "Workspaces",
+          id: arg,
+        },
+      ],
     }),
 
     getWorkspacesAvailable: builder.query<GetWorkspaceResponse[], undefined>({
@@ -149,7 +157,7 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     // PATCH
-    modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
+    modifyWorkspace: builder.mutation<WorkspaceDto, Partial<WorkspaceDto>>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
         method: "PATCH",
@@ -158,6 +166,8 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: (result, error, arg) =>
+        result?.id ? [{ type: "Workspaces", id: arg.id }] : [],
     }),
 
     modifyWorkspaceProfilePicture: builder.mutation<
