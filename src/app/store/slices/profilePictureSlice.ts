@@ -16,8 +16,17 @@ const profilePictureSlice = createSlice({
     ) => {
       state[action.payload.id] = action.payload.url;
     },
+    addProfilePicture: (
+      state,
+      action: PayloadAction<{ id: string; url: string }>,
+    ) => {
+      if (!state[action.payload.id]) {
+        state[action.payload.id] = action.payload.url;
+      }
+    },
   },
 });
 
-export const { setProfilePicture } = profilePictureSlice.actions;
+export const { setProfilePicture, addProfilePicture } =
+  profilePictureSlice.actions;
 export default profilePictureSlice.reducer;

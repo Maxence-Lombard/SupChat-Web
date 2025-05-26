@@ -180,7 +180,9 @@ export const WorkspaceApi = api.injectEndpoints({
       query: (data) => ({
         url: `/api/Workspace/${data.workspaceId}/ProfilePicture`,
         method: "PATCH",
-        body: JSON.stringify(data.attachmentUuid),
+        body: {
+          attachmentId: data.attachmentUuid,
+        },
         headers: {
           "Content-Type": "application/json",
         },

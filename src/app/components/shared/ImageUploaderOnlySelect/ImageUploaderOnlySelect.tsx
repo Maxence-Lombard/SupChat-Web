@@ -1,3 +1,4 @@
+import "./ImageUploaderOnlySelect.css";
 import React, { useRef, useState } from "react";
 
 interface ImageUploaderProps {
@@ -21,20 +22,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       onImageSelected?.(file);
     }
   };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
   const handleClick = () => fileInputRef.current?.click();
 
   return (
     <div className="flex items-center gap-4">
-      <div
-        onClick={handleClick}
-        onDragOver={handleDragOver}
-        className="w-32 h-32 cursor-pointer rounded"
-      >
+      {/* TODO: ajouter div grise par dessus avec crayon */}
+      <div onClick={handleClick} className="container">
         {previewUrl ? (
           <img
             src={previewUrl}
@@ -51,7 +44,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <p className="text-sm text-black/50"> Drag or click to upload </p>
           </div>
         )}
+        <div className="overlay">
+          <i className="pi pi-pencil text-3xl text-white"></i>
+        </div>
       </div>
+
       <input
         type="file"
         accept="image/*"

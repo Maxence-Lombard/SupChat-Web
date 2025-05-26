@@ -3,6 +3,7 @@ import {
   useGetFirstChannelMutation,
   useGetWorkspaceByIdQuery,
   useModifyWorkspaceMutation,
+  useModifyWorkspaceProfilePictureMutation,
   WorkspaceDto,
 } from "../../api/workspaces/workspaces.api.ts";
 import { useEffect, useState } from "react";
@@ -15,6 +16,7 @@ import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUplo
 import { attachmentType } from "../../Models/Enums.ts";
 import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
 import { modifyWorkspaceData } from "../../store/slices/workspaceSlice.ts";
+import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
 
 function WorkspaceParameters() {
   const { workspaceId } = useParams();
@@ -25,6 +27,8 @@ function WorkspaceParameters() {
   const [GetFirstChannel] = useGetFirstChannelMutation();
   const [uploadProfilePictureRequest] = useUploadFileMutation();
   const [modifyWorkspaceQuery] = useModifyWorkspaceMutation();
+  const [modifyWorkspaceProfilePicture] =
+    useModifyWorkspaceProfilePictureMutation();
 
   const profilePictureUrls = useSelector(
     (state: RootState) => state.profilePictures,
@@ -36,15 +40,12 @@ function WorkspaceParameters() {
 
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
-  const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
-    useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const resetWorkspaceInfos = () => {
     if (!workspace) return;
     setWorkspaceName(workspace.name);
     setWorkspaceDescription(workspace.description);
-    setWorkspaceProfilePictureId(workspace.profilePictureId);
     setSelectedFile(null);
   };
 
@@ -69,17 +70,23 @@ function WorkspaceParameters() {
 
         const profilePicture =
           await uploadProfilePictureRequest(newProfilePicture).unwrap();
-        setWorkspaceProfilePictureId(profilePicture.id);
+        await modifyWorkspaceProfilePicture({
+          workspaceId: workspace.id,
+          attachmentUuid: profilePicture.id,
+        }).unwrap();
+        const blobUrl = URL.createObjectURL(selectedFile);
+        dispatch(
+          addProfilePicture({
+            id: profilePicture.id,
+            url: blobUrl,
+          }),
+        );
       }
-
       const modifiedWorkspace: Partial<WorkspaceDto> = {
         id: workspace.id,
         name: workspaceName,
         description: workspaceDescription,
       };
-      if (workspaceProfilePictureId) {
-        modifiedWorkspace.profilePictureId = workspaceProfilePictureId;
-      }
 
       const newWorkspaceInfos =
         await modifyWorkspaceQuery(modifiedWorkspace).unwrap();
