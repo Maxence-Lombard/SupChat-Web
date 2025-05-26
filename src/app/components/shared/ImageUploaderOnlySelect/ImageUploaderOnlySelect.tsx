@@ -1,14 +1,16 @@
 import "./ImageUploaderOnlySelect.css";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface ImageUploaderProps {
   onImageSelected?: (file: File) => void;
   imageUrl: string;
+  onPreviewUrlChange: (url: string) => void;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   onImageSelected,
   imageUrl,
+  onPreviewUrlChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(imageUrl);
@@ -18,11 +20,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
       onImageSelected?.(file);
+      onPreviewUrlChange(url);
     }
   };
   const handleClick = () => fileInputRef.current?.click();
+
+  useEffect(() => {
+    if (imageUrl) {
+      setPreviewUrl(imageUrl);
+    }
+  }, [imageUrl]);
 
   return (
     <div className="flex items-center gap-4">

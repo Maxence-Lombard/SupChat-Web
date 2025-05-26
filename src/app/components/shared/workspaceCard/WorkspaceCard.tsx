@@ -1,33 +1,52 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import workspacePH from "../../../../assets/placeholder/workspacePH.svg";
-import {
-  GetWorkspaceResponse,
-  useJoinWorkspaceMutation,
-} from "../../../api/workspaces/workspaces.api.ts";
+import { useJoinWorkspaceMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { addWorkspace } from "../../../store/slices/workspaceSlice.ts";
+import { visibility } from "../../../Models/Enums.ts";
+import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
 
 interface Workspace {
-  workspace: GetWorkspaceResponse;
+  workspaceId: number;
+  workspaceName: string;
+  workspaceDescription: string;
+  profilePictureId: string;
+  joinButtonState: boolean;
+  visibility: visibility;
+  ownerId: number;
+  imagePreview?: string;
 }
 
-function WorkspaceCard({ workspace }: Workspace) {
+function WorkspaceCard(workspace: Workspace) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [AddMemberInWorkspace] = useJoinWorkspaceMutation();
 
+  const profilePicture = useUserProfilePicture(workspace.profilePictureId);
+
   const handleNavigation = () => {
-    navigate(`/workspace/${workspace.id}/channel/1`);
+    navigate(`/workspace/${workspace.workspaceId}/channel/1`);
   };
 
   const handleJoinWorkspace = async () => {
-    if (!workspace.id) {
+    if (!workspace.workspaceId) {
       console.error("Workspace ID is not defined");
       return;
     }
     try {
-      await AddMemberInWorkspace(workspace.id).unwrap();
-      dispatch(addWorkspace(workspace));
+      await AddMemberInWorkspace(workspace.workspaceId).unwrap();
+
+      const workspaceToAdd = {
+        id: workspace.workspaceId,
+        name: workspace.workspaceName,
+        description: workspace.workspaceDescription,
+        visibility: workspace.visibility,
+        visibilityLocalized: workspace.visibility,
+        image: "",
+        profilePictureId: workspace.profilePictureId,
+        ownerId: workspace.ownerId,
+      };
+
+      dispatch(addWorkspace(workspaceToAdd));
       handleNavigation();
     } catch (error) {
       console.log("Error creating channel:", error);
@@ -39,18 +58,18 @@ function WorkspaceCard({ workspace }: Workspace) {
       <div className="flex items-center gap-4">
         <img
           className="w-14 h-14 rounded"
-          src={workspacePH}
-          alt="workspacePH"
+          src={workspace.imagePreview || profilePicture}
+          alt="profilePicture"
         />
         <div className="flex flex-col">
-          <p className="font-semibold"> {workspace.name} </p>
+          <p className="font-semibold"> {workspace.workspaceName} </p>
           <p className="text-[#A0A0A0]"> 5 members </p>
           {/* TODO: change with the get membersByWorkspace route */}
         </div>
       </div>
-      {/* TODO: change with description */}
-      <p className="h-full">{workspace.description}</p>
+      <p className="h-full">{workspace.workspaceDescription}</p>
       <button
+        disabled={!workspace.joinButtonState}
         className="flex self-end gap-2 px-4 py-2 items-center bg-[#687BEC] rounded-lg"
         onClick={handleJoinWorkspace}
       >

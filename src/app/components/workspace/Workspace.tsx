@@ -1,6 +1,5 @@
 // ASSETS
 import user from "../../../assets/placeholder/user4.svg";
-import workspacePH from "../../../assets/placeholder/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import { AvatarGroup } from "primereact/avatargroup";
@@ -18,6 +17,7 @@ import { addChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
 import Channel from "../channel/Channel.tsx";
 import { useGetChannelByIdQuery } from "../../api/channels/channels.api.ts";
+import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -31,8 +31,6 @@ function Workspace() {
     Number(channelId),
   );
   const [fetchChannelInfo, setFetchChannelInfo] = useState<boolean>(false);
-  const [workspaceProfilePicture, setWorkspaceProfilePicture] =
-    useState<string>(workspacePH);
 
   const channelsFromStore = useSelector(
     (state: RootState) => state.channels.byWorkspaceId,
@@ -58,12 +56,11 @@ function Workspace() {
     { skip: skipFetchChannelInfo },
   );
 
+  const workspaceProfilePicture = useUserProfilePicture(
+    workspace?.profilePictureId ?? "",
+  );
+
   useEffect(() => {
-    if (workspace && profilePictureUrls[workspace.profilePictureId]) {
-      setWorkspaceProfilePicture(
-        profilePictureUrls[workspace.profilePictureId],
-      );
-    }
     if (isSuccess && channels) {
       channels.forEach((channel) => {
         dispatch(addChannel(channel));

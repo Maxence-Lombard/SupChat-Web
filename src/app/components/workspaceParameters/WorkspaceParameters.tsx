@@ -40,12 +40,17 @@ function WorkspaceParameters() {
 
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
+  const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
+    useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const resetWorkspaceInfos = () => {
     if (!workspace) return;
     setWorkspaceName(workspace.name);
     setWorkspaceDescription(workspace.description);
+    setWorkspaceProfilePictureId(workspace.profilePictureId || "");
+    setPreviewUrl(undefined);
     setSelectedFile(null);
   };
 
@@ -74,6 +79,7 @@ function WorkspaceParameters() {
           workspaceId: workspace.id,
           attachmentUuid: profilePicture.id,
         }).unwrap();
+        setWorkspaceProfilePictureId(profilePicture.id);
         const blobUrl = URL.createObjectURL(selectedFile);
         dispatch(
           addProfilePicture({
@@ -103,6 +109,8 @@ function WorkspaceParameters() {
     if (workspace) {
       setWorkspaceName(workspace.name);
       setWorkspaceDescription(workspace.description);
+      setWorkspaceProfilePictureId(workspace.profilePictureId || "");
+      setPreviewUrl(undefined);
     }
   }, [workspace, profilePictureUrls]);
 
@@ -147,10 +155,24 @@ function WorkspaceParameters() {
                     </p>
                     <ImageUploaderOnlySelect
                       onImageSelected={(file) => setSelectedFile(file)}
-                      imageUrl={workspaceProfilePicture}
+                      imageUrl={previewUrl ?? workspaceProfilePicture}
+                      onPreviewUrlChange={(url) => {
+                        setPreviewUrl(url);
+                      }}
                     />
                   </div>
-                  {workspace && <WorkspaceCard workspace={workspace} />}
+                  {workspace ? (
+                    <WorkspaceCard
+                      workspaceId={workspace.id}
+                      workspaceName={workspaceName}
+                      workspaceDescription={workspaceDescription}
+                      visibility={workspace.visibility}
+                      profilePictureId={workspaceProfilePictureId}
+                      ownerId={workspace.ownerId}
+                      imagePreview={previewUrl}
+                      joinButtonState={false}
+                    />
+                  ) : null}
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="flex" htmlFor="name">
