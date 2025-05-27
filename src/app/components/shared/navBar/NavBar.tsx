@@ -85,7 +85,7 @@ function NavBar() {
         dispatch(setProfilePicture({ id: workspacePPId, url }));
       } catch (error) {
         profilePictures[workspace.id] = workspacePH;
-        console.log("Error downloading file:", error);
+        return error;
       }
     }
     setWorkspaceImage(profilePictures);
@@ -110,6 +110,7 @@ function NavBar() {
             <i className="pi pi-cog text-2xl  cursor-pointer" />
           </div>
           <hr className="w-full border border-black/50 " />
+          {/* TODO: régler pb de liste workspace pas scrollable */}
           <div className="flex flex-col items-center gap-4 h-full overflow-y-auto">
             {workspaces?.map((workspace) => (
               <img

@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  useDeleteWorkspaceMutation,
   useGetFirstChannelMutation,
   useGetWorkspaceByIdQuery,
   useModifyWorkspaceMutation,
@@ -15,7 +16,10 @@ import { InputText } from "primereact/inputtext";
 import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUploaderOnlySelect.tsx";
 import { attachmentType } from "../../Models/Enums.ts";
 import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
-import { modifyWorkspaceData } from "../../store/slices/workspaceSlice.ts";
+import {
+  modifyWorkspaceData,
+  removeWorkspace,
+} from "../../store/slices/workspaceSlice.ts";
 import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
 
 function WorkspaceParameters() {
@@ -29,6 +33,7 @@ function WorkspaceParameters() {
   const [modifyWorkspaceQuery] = useModifyWorkspaceMutation();
   const [modifyWorkspaceProfilePicture] =
     useModifyWorkspaceProfilePictureMutation();
+  const [deleteWorkspace] = useDeleteWorkspaceMutation();
 
   const profilePictureUrls = useSelector(
     (state: RootState) => state.profilePictures,
@@ -105,6 +110,19 @@ function WorkspaceParameters() {
     }
   };
 
+  const handleDeleteWorkspace = async (workspaceId: number) => {
+    if (!workspaceId) return;
+    console.log("Deleting workspace with ID:", workspaceId);
+    try {
+      deleteWorkspace(workspaceId).unwrap();
+      dispatch(removeWorkspace(workspaceId));
+      navigate("/");
+      console.log("Workspace deleted successfully");
+    } catch (error) {
+      console.error("Error deleting workspace:", error);
+    }
+  };
+
   useEffect(() => {
     if (workspace) {
       setWorkspaceName(workspace.name);
@@ -136,7 +154,12 @@ function WorkspaceParameters() {
                   </p>
                   <p className="cursor-pointer px-2 "> Roles </p>
                 </div>
-                <div className="flex gap-2 items-center text-red-500 cursor-pointer">
+                <div
+                  className="flex gap-2 items-center text-red-500 cursor-pointer"
+                  onClick={() => {
+                    handleDeleteWorkspace(Number(workspaceId));
+                  }}
+                >
                   <p> Delete Workspace </p>
                   <i className="pi pi-trash"></i>
                 </div>

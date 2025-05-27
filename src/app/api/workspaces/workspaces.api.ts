@@ -190,9 +190,19 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     // DELETE
-    deleteWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
+    leaveWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
-        url: `/api/Workspace/${data.id}`,
+        url: `/api/Workspace/${data.id}/Leave`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    deleteWorkspace: builder.mutation<undefined, number>({
+      query: (workspaceId) => ({
+        url: `/api/Workspace/${workspaceId}`,
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -215,5 +225,6 @@ export const {
   useJoinWorkspaceMutation,
   useModifyWorkspaceMutation,
   useModifyWorkspaceProfilePictureMutation,
+  useLeaveWorkspaceMutation,
   useDeleteWorkspaceMutation,
 } = WorkspaceApi;

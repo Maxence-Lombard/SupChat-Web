@@ -33,9 +33,18 @@ export const workspacesSlice = createSlice({
         };
       }
     },
+    removeWorkspace: (state, action: PayloadAction<number>) => {
+      state.list = state.list.filter(
+        (workspace) => workspace.id !== action.payload,
+      );
+    },
   },
 });
 
-export const { addWorkspace, setWorkspaces, modifyWorkspaceData } =
-  workspacesSlice.actions;
+export const {
+  addWorkspace,
+  setWorkspaces,
+  modifyWorkspaceData,
+  removeWorkspace,
+} = workspacesSlice.actions;
 export default workspacesSlice.reducer;
