@@ -112,14 +112,12 @@ function WorkspaceParameters() {
 
   const handleDeleteWorkspace = async (workspaceId: number) => {
     if (!workspaceId) return;
-    console.log("Deleting workspace with ID:", workspaceId);
     try {
       deleteWorkspace(workspaceId).unwrap();
       dispatch(removeWorkspace(workspaceId));
       navigate("/");
-      console.log("Workspace deleted successfully");
     } catch (error) {
-      console.error("Error deleting workspace:", error);
+      return error;
     }
   };
 
