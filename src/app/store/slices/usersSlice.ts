@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../../Models/User.ts";
+import { ApplicationUser } from "../../Models/User.ts";
 
 type UsersState = {
-  byId: Record<string, Partial<User>>;
-  allIds: string[];
-  currentUserId?: string;
+  byId: Record<string, Partial<ApplicationUser>>;
+  allIds: number[];
+  currentUserId?: number;
 };
 
 const initialState: UsersState = {
@@ -17,34 +17,32 @@ const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    addUser: (state, action: PayloadAction<User>) => {
+    addUser: (state, action: PayloadAction<ApplicationUser>) => {
       const user = action.payload;
-      const userId = String(user.applicationUser.id);
+      const userId = user.id;
       if (state.allIds.includes(userId)) return;
       if (userId === state.currentUserId) {
-        state.byId[user.applicationUser.id] = user;
+        state.byId[user.id] = user;
       } else {
-        state.byId[user.applicationUser.id] = {
-          id: userId,
-          applicationUser: user.applicationUser,
+        state.byId[user.id] = {
+          ...user,
         };
       }
       state.allIds.push(userId);
     },
-    updateUser: (state, action: PayloadAction<User>) => {
+    updateUser: (state, action: PayloadAction<ApplicationUser>) => {
       const user = action.payload;
-      const userId = String(user.applicationUser.id);
-      if (!user.applicationUser.id) return;
+      const userId = user.id;
+      if (!user.id) return;
       if (userId === state.currentUserId) {
-        state.byId[user.applicationUser.id] = user;
+        state.byId[user.id] = user;
       } else {
-        state.byId[user.applicationUser.id] = {
-          id: userId,
-          applicationUser: user.applicationUser,
+        state.byId[user.id] = {
+          ...user,
         };
       }
     },
-    setCurrentUserId: (state, action: PayloadAction<string>) => {
+    setCurrentUserId: (state, action: PayloadAction<number>) => {
       state.currentUserId = action.payload;
     },
     clearUserInfos: () => initialState,

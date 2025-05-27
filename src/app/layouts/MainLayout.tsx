@@ -23,8 +23,8 @@ function MainLayout() {
 
   const handleUserInfos = () => {
     if (userInfos) {
-      dispatch(setCurrentUserId(String(userInfos.applicationUser.id)));
-      dispatch(addUser(userInfos));
+      dispatch(setCurrentUserId(userInfos.applicationUser.id));
+      dispatch(addUser(userInfos.applicationUser));
     }
   };
 

@@ -4,9 +4,8 @@ import { RootState } from "../../../store/store.ts";
 import { Message } from "../../../api/messages/messages.api.ts";
 import { useEffect, useState } from "react";
 import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
-import { User } from "../../../Models/User.ts";
+import { ApplicationUser } from "../../../Models/User.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
-import { mapUser } from "../../../api/utils/mapUser.ts";
 import { addUser } from "../../../store/slices/usersSlice.ts";
 
 type MessageProps = {
@@ -26,9 +25,11 @@ function MessageItem({
     (state: RootState) => state.users.byId[message.senderId],
   );
 
-  const [user, setUser] = useState<Partial<User> | undefined>(storeUser);
+  const [user, setUser] = useState<Partial<ApplicationUser> | undefined>(
+    storeUser,
+  );
   const [profilePictureId, setProfilePictureId] = useState<string>(
-    user?.applicationUser?.profilePictureId || "",
+    user?.profilePictureId || "",
   );
 
   const { formatDate } = useDateFormatter();
@@ -39,10 +40,9 @@ function MessageItem({
       getUserInfos(message.senderId)
         .unwrap()
         .then((data) => {
-          const mappedUser = mapUser(data);
-          setUser(mappedUser);
-          setProfilePictureId(mappedUser.applicationUser.profilePictureId);
-          dispatch(addUser(mappedUser));
+          setUser(data);
+          setProfilePictureId(data.profilePictureId);
+          dispatch(addUser(data));
         });
     }
   }, [storeUser, message.senderId]);

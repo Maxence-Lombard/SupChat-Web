@@ -19,12 +19,10 @@ function Channel() {
 
   const currentUserPPId = useSelector(
     (state: RootState) =>
-      state.users.byId[state.users.currentUserId!]?.applicationUser
-        ?.profilePictureId,
+      state.users.byId[state.users.currentUserId!]?.profilePictureId,
   );
   const currentUserId = useSelector(
-    (state: RootState) =>
-      state.users.byId[state.users.currentUserId!]?.applicationUser?.id,
+    (state: RootState) => state.users.byId[state.users.currentUserId!]?.id,
   );
 
   const currentUserImage = useProfilePicture(currentUserPPId || "");

@@ -22,8 +22,7 @@ function NavBar() {
   );
   const userProfilePictureId = useSelector(
     (state: RootState) =>
-      state.users.byId[state.users.currentUserId!]?.applicationUser
-        ?.profilePictureId,
+      state.users.byId[state.users.currentUserId!]?.profilePictureId,
   );
 
   const [newWorkspaceVisible, setNewWorkspaceVisible] =

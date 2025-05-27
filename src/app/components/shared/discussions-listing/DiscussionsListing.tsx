@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useGetUserWithMessagesQuery } from "../../../api/user/user.api.ts";
 import { addUser } from "../../../store/slices/usersSlice.ts";
 import { useDispatch } from "react-redux";
-import { mapUser } from "../../../api/utils/mapUser.ts";
 
 function DiscussionsListing() {
   const [search, setSearch] = useState<string>("");
@@ -14,7 +13,7 @@ function DiscussionsListing() {
   useEffect(() => {
     if (users) {
       for (const user of users) {
-        dispatch(addUser(mapUser(user)));
+        dispatch(addUser(user));
       }
     }
   }, [users]);

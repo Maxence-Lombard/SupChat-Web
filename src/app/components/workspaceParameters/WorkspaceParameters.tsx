@@ -220,7 +220,7 @@ function WorkspaceParameters() {
                   <div className="flex flex-col gap-1">
                     <p> Image </p>
                     <p className="text-black/50">
-                      Use an image of at least 56 × 56 pixels for better
+                      Use an image of at least 256 × 256 pixels for better
                       quality.
                     </p>
                     {imageErrorMessage ? (
@@ -272,7 +272,7 @@ function WorkspaceParameters() {
                     </label>
                     <p className="text-xs text-black/50">
                       (
-                      {workspaceDescription.length +
+                      {(workspaceDescription?.length || 0) +
                         "/" +
                         maxWorkspaceDescription}
                       )
