@@ -7,8 +7,8 @@ import { RootState } from "../../store/store.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
 import { useEffect, useRef, useState } from "react";
 import { addMessage } from "../../store/slices/messageSlice.ts";
-import useUserProfilePicture from "../../hooks/useUserProfilePicture.tsx";
-import MessageItem from "../shared/message/MessageItem.tsx";
+import useProfilePicture from "../../hooks/useProfilePicture.tsx";
+import MessageItem from "../shared/messageItem/MessageItem.tsx";
 
 function Channel() {
   const { channelId } = useParams();
@@ -27,7 +27,7 @@ function Channel() {
       state.users.byId[state.users.currentUserId!]?.applicationUser?.id,
   );
 
-  const currentUserImage = useUserProfilePicture(currentUserPPId || "");
+  const currentUserImage = useProfilePicture(currentUserPPId || "");
 
   const { data: oldMessages } = useGetMessagesByChannelIdQuery(
     Number(channelId),

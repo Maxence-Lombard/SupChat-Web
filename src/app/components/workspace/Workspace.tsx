@@ -1,6 +1,5 @@
 // ASSETS
 import user from "../../../assets/placeholder/user4.svg";
-import workspacePH from "../../../assets/placeholder/workspacePH.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import { AvatarGroup } from "primereact/avatargroup";
@@ -18,22 +17,25 @@ import { addChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
 import Channel from "../channel/Channel.tsx";
 import { useGetChannelByIdQuery } from "../../api/channels/channels.api.ts";
+import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { workspaceId } = useParams();
+  const { channelId } = useParams();
   const [search, setSearch] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
-  const [currentChannelId, setCurrentChannelId] = useState<number>(1);
+  const [currentChannelId, setCurrentChannelId] = useState<number>(
+    Number(channelId),
+  );
   const [fetchChannelInfo, setFetchChannelInfo] = useState<boolean>(false);
-  const [workspaceProfilePicture, setWorkspaceProfilePicture] =
-    useState<string>(workspacePH);
 
   const channelsFromStore = useSelector(
     (state: RootState) => state.channels.byWorkspaceId,
   );
+  const userId = useSelector((state: RootState) => state.users.currentUserId);
   const workspaceChannels = Object.values(channelsFromStore).filter(
     (channel) => channel.workspaceId === Number(workspaceId),
   );
@@ -54,22 +56,25 @@ function Workspace() {
     { skip: skipFetchChannelInfo },
   );
 
+  const workspaceProfilePicture = useProfilePicture(
+    workspace?.profilePictureId ?? "",
+  );
+
   useEffect(() => {
-    if (workspace && profilePictureUrls[workspace.profilePictureId]) {
-      setWorkspaceProfilePicture(
-        profilePictureUrls[workspace.profilePictureId],
-      );
-    }
     if (isSuccess && channels) {
       channels.forEach((channel) => {
         dispatch(addChannel(channel));
       });
     }
-  }, [isSuccess, channels, dispatch, workspace]);
+  }, [isSuccess, channels, dispatch, workspace, profilePictureUrls]);
 
   const handleChannelNavigate = (channelId: number) => {
     setCurrentChannelId(channelId);
     navigate(`/workspace/${workspaceId}/channel/${channelId}`);
+  };
+
+  const handleWorkspaceParametersNavigate = (workspaceId: number) => {
+    navigate(`/workspace/settings/${workspaceId}`);
   };
 
   return (
@@ -96,9 +101,18 @@ function Workspace() {
               />
               <div className="flex flex-col h-full gap-auto">
                 <p className="font-semibold"> {workspace?.name} </p>
-                <div className="flex items-center gap-1">
-                  <p className="text-black/50">Settings</p>
-                  <i className="pi pi-cog text-black/50" />
+                <div
+                  className="flex items-center gap-1 cursor-pointer"
+                  onClick={() =>
+                    handleWorkspaceParametersNavigate(Number(workspaceId))
+                  }
+                >
+                  {userId === workspace?.ownerId ? (
+                    <>
+                      <p className="text-black/50">Settings</p>
+                      <i className="pi pi-cog text-black/50" />
+                    </>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -120,6 +134,7 @@ function Workspace() {
                       <p className="font-semibold text-[#6B8AFD]">Channels</p>
                     </div>
                     <div className="flex flex-col gap-3">
+                      {/* TODO: ajouter un .filter pr récup uniquement ceux dans lequel il est (workspaceMember) */}
                       {workspaceChannels?.map((channel) => (
                         <div
                           className="flex items-center gap-1 cursor-pointer"

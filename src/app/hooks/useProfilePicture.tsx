@@ -3,9 +3,9 @@ import { useDownloadFileMutation } from "../api/attachments/attachments.api.ts";
 import userPlaceHolder from "../../assets/placeholder/user1.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
-import { setProfilePicture } from "../store/slices/profilePictureSlice.ts";
+import { addProfilePicture } from "../store/slices/profilePictureSlice.ts";
 
-const useUserProfilePicture = (profilePictureId: string) => {
+const useProfilePicture = (profilePictureId: string) => {
   const dispatch = useDispatch();
   const [userImage, setUserImage] = useState<string>(userPlaceHolder);
   const [GetProfilePicture] = useDownloadFileMutation();
@@ -14,14 +14,14 @@ const useUserProfilePicture = (profilePictureId: string) => {
   );
 
   const setUserProfilePicture = async () => {
-    if (!userImage || !profilePictureId) return;
+    if (!profilePictureId) return;
     if (profilePictureUrls[profilePictureId]) {
       setUserImage(profilePictureUrls[profilePictureId]);
       return;
     }
     const blob = await GetProfilePicture(profilePictureId).unwrap();
     const url = URL.createObjectURL(blob);
-    dispatch(setProfilePicture({ id: profilePictureId, url }));
+    dispatch(addProfilePicture({ id: profilePictureId, url }));
     setUserImage(url);
   };
 
@@ -34,4 +34,4 @@ const useUserProfilePicture = (profilePictureId: string) => {
   return userImage;
 };
 
-export default useUserProfilePicture;
+export default useProfilePicture;

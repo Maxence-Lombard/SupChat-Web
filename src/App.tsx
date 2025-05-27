@@ -14,6 +14,7 @@ import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 import JoinWorkspaces from "./app/components/joinWorkspaces/JoinWorkspaces.tsx";
 import Callback from "./app/components/callback/Callback.tsx";
 import ConfirmEmail from "./app/components/confirmEmail/ConfirmEmail.tsx";
+import WorkspaceParameters from "./app/components/workspaceParameters/WorkspaceParameters.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -41,6 +42,10 @@ function App() {
                 element={<Workspace />}
               />
               <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
+              <Route
+                path="/workspace/settings/:workspaceId"
+                element={<WorkspaceParameters />}
+              />
             </Route>
             <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
             <Route path="/login/callback" element={<Callback />} />

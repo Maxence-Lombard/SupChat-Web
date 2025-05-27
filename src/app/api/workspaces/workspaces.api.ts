@@ -9,8 +9,9 @@ import {
 export type WorkspaceDto = {
   id: number;
   name: string;
-  image?: string;
+  description: string;
   visibility: visibility;
+  profilePictureId: string;
 };
 
 export type CreateWorkspaceDto = {
@@ -34,6 +35,7 @@ export type GetWorkspaceResponse = {
   visibilityLocalized: string;
   ownerId: number;
   profilePictureId: string;
+  description: string;
 };
 
 export const WorkspaceApi = api.injectEndpoints({
@@ -67,6 +69,12 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: (result, error, arg) => [
+        {
+          type: "Workspaces",
+          id: arg,
+        },
+      ],
     }),
 
     getWorkspacesAvailable: builder.query<GetWorkspaceResponse[], undefined>({
@@ -149,7 +157,7 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     // PATCH
-    modifyWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
+    modifyWorkspace: builder.mutation<WorkspaceDto, Partial<WorkspaceDto>>({
       query: (data) => ({
         url: `/api/Workspace/${data.id}`,
         method: "PATCH",
@@ -158,6 +166,8 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: (result, error, arg) =>
+        result?.id ? [{ type: "Workspaces", id: arg.id }] : [],
     }),
 
     modifyWorkspaceProfilePicture: builder.mutation<
@@ -170,7 +180,9 @@ export const WorkspaceApi = api.injectEndpoints({
       query: (data) => ({
         url: `/api/Workspace/${data.workspaceId}/ProfilePicture`,
         method: "PATCH",
-        body: JSON.stringify(data.attachmentUuid),
+        body: {
+          attachmentId: data.attachmentUuid,
+        },
         headers: {
           "Content-Type": "application/json",
         },
@@ -178,9 +190,19 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     // DELETE
-    deleteWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
+    leaveWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
-        url: `/api/Workspace/${data.id}`,
+        url: `/api/Workspace/${data.id}/Leave`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    deleteWorkspace: builder.mutation<undefined, number>({
+      query: (workspaceId) => ({
+        url: `/api/Workspace/${workspaceId}`,
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -203,5 +225,6 @@ export const {
   useJoinWorkspaceMutation,
   useModifyWorkspaceMutation,
   useModifyWorkspaceProfilePictureMutation,
+  useLeaveWorkspaceMutation,
   useDeleteWorkspaceMutation,
 } = WorkspaceApi;

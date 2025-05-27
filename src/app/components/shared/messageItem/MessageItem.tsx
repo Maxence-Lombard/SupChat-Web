@@ -5,7 +5,7 @@ import { Message } from "../../../api/messages/messages.api.ts";
 import { useEffect, useState } from "react";
 import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
 import { User } from "../../../Models/User.ts";
-import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 import { mapUser } from "../../../api/utils/mapUser.ts";
 import { addUser } from "../../../store/slices/usersSlice.ts";
 
@@ -47,7 +47,7 @@ function MessageItem({
     }
   }, [storeUser, message.senderId]);
 
-  const userImage = useUserProfilePicture(profilePictureId);
+  const userImage = useProfilePicture(profilePictureId);
 
   if (message.senderId === currentUserId) {
     return (

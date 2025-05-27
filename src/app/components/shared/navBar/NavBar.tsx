@@ -10,7 +10,7 @@ import { useAuth } from "../../../hooks/useAuth.tsx";
 import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
 import { setProfilePicture } from "../../../store/slices/profilePictureSlice.ts";
-import useUserProfilePicture from "../../../hooks/useUserProfilePicture.tsx";
+import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
 function NavBar() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ function NavBar() {
   const [workspaceImage, setWorkspaceImage] = useState<{
     [id: number]: string;
   }>({});
-  const userImage = useUserProfilePicture(userProfilePictureId || "");
+  const userImage = useProfilePicture(userProfilePictureId || "");
 
   const { logout } = useAuth();
   const [GetProfilePicture] = useDownloadFileMutation();
@@ -62,7 +62,7 @@ function NavBar() {
   const navigateToWorkspace = async (id: number) => {
     try {
       const channel = await GetFirstChannel(id).unwrap();
-      navigate(`/workspace/${channel.workspaceId}/channel/${channel!.id}`);
+      navigate(`/workspace/${channel.workspaceId}/channel/${channel.id}`);
     } catch (error) {
       console.error("Error fetching first channel:", error);
     }
@@ -85,7 +85,7 @@ function NavBar() {
         dispatch(setProfilePicture({ id: workspacePPId, url }));
       } catch (error) {
         profilePictures[workspace.id] = workspacePH;
-        console.log("Error downloading file:", error);
+        return error;
       }
     }
     setWorkspaceImage(profilePictures);
@@ -110,6 +110,7 @@ function NavBar() {
             <i className="pi pi-cog text-2xl  cursor-pointer" />
           </div>
           <hr className="w-full border border-black/50 " />
+          {/* TODO: régler pb de liste workspace pas scrollable */}
           <div className="flex flex-col items-center gap-4 h-full overflow-y-auto">
             {workspaces?.map((workspace) => (
               <img
