@@ -107,7 +107,7 @@ function Workspace() {
                     handleWorkspaceParametersNavigate(Number(workspaceId))
                   }
                 >
-                  {userId === workspace?.ownerId ? (
+                  {Number(userId) === workspace?.ownerId ? (
                     <>
                       <p className="text-black/50">Settings</p>
                       <i className="pi pi-cog text-black/50" />
