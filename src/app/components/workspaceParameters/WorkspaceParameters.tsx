@@ -101,7 +101,7 @@ function WorkspaceParameters() {
       return;
     }
 
-    if (workspaceDescription.length > 500) {
+    if (workspaceDescription?.length > 500) {
       setDescriptionInputErrorMessage(
         "The workspace description must be less than 500 characters.",
       );
@@ -272,7 +272,7 @@ function WorkspaceParameters() {
                     </label>
                     <p className="text-xs text-black/50">
                       (
-                      {(workspaceDescription?.length || 0) +
+                      {(workspaceDescription?.length ?? 0) +
                         "/" +
                         maxWorkspaceDescription}
                       )
