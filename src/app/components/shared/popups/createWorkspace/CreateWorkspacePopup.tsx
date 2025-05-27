@@ -39,16 +39,14 @@ function CreateWorkspacePopup({
   const handleCreateWorkspace = async () => {
     setErrorMessage(undefined);
     if (!newWorkspaceName || newWorkspaceName.trim() === "") {
-      console.error("Le nom du workspace est manquant.");
       setInputErrorMessage("You must provide a name for the workspace.");
       return;
     }
     setInputErrorMessage(undefined);
 
-    if (newWorkspaceName.length > 100) {
-      console.log("Le nom du workspace est trop long.");
+    if (newWorkspaceName.length > 50) {
       setInputErrorMessage(
-        "The workspace name must be less than 100 characters.",
+        "The workspace name must be less than 50 characters.",
       );
       return;
     }
