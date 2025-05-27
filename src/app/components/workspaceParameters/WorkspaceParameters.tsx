@@ -1,4 +1,10 @@
+import { InputText } from "primereact/inputtext";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ErrorResponse, useNavigate, useParams } from "react-router-dom";
+import workspacePH from "../../../assets/placeholder/workspacePH.svg";
+import { attachmentType } from "../../Models/Enums.ts";
+import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
 import {
   useDeleteWorkspaceMutation,
   useGetFirstChannelMutation,
@@ -7,20 +13,14 @@ import {
   useModifyWorkspaceProfilePictureMutation,
   WorkspaceDto,
 } from "../../api/workspaces/workspaces.api.ts";
-import { useEffect, useState } from "react";
-import workspacePH from "../../../assets/placeholder/workspacePH.svg";
-import { RootState } from "../../store/store.ts";
-import { useDispatch, useSelector } from "react-redux";
-import WorkspaceCard from "../shared/workspaceCard/WorkspaceCard.tsx";
-import { InputText } from "primereact/inputtext";
-import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUploaderOnlySelect.tsx";
-import { attachmentType } from "../../Models/Enums.ts";
-import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
+import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
 import {
   modifyWorkspaceData,
   removeWorkspace,
 } from "../../store/slices/workspaceSlice.ts";
-import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
+import { RootState } from "../../store/store.ts";
+import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUploaderOnlySelect.tsx";
+import WorkspaceCard from "../shared/workspaceCard/WorkspaceCard.tsx";
 
 function WorkspaceParameters() {
   const { workspaceId } = useParams();
@@ -272,7 +272,7 @@ function WorkspaceParameters() {
                     </label>
                     <p className="text-xs text-black/50">
                       (
-                      {workspaceDescription.length +
+                      {workspaceDescription?.length ?? 0 +
                         "/" +
                         maxWorkspaceDescription}
                       )
