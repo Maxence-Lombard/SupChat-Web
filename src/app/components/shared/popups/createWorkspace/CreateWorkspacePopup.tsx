@@ -9,6 +9,7 @@ import { attachmentType, visibility } from "../../../../Models/Enums.ts";
 import { useDispatch } from "react-redux";
 import { addWorkspace } from "../../../../store/slices/workspaceSlice.ts";
 import { useUploadFileMutation } from "../../../../api/attachments/attachments.api.ts";
+import { ErrorResponse } from "../../../../Models/Error.ts";
 
 interface CreateWorkspacePopupProps {
   hide: () => void;
@@ -20,6 +21,15 @@ function CreateWorkspacePopup({
   onWorkspaceCreated,
 }: CreateWorkspacePopupProps) {
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [inputErrorMessage, setInputErrorMessage] = useState<
+    string | undefined
+  >(undefined);
+  const [imageErrorMessage, setImageErrorMessage] = useState<
+    string | undefined
+  >(undefined);
   const [newWorkspaceName, setNewWorkspaceName] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -27,29 +37,50 @@ function CreateWorkspacePopup({
   const [uploadProfilePictureRequest] = useUploadFileMutation();
 
   const handleCreateWorkspace = async () => {
+    setErrorMessage(undefined);
     if (!newWorkspaceName || newWorkspaceName.trim() === "") {
-      console.error("Le nom du workspace est manquant.");
-      return;
-    }
-    if (!selectedFile) {
-      console.error("Le fichier d'image est manquant.");
+      setInputErrorMessage("You must provide a name for the workspace.");
       return;
     }
 
-    const newProfilePicture = {
-      type: attachmentType.profilePicture,
-      file: selectedFile,
-    };
+    if (newWorkspaceName.length > 50) {
+      setInputErrorMessage(
+        "The workspace name must be less than 50 characters.",
+      );
+      return;
+    }
+    setInputErrorMessage(undefined);
 
     try {
-      const profilePicture =
-        await uploadProfilePictureRequest(newProfilePicture).unwrap();
+      let profilePictureId: string | undefined = undefined;
+      if (selectedFile) {
+        if (
+          selectedFile.type === "image/png" ||
+          selectedFile.type === "image/jpg" ||
+          selectedFile.type === "image/jpeg" ||
+          selectedFile.type === "image/webp"
+        ) {
+          const newProfilePicture = {
+            type: attachmentType.profilePicture,
+            file: selectedFile,
+          };
+          const profilePicture =
+            await uploadProfilePictureRequest(newProfilePicture).unwrap();
+          profilePictureId = profilePicture.id;
+          setImageErrorMessage(undefined);
+        } else {
+          setImageErrorMessage("The image must be a PNG, JPG, JPEG, or WEBP.");
+          return;
+        }
+      }
 
       const newWorkspace: CreateWorkspaceDto = {
         name: newWorkspaceName,
-        profilePictureId: profilePicture.id,
         visibility: isPublic ? visibility.public : visibility.private,
       };
+      if (profilePictureId) {
+        newWorkspace.profilePictureId = profilePictureId;
+      }
 
       const createdWorkspace =
         await createWorkspaceRequest(newWorkspace).unwrap();
@@ -57,8 +88,9 @@ function CreateWorkspacePopup({
       dispatch(addWorkspace(createdWorkspace));
       onWorkspaceCreated();
       hide();
-    } catch (error) {
-      console.error("Error creating workspace:", error);
+    } catch (e) {
+      const error = e as ErrorResponse;
+      setErrorMessage(error.data.detail);
     }
   };
 
@@ -70,6 +102,9 @@ function CreateWorkspacePopup({
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-1">
               <label htmlFor="createWorkspace">Name of the workspace</label>
+              {inputErrorMessage ? (
+                <p className="text-xs text-red-500"> {inputErrorMessage}</p>
+              ) : null}
               <InputText
                 id="createWorkspace"
                 className="w-full border rounded border-black px-2 py-1"
@@ -81,6 +116,9 @@ function CreateWorkspacePopup({
 
             <div className="flex flex-col gap-2">
               <label htmlFor="addImage">Image of the workspace</label>
+              {imageErrorMessage ? (
+                <p className="text-xs text-red-500"> {imageErrorMessage}</p>
+              ) : null}
               <ImageUploader
                 onImageSelected={(file) => setSelectedFile(file)}
               />
@@ -101,25 +139,29 @@ function CreateWorkspacePopup({
               />
             </div>
           </div>
-
-          <div className="flex self-end gap-4">
-            <button
-              className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
-              onClick={() => hide()}
-            >
-              <i
-                className="pi pi-times"
-                style={{ color: "var(--primary-color)" }}
-              ></i>
-              <p className="text-[#687BEC]">Cancel</p>
-            </button>
-            <button
-              className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-              onClick={() => handleCreateWorkspace()}
-            >
-              <i className="pi pi-plus text-white"></i>
-              <p className="text-white">Create the workspace</p>
-            </button>
+          <div className="flex flex-col gap-2">
+            {errorMessage ? (
+              <p className="text-xs text-red-500 self-end"> {errorMessage}</p>
+            ) : null}
+            <div className="flex self-end gap-4">
+              <button
+                className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
+                onClick={() => hide()}
+              >
+                <i
+                  className="pi pi-times"
+                  style={{ color: "var(--primary-color)" }}
+                ></i>
+                <p className="text-[#687BEC]">Cancel</p>
+              </button>
+              <button
+                className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                onClick={() => handleCreateWorkspace()}
+              >
+                <i className="pi pi-plus text-white"></i>
+                <p className="text-white">Create the workspace</p>
+              </button>
+            </div>
           </div>
         </div>
       </div>

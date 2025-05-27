@@ -16,9 +16,8 @@ export type WorkspaceDto = {
 
 export type CreateWorkspaceDto = {
   name: string;
-  image?: string;
   visibility: visibility;
-  profilePictureId: string;
+  profilePictureId?: string;
 };
 
 export type addMemberDto = {

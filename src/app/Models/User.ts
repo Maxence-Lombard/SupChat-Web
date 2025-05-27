@@ -1,5 +1,5 @@
 import { status, theme } from "./Enums.ts";
-import { GetUserMpResponse } from "../api/user/user.api.ts";
+import { UserMpDto } from "../api/user/user.api.ts";
 
 export interface UserInitialState {
   id?: string;
@@ -62,5 +62,5 @@ export interface User {
 }
 
 export interface UserProps {
-  user: GetUserMpResponse;
+  user: UserMpDto;
 }

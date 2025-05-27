@@ -30,7 +30,8 @@ function NavBar() {
     useState<boolean>(false);
   const [createWorkspaceVisible, setCreateWorkspaceVisible] =
     useState<boolean>(false);
-  const [workspaceImage, setWorkspaceImage] = useState<{
+
+  const [workspaceImages, setWorkspaceImages] = useState<{
     [id: number]: string;
   }>({});
   const userImage = useProfilePicture(userProfilePictureId || "");
@@ -69,26 +70,27 @@ function NavBar() {
   };
 
   const setWorkspaceProfilePicture = async () => {
-    const profilePictures: { [id: number]: string } = {};
+    const images: { [id: number]: string } = {};
     for (const workspace of workspaces) {
-      const workspacePPId = workspace.profilePictureId;
-      if (profilePictureUrls[workspacePPId]) {
-        profilePictures[workspace.id] = profilePictureUrls[workspacePPId];
-        continue;
-      }
-      try {
-        const blob = await GetProfilePicture(
-          workspace.profilePictureId,
-        ).unwrap();
-        const url = URL.createObjectURL(blob);
-        profilePictures[workspace.id] = url;
-        dispatch(setProfilePicture({ id: workspacePPId, url }));
-      } catch (error) {
-        profilePictures[workspace.id] = workspacePH;
-        return error;
+      const workspacePPId = workspace.profilePictureId || undefined;
+      if (workspacePPId && profilePictureUrls[workspacePPId]) {
+        images[workspace.id] = profilePictureUrls[workspacePPId];
+      } else if (workspacePPId) {
+        try {
+          const blob = await GetProfilePicture(workspacePPId).unwrap();
+          const url = URL.createObjectURL(blob);
+          images[workspace.id] = url;
+          dispatch(setProfilePicture({ id: workspacePPId, url }));
+          setWorkspaceImages(images);
+        } catch (error) {
+          images[workspace.id] = workspacePH;
+          return error;
+        }
+      } else {
+        images[workspace.id] = workspacePH;
       }
     }
-    setWorkspaceImage(profilePictures);
+    setWorkspaceImages(images);
   };
 
   useEffect(() => {
@@ -117,7 +119,7 @@ function NavBar() {
                 onClick={() => navigateToWorkspace(workspace.id)}
                 key={workspace.id}
                 className="w-12 h-12 cursor-pointer rounded-lg"
-                src={workspaceImage[workspace.id]}
+                src={workspaceImages[workspace.id]}
                 alt="workspaceImage"
               />
             ))}
