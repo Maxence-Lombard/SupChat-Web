@@ -1,5 +1,5 @@
-import { status, theme } from "./Enums.ts";
 import { UserMpDto } from "../api/user/user.api.ts";
+import { status, theme } from "./Enums.ts";
 
 export interface UserInitialState {
   id?: string;
@@ -42,7 +42,7 @@ export interface ApplicationUser {
   themeLocalized: string;
   language: string;
   languageLocalized: string;
-  profilePictureId: string;
+  profilePictureId?: string;
 }
 
 export interface User {
