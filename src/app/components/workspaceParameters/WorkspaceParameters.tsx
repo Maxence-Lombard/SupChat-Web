@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { ErrorResponse, useNavigate, useParams } from "react-router-dom";
 import {
   useDeleteWorkspaceMutation,
   useGetFirstChannelMutation,
@@ -43,8 +43,22 @@ function WorkspaceParameters() {
       ? profilePictureUrls[workspace.profilePictureId]
       : workspacePH;
 
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [imageErrorMessage, setImageErrorMessage] = useState<
+    string | undefined
+  >(undefined);
+  const [inputErrorMessage, setInputErrorMessage] = useState<
+    string | undefined
+  >(undefined);
+  const [descriptionErrorMessage, setDescriptionInputErrorMessage] = useState<
+    string | undefined
+  >(undefined);
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
+  const [maxWorkspaceDescription, setMaxWorkspaceDescription] =
+    useState<string>(500);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
     useState<string>("");
@@ -57,6 +71,12 @@ function WorkspaceParameters() {
     setWorkspaceProfilePictureId(workspace.profilePictureId || "");
     setPreviewUrl(undefined);
     setSelectedFile(null);
+
+    //Reset error messages
+    setErrorMessage(undefined);
+    setImageErrorMessage(undefined);
+    setInputErrorMessage(undefined);
+    setDescriptionInputErrorMessage(undefined);
   };
 
   const navigateToWorkspace = async (id: number) => {
@@ -69,29 +89,57 @@ function WorkspaceParameters() {
   };
 
   const modifyWorkspace = async () => {
-    if (!workspace || !workspaceName || !workspaceDescription) return;
+    if (!workspaceName || workspaceName.trim() === "") {
+      setInputErrorMessage("You must provide a name for the workspace.");
+      return;
+    }
+
+    if (workspaceName.length > 50) {
+      setInputErrorMessage(
+        "The workspace name must be less than 50 characters.",
+      );
+      return;
+    }
+
+    if (workspaceDescription.length > 500) {
+      setDescriptionInputErrorMessage(
+        "The workspace description must be less than 500 characters.",
+      );
+      return;
+    }
+    setInputErrorMessage(undefined);
 
     try {
       if (selectedFile) {
-        const newProfilePicture = {
-          type: attachmentType.profilePicture,
-          file: selectedFile,
-        };
+        if (
+          selectedFile.type === "image/png" ||
+          selectedFile.type === "image/jpg" ||
+          selectedFile.type === "image/jpeg" ||
+          selectedFile.type === "image/webp"
+        ) {
+          const newProfilePicture = {
+            type: attachmentType.profilePicture,
+            file: selectedFile,
+          };
 
-        const profilePicture =
-          await uploadProfilePictureRequest(newProfilePicture).unwrap();
-        await modifyWorkspaceProfilePicture({
-          workspaceId: workspace.id,
-          attachmentUuid: profilePicture.id,
-        }).unwrap();
-        setWorkspaceProfilePictureId(profilePicture.id);
-        const blobUrl = URL.createObjectURL(selectedFile);
-        dispatch(
-          addProfilePicture({
-            id: profilePicture.id,
-            url: blobUrl,
-          }),
-        );
+          const profilePicture =
+            await uploadProfilePictureRequest(newProfilePicture).unwrap();
+          await modifyWorkspaceProfilePicture({
+            workspaceId: workspace.id,
+            attachmentUuid: profilePicture.id,
+          }).unwrap();
+          setWorkspaceProfilePictureId(profilePicture.id);
+          const blobUrl = URL.createObjectURL(selectedFile);
+          dispatch(
+            addProfilePicture({
+              id: profilePicture.id,
+              url: blobUrl,
+            }),
+          );
+        } else {
+          setImageErrorMessage("The image must be a PNG, JPG, JPEG, or WEBP.");
+          return;
+        }
       }
       const modifiedWorkspace: Partial<WorkspaceDto> = {
         id: workspace.id,
@@ -116,8 +164,9 @@ function WorkspaceParameters() {
       deleteWorkspace(workspaceId).unwrap();
       dispatch(removeWorkspace(workspaceId));
       navigate("/");
-    } catch (error) {
-      return error;
+    } catch (e) {
+      const error = e as ErrorResponse;
+      setErrorMessage(error.data.detail);
     }
   };
 
@@ -174,6 +223,11 @@ function WorkspaceParameters() {
                       Use an image of at least 56 × 56 pixels for better
                       quality.
                     </p>
+                    {imageErrorMessage ? (
+                      <p className="text-xs text-red-500">
+                        {imageErrorMessage}
+                      </p>
+                    ) : null}
                     <ImageUploaderOnlySelect
                       onImageSelected={(file) => setSelectedFile(file)}
                       imageUrl={previewUrl ?? workspaceProfilePicture}
@@ -199,6 +253,9 @@ function WorkspaceParameters() {
                   <label className="flex" htmlFor="name">
                     Name
                   </label>
+                  {inputErrorMessage ? (
+                    <p className="text-xs text-red-500"> {inputErrorMessage}</p>
+                  ) : null}
                   <InputText
                     name="name"
                     id="name"
@@ -209,9 +266,23 @@ function WorkspaceParameters() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="flex" htmlFor="workspaceDescription">
-                    Description
-                  </label>
+                  <div className="flex gap-1 items-center">
+                    <label className="flex" htmlFor="workspaceDescription">
+                      Description
+                    </label>
+                    <p className="text-xs text-black/50">
+                      (
+                      {workspaceDescription.length +
+                        "/" +
+                        maxWorkspaceDescription}
+                      )
+                    </p>
+                  </div>
+                  {descriptionErrorMessage ? (
+                    <p className="text-xs text-red-500">
+                      {descriptionErrorMessage}
+                    </p>
+                  ) : null}
                   <textarea
                     name="workspaceDescription"
                     id="workspaceDescription"
@@ -223,24 +294,29 @@ function WorkspaceParameters() {
                 </div>
               </div>
               {/* Buttons */}
-              <div className="flex self-end gap-4">
-                <button
-                  className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
-                  onClick={resetWorkspaceInfos}
-                >
-                  <i
-                    className="pi pi-times"
-                    style={{ color: "var(--primary-color)" }}
-                  ></i>
-                  <p className="text-[#687BEC]"> Cancel </p>
-                </button>
-                <button
-                  className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                  onClick={() => modifyWorkspace()}
-                >
-                  <i className="pi pi-save text-white"></i>
-                  <p className="text-white"> Save </p>
-                </button>
+              <div className="flex flex-col gap-2">
+                {errorMessage ? (
+                  <p className="text-xs text-red-500"> {inputErrorMessage}</p>
+                ) : null}
+                <div className="flex self-end gap-4">
+                  <button
+                    className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
+                    onClick={resetWorkspaceInfos}
+                  >
+                    <i
+                      className="pi pi-times"
+                      style={{ color: "var(--primary-color)" }}
+                    ></i>
+                    <p className="text-[#687BEC]"> Cancel </p>
+                  </button>
+                  <button
+                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                    onClick={() => modifyWorkspace()}
+                  >
+                    <i className="pi pi-save text-white"></i>
+                    <p className="text-white"> Save </p>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -42,7 +42,6 @@ function CreateWorkspacePopup({
       setInputErrorMessage("You must provide a name for the workspace.");
       return;
     }
-    setInputErrorMessage(undefined);
 
     if (newWorkspaceName.length > 50) {
       setInputErrorMessage(
@@ -55,7 +54,6 @@ function CreateWorkspacePopup({
     try {
       let profilePictureId: string | undefined = undefined;
       if (selectedFile) {
-        console.log("Selected file type:", selectedFile.type);
         if (
           selectedFile.type === "image/png" ||
           selectedFile.type === "image/jpg" ||
