@@ -1,5 +1,5 @@
 import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUploaderOnlySelect.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RootState } from "../../store/store.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import {
 import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
 import { ApplicationUser } from "../../Models/User.ts";
 import { updateUser } from "../../store/slices/usersSlice.ts";
+import { InputText } from "primereact/inputtext";
 
 function MyProfile() {
   const navigate = useNavigate();
@@ -31,6 +32,13 @@ function MyProfile() {
   const [modifyUserProfilePicture] = useUpdateUserProfilePictureMutation();
   const [modifyUserinfos] = useUpdateUserInfosMutation();
 
+  // USER INPUTS
+  const [userFirstName, setUserFirstName] = useState<string>("");
+  const [userLastName, setUserLastName] = useState<string>("");
+  // ERROR MESSAGES
+  const [inputErrorMessage, setInputErrorMessage] = useState<
+    string | undefined
+  >(undefined);
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [imageErrorMessage, setImageErrorMessage] = useState<
@@ -44,6 +52,8 @@ function MyProfile() {
 
   const resetUserInfos = () => {
     if (!user) return;
+    setUserFirstName(user.firstName || "");
+    setUserLastName(user.lastName || "");
     setPreviewUrl(undefined);
     setSelectedFile(undefined);
 
@@ -53,6 +63,11 @@ function MyProfile() {
   };
 
   const modifyUser = async () => {
+    if (!userFirstName || userFirstName.trim() === "") {
+      setInputErrorMessage("You must provide a first name for your profile.");
+      return;
+    }
+
     try {
       if (selectedFile) {
         if (
@@ -86,7 +101,8 @@ function MyProfile() {
       }
       const modifiedUser: Partial<ApplicationUser> = {
         id: user?.id || 0,
-        firstName: user.firstName,
+        firstName: userFirstName,
+        lastName: userLastName,
       };
 
       const newUserInfos = await modifyUserinfos(modifiedUser).unwrap();
@@ -97,6 +113,14 @@ function MyProfile() {
       return error;
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      setUserFirstName(user.firstName || "");
+      setUserLastName(user.lastName || "");
+      setPreviewUrl(undefined);
+    }
+  }, [user]);
 
   return (
     <>
@@ -122,7 +146,7 @@ function MyProfile() {
                   <i className="pi pi-sign-out" />
                 </div>
                 <div className="flex gap-2 items-center text-red-500 cursor-pointer">
-                  <p> Delete Workspace </p>
+                  <p> Delete Account </p>
                   <i className="pi pi-trash"></i>
                 </div>
               </div>
@@ -152,6 +176,39 @@ function MyProfile() {
                       onPreviewUrlChange={(url) => {
                         setPreviewUrl(url);
                       }}
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex flex-1 flex-col gap-1">
+                    <label className="flex" htmlFor="firstname">
+                      First Name
+                    </label>
+                    {inputErrorMessage ? (
+                      <p className="text-xs text-red-500">
+                        {inputErrorMessage}
+                      </p>
+                    ) : null}
+                    <InputText
+                      name="firstname"
+                      id="firstname"
+                      className="w-full border rounded border-black px-2 py-1"
+                      placeholder="First Name"
+                      value={userFirstName}
+                      onChange={(e) => setUserFirstName(e.target.value ?? "")}
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1">
+                    <label className="flex" htmlFor="lastName">
+                      Last Name
+                    </label>
+                    <InputText
+                      name="lastName"
+                      id="lastName"
+                      className="w-full border rounded border-black px-2 py-1"
+                      placeholder="Last Name"
+                      value={userLastName}
+                      onChange={(e) => setUserLastName(e.target.value ?? "")}
                     />
                   </div>
                 </div>
