@@ -76,54 +76,54 @@ function Channel() {
               currentUserImage={currentUserImage}
             />
           ))}
-          <div className="flex flex-col mt-1 gap-2 w-full">
-            <hr className="flex-1 border border-[#EBEBEB]" />
-            <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
-              <textarea
-                ref={textAreaRef}
-                name="messageInput"
-                id="messageInput"
-                className="messageTextArea"
-                placeholder="Message..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-              />
-              <div className="flex justify-between w-full items-center">
-                <div className="flex gap-4">
-                  <i
-                    className="pi pi-plus-circle text-xl cursor-pointer"
-                    style={{ color: "var(--primary-color)" }}
-                  />
-                  <i
-                    className="pi pi-face-smile text-xl cursor-pointer"
-                    style={{ color: "var(--primary-color)" }}
-                  />
-                  <i
-                    className="pi pi-at text-xl cursor-pointer"
-                    style={{ color: "var(--primary-color)" }}
-                  />
-                </div>
-                <div className="flex gap-2 items-center">
-                  <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
-                    <i className="pi pi-times-circle text-white" />
-                    <p className="text-white">Discard</p>
-                  </button>
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                    onClick={() => {
-                      if (messageInput.trim()) {
-                        sendChannelMessage({
-                          content: messageInput,
-                          channelId: Number(channelId),
-                        });
-                        setMessageInput("");
-                      }
-                    }}
-                  >
-                    <i className="pi pi-send text-white" />
-                    <p className="text-white">Send</p>
-                  </button>
-                </div>
+        </div>
+        <div className="flex flex-col mt-1 gap-2 w-full">
+          <hr className="flex-1 border border-[#EBEBEB]" />
+          <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
+            <textarea
+              ref={textAreaRef}
+              name="messageInput"
+              id="messageInput"
+              className="messageTextArea"
+              placeholder="Message..."
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+            />
+            <div className="flex justify-between w-full items-center">
+              <div className="flex gap-4">
+                <i
+                  className="pi pi-plus-circle text-xl cursor-pointer"
+                  style={{ color: "var(--primary-color)" }}
+                />
+                <i
+                  className="pi pi-face-smile text-xl cursor-pointer"
+                  style={{ color: "var(--primary-color)" }}
+                />
+                <i
+                  className="pi pi-at text-xl cursor-pointer"
+                  style={{ color: "var(--primary-color)" }}
+                />
+              </div>
+              <div className="flex gap-2 items-center">
+                <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
+                  <i className="pi pi-times-circle text-white" />
+                  <p className="text-white">Discard</p>
+                </button>
+                <button
+                  className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                  onClick={() => {
+                    if (messageInput.trim()) {
+                      sendChannelMessage({
+                        content: messageInput,
+                        channelId: Number(channelId),
+                      });
+                      setMessageInput("");
+                    }
+                  }}
+                >
+                  <i className="pi pi-send text-white" />
+                  <p className="text-white">Send</p>
+                </button>
               </div>
             </div>
           </div>

@@ -67,7 +67,11 @@ function WorkspaceCard(workspace: Workspace) {
           {/* TODO: change with the get membersByWorkspace route */}
         </div>
       </div>
-      <p className="h-full">{workspace.workspaceDescription}</p>
+      <div className="flex h-full">
+        <p className="w-full break-words overflow-hidden text-ellipsis line-clamp-3">
+          {workspace.workspaceDescription}
+        </p>
+      </div>
       <button
         disabled={!workspace.joinButtonState}
         className="flex self-end gap-2 px-4 py-2 items-center bg-[#687BEC] rounded-lg"
