@@ -15,6 +15,7 @@ import WorkspaceParameters from "./app/components/workspaceParameters/WorkspaceP
 import AuthLayout from "./app/layouts/AuthLayout.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
+import MyProfile from "./app/components/myProfile/MyProfile.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -46,7 +47,10 @@ function App() {
                 path="/workspace/settings/:workspaceId"
                 element={<WorkspaceParameters />}
               />
+              {/* User settings */}
+              <Route path="/settings/myprofile" element={<MyProfile />} />
             </Route>
+
             <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
             <Route path="/login/callback" element={<Callback />} />
 

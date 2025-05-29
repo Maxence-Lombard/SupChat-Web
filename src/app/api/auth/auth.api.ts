@@ -44,7 +44,6 @@ export const AuthApi = api.injectEndpoints({
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
     register: builder.mutation<RegisterResponse, RegisterDto>({
       query: (data: RegisterDto) => ({
@@ -55,7 +54,6 @@ export const AuthApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
     confirmEmail: builder.mutation<LoginResponse, ConfirmEmailDto>({
       query: (data: ConfirmEmailDto) => ({
@@ -65,7 +63,6 @@ export const AuthApi = api.injectEndpoints({
           code: data.code,
         },
       }),
-      // invalidatesTags: ['Auth'],
     }),
   }),
 });

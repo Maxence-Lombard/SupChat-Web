@@ -57,11 +57,11 @@ function WorkspaceParameters() {
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
   const [maxWorkspaceDescription, setMaxWorkspaceDescription] =
-    useState<string>(500);
+    useState<number>(500);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
     useState<string>("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
 
   const resetWorkspaceInfos = () => {
     if (!workspace) return;
@@ -69,7 +69,7 @@ function WorkspaceParameters() {
     setWorkspaceDescription(workspace.description);
     setWorkspaceProfilePictureId(workspace.profilePictureId || "");
     setPreviewUrl(undefined);
-    setSelectedFile(null);
+    setSelectedFile(undefined);
 
     //Reset error messages
     setErrorMessage(undefined);
@@ -124,7 +124,7 @@ function WorkspaceParameters() {
           const profilePicture =
             await uploadProfilePictureRequest(newProfilePicture).unwrap();
           await modifyWorkspaceProfilePicture({
-            workspaceId: workspace.id,
+            workspaceId: workspace?.id || 0,
             attachmentUuid: profilePicture.id,
           }).unwrap();
           setWorkspaceProfilePictureId(profilePicture.id);
@@ -141,7 +141,7 @@ function WorkspaceParameters() {
         }
       }
       const modifiedWorkspace: Partial<WorkspaceDto> = {
-        id: workspace.id,
+        id: workspace?.id || 0,
         name: workspaceName,
         description: workspaceDescription,
       };
@@ -150,7 +150,7 @@ function WorkspaceParameters() {
         await modifyWorkspaceQuery(modifiedWorkspace).unwrap();
 
       dispatch(modifyWorkspaceData(newWorkspaceInfos));
-      await navigateToWorkspace(workspace.id);
+      await navigateToWorkspace(workspace?.id || 0);
       resetWorkspaceInfos();
     } catch (error) {
       return error;

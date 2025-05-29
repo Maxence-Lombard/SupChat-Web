@@ -29,12 +29,51 @@ export const MessagesApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: (_result, _error, arg) => [
+        {
+          type: "Users",
+          id: arg,
+        },
+      ],
     }),
 
     getUserWithMessages: builder.query<ApplicationUser[], undefined>({
       query: () => ({
         url: "/api/User/Mp",
         method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    // PATCH
+    updateUserInfos: builder.mutation<
+      ApplicationUser,
+      Partial<ApplicationUser>
+    >({
+      query: (data) => ({
+        url: `/api/User/${data.id}`,
+        method: "PATCH",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: (result, _error, arg) =>
+        result?.id ? [{ type: "Users", id: arg.id }] : [],
+    }),
+
+    updateUserProfilePicture: builder.mutation<
+      ApplicationUser,
+      { userId: number; attachmentUuid: string }
+    >({
+      query: (data) => ({
+        url: `/api/User/${data.userId}/ProfilePicture`,
+        method: "PATCH",
+        body: {
+          attachmentId: data.attachmentUuid,
+        },
         headers: {
           "Content-Type": "application/json",
         },
@@ -47,4 +86,6 @@ export const {
   useGetUserInfosQuery,
   useGetUserInfosByIdMutation,
   useGetUserWithMessagesQuery,
+  useUpdateUserInfosMutation,
+  useUpdateUserProfilePictureMutation,
 } = MessagesApi;
