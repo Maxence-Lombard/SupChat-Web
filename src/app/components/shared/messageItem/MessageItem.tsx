@@ -7,6 +7,7 @@ import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
 import { ApplicationUser } from "../../../Models/User.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 import { addUser } from "../../../store/slices/usersSlice.ts";
+import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 type MessageProps = {
   message: Message;
@@ -60,10 +61,10 @@ function MessageItem({
             <p className="text-white">{message.content}</p>
           </div>
         </div>
-        <img
-          src={currentUserImage}
-          alt="currentUserImage"
-          className="w-14 h-14 rounded-lg"
+        <ProfilePictureAvatar
+          avatarType={"user"}
+          url={userImage}
+          altText={user?.firstName?.charAt(0).toUpperCase()}
         />
       </div>
     );
@@ -71,7 +72,11 @@ function MessageItem({
 
   return (
     <div className="flex items-end gap-3" key={message.id}>
-      <img src={userImage} alt="userImage" className="w-14 h-14 rounded-lg" />
+      <ProfilePictureAvatar
+        avatarType={"user"}
+        url={userImage}
+        altText={user?.firstName?.charAt(0).toUpperCase()}
+      />
       <div className="flex flex-col gap-1">
         <p className="text-black/50">
           {formatDate(message.sendDate, "HH'h'mm")}

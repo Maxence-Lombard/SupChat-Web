@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDownloadFileMutation } from "../api/attachments/attachments.api.ts";
-import userPlaceHolder from "../../assets/placeholder/user1.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
 import { addProfilePicture } from "../store/slices/profilePictureSlice.ts";
 
-const useProfilePicture = (profilePictureId: string) => {
+const useProfilePicture = (profilePictureId: string | undefined) => {
   const dispatch = useDispatch();
-  const [userImage, setUserImage] = useState<string>(userPlaceHolder);
+  const [userImage, setUserImage] = useState<string | undefined>(undefined);
   const [GetProfilePicture] = useDownloadFileMutation();
   const profilePictureUrls = useSelector(
     (state: RootState) => state.profilePictures,

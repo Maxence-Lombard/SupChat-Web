@@ -4,6 +4,7 @@ import { useJoinWorkspaceMutation } from "../../../api/workspaces/workspaces.api
 import { addWorkspace } from "../../../store/slices/workspaceSlice.ts";
 import { visibility } from "../../../Models/Enums.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
+import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 interface Workspace {
   workspaceId: number;
@@ -56,11 +57,13 @@ function WorkspaceCard(workspace: Workspace) {
   return (
     <div className="flex flex-col gap-4 bg-white border border-[#ECECEC] rounded-2xl p-4 w-80 h-60">
       <div className="flex items-center gap-4">
-        <img
-          className="w-14 h-14 rounded"
-          src={workspace.imagePreview || profilePicture}
-          alt="profilePicture"
+        <ProfilePictureAvatar
+          avatarType={"workspace"}
+          url={workspace.imagePreview || profilePicture}
+          size={"xlarge"}
+          altText={workspace.workspaceName.charAt(0).toUpperCase()}
         />
+
         <div className="flex flex-col">
           <p className="font-semibold"> {workspace.workspaceName} </p>
           <p className="text-[#A0A0A0]"> 5 members </p>

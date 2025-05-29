@@ -9,6 +9,7 @@ import { addMessage } from "../../store/slices/messageSlice.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
+import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 function Conversation() {
   const { id } = useParams();
@@ -21,9 +22,7 @@ function Conversation() {
     (state: RootState) =>
       state.users.byId[state.users.currentUserId!]?.profilePictureId,
   );
-  const userId = useSelector(
-    (state: RootState) => state.users.byId[state.users.currentUserId!].id,
-  );
+  const userId = useSelector((state: RootState) => state.users.currentUserId);
 
   const location = useLocation();
   const user: ApplicationUser = location.state?.user;
@@ -61,10 +60,10 @@ function Conversation() {
           {/* User Banner */}
           <div className="flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2">
             <div className="flex items-center gap-2">
-              <img
-                src={userImage}
-                alt="userImage"
-                className="w-14 h-14 rounded-lg"
+              <ProfilePictureAvatar
+                avatarType={"user"}
+                url={userImage}
+                altText={user.firstName.charAt(0).toUpperCase()}
               />
               <div>
                 <p className="font-semibold"> {user.firstName} </p>

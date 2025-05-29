@@ -18,6 +18,7 @@ import { RootState } from "../../store/store.ts";
 import Channel from "../channel/Channel.tsx";
 import { useGetChannelByIdQuery } from "../../api/channels/channels.api.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
+import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -94,10 +95,10 @@ function Workspace() {
           </div>
           <div className="flex flex-col p-2 gap-6 h-full overflow-y-auto bg-[#EBEBEB]/50 rounded-lg">
             <div className="flex gap-3">
-              <img
-                className="w-12 h-12 cursor-pointer rounded"
-                src={workspaceProfilePicture}
-                alt="workspaceProfilePicture"
+              <ProfilePictureAvatar
+                avatarType={"workspace"}
+                url={workspaceProfilePicture}
+                altText={workspace?.name.charAt(0).toUpperCase() || "?"}
               />
               <div className="flex flex-col h-full gap-auto">
                 <p className="font-semibold"> {workspace?.name} </p>
@@ -189,10 +190,10 @@ function Workspace() {
           {/* WORKSPACE BANNER */}
           <div className="flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2">
             <div className="flex items-center gap-2">
-              <img
-                className="rounded w-14 h-14"
-                src={workspaceProfilePicture}
-                alt="workspaceProfilePicture"
+              <ProfilePictureAvatar
+                avatarType={"workspace"}
+                url={workspaceProfilePicture}
+                altText={workspace?.name.charAt(0).toUpperCase() || "?"}
               />
               <div>
                 <p className="font-semibold">

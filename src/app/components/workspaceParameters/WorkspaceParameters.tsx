@@ -8,7 +8,6 @@ import {
   WorkspaceDto,
 } from "../../api/workspaces/workspaces.api.ts";
 import { useEffect, useState } from "react";
-import workspacePH from "../../../assets/placeholder/workspacePH.svg";
 import { RootState } from "../../store/store.ts";
 import { useDispatch, useSelector } from "react-redux";
 import WorkspaceCard from "../shared/workspaceCard/WorkspaceCard.tsx";
@@ -41,7 +40,7 @@ function WorkspaceParameters() {
   const workspaceProfilePicture =
     workspace && profilePictureUrls[workspace.profilePictureId]
       ? profilePictureUrls[workspace.profilePictureId]
-      : workspacePH;
+      : "";
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined,

@@ -1,4 +1,3 @@
-import workspacePH from "../../../../assets/placeholder/workspacePH.svg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
@@ -10,6 +9,7 @@ import { useAuth } from "../../../hooks/useAuth.tsx";
 import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
 import { setProfilePicture } from "../../../store/slices/profilePictureSlice.ts";
+import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
 function NavBar() {
@@ -24,6 +24,12 @@ function NavBar() {
     (state: RootState) =>
       state.users.byId[state.users.currentUserId!]?.profilePictureId,
   );
+  const username = useSelector(
+    (state: RootState) =>
+      state.users.byId[state.users.currentUserId!]?.firstName,
+  );
+
+  const userImage = useProfilePicture(userProfilePictureId);
 
   const [newWorkspaceVisible, setNewWorkspaceVisible] =
     useState<boolean>(false);
@@ -33,7 +39,6 @@ function NavBar() {
   const [workspaceImages, setWorkspaceImages] = useState<{
     [id: number]: string;
   }>({});
-  const userImage = useProfilePicture(userProfilePictureId || "");
 
   const { logout } = useAuth();
   const [GetProfilePicture] = useDownloadFileMutation();
@@ -82,11 +87,8 @@ function NavBar() {
           dispatch(setProfilePicture({ id: workspacePPId, url }));
           setWorkspaceImages(images);
         } catch (error) {
-          images[workspace.id] = workspacePH;
           return error;
         }
-      } else {
-        images[workspace.id] = workspacePH;
       }
     }
     setWorkspaceImages(images);
@@ -114,12 +116,12 @@ function NavBar() {
           {/* TODO: régler pb de liste workspace pas scrollable */}
           <div className="flex flex-col items-center gap-4 h-full overflow-y-auto">
             {workspaces?.map((workspace) => (
-              <img
-                onClick={() => navigateToWorkspace(workspace.id)}
+              <ProfilePictureAvatar
                 key={workspace.id}
-                className="w-12 h-12 cursor-pointer rounded-lg"
-                src={workspaceImages[workspace.id]}
-                alt="workspaceImage"
+                avatarType={"workspace"}
+                url={workspaceImages[workspace.id]}
+                action={() => navigateToWorkspace(workspace.id)}
+                altText={workspace.name.charAt(0).toUpperCase()}
               />
             ))}
             <button
@@ -170,10 +172,10 @@ function NavBar() {
           </div>
         </div>
         <div>
-          <img
-            className="w-12 h-12 cursor-pointer rounded-lg"
-            src={userImage}
-            alt="userImage"
+          <ProfilePictureAvatar
+            avatarType={"user"}
+            url={userImage}
+            altText={username?.charAt(0).toUpperCase()}
           />
           <i
             className="pi pi-sign-out text-2xl text-red-500"

@@ -1,4 +1,3 @@
-import { UserMpDto } from "../api/user/user.api.ts";
 import { status, theme } from "./Enums.ts";
 
 export interface UserInitialState {
@@ -62,5 +61,5 @@ export interface User {
 }
 
 export interface UserProps {
-  user: UserMpDto;
+  user: ApplicationUser;
 }

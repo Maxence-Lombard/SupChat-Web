@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { UserProps } from "../../../Models/User.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
+import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 function UserCard({ user }: UserProps) {
   const navigate = useNavigate();
@@ -17,11 +18,11 @@ function UserCard({ user }: UserProps) {
   return (
     <>
       <div className="flex gap-3 cursor-pointer" onClick={handleNavigation}>
-        <div className="inline-block relative">
-          <img
-            className="w-14 h-14 rounded-lg"
-            src={userImage}
-            alt="userImage"
+        <div className="relative w-16 h-16">
+          <ProfilePictureAvatar
+            avatarType={"user"}
+            url={userImage}
+            size={"xlarge"}
           />
           <div className="status-indicator"></div>
         </div>
