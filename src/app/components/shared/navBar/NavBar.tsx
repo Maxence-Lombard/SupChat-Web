@@ -5,12 +5,17 @@ import { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
-import { useAuth } from "../../../hooks/useAuth.tsx";
 import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
 import { setProfilePicture } from "../../../store/slices/profilePictureSlice.ts";
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
+
+enum NavigationOptions {
+  messages = "messages",
+  activities = "activities",
+  settings = "settings",
+}
 
 function NavBar() {
   const navigate = useNavigate();
@@ -40,25 +45,19 @@ function NavBar() {
     [id: number]: string;
   }>({});
 
-  const { logout } = useAuth();
   const [GetProfilePicture] = useDownloadFileMutation();
   const [GetFirstChannel] = useGetFirstChannelMutation();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
-  const handleNavigation = (nav: string) => {
+  const handleNavigation = (nav: NavigationOptions) => {
     switch (nav) {
-      case "messages":
+      case NavigationOptions.messages:
         navigate(`/`);
         break;
-      case "activities":
+      case NavigationOptions.activities:
         navigate(`/`);
         break;
-      case "settings":
-        navigate(`/`);
+      case NavigationOptions.settings:
+        navigate(`/settings/myprofile`);
         break;
       default:
         break;
@@ -107,10 +106,13 @@ function NavBar() {
           <div className="flex flex-col items-center gap-4">
             <i
               className="pi pi-inbox text-2xl cursor-pointer"
-              onClick={() => handleNavigation("messages")}
+              onClick={() => handleNavigation(NavigationOptions.messages)}
             />
             <i className="pi pi-bell text-2xl cursor-pointer" />
-            <i className="pi pi-cog text-2xl  cursor-pointer" />
+            <i
+              className="pi pi-cog text-2xl  cursor-pointer"
+              onClick={() => handleNavigation(NavigationOptions.settings)}
+            />
           </div>
           <hr className="w-full border border-black/50 " />
           {/* TODO: régler pb de liste workspace pas scrollable */}
@@ -171,17 +173,11 @@ function NavBar() {
             ></Dialog>
           </div>
         </div>
-        <div>
-          <ProfilePictureAvatar
-            avatarType={"user"}
-            url={userImage}
-            altText={username?.charAt(0).toUpperCase()}
-          />
-          <i
-            className="pi pi-sign-out text-2xl text-red-500"
-            onClick={handleLogout}
-          />
-        </div>
+        <ProfilePictureAvatar
+          avatarType={"user"}
+          url={userImage}
+          altText={username?.charAt(0).toUpperCase()}
+        />
       </div>
     </>
   );

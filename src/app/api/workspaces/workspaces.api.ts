@@ -68,7 +68,7 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
-      providesTags: (result, error, arg) => [
+      providesTags: (_result, _error, arg) => [
         {
           type: "Workspaces",
           id: arg,
@@ -165,7 +165,7 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
-      invalidatesTags: (result, error, arg) =>
+      invalidatesTags: (result, _error, arg) =>
         result?.id ? [{ type: "Workspaces", id: arg.id }] : [],
     }),
 

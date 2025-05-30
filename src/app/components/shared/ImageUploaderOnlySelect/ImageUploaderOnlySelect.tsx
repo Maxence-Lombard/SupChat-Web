@@ -36,7 +36,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className="flex items-center gap-4">
-      {/* TODO: ajouter div grise par dessus avec crayon */}
       <div onClick={handleClick} className="container w-fit">
         {previewUrl ? (
           <img
@@ -51,7 +50,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               style={{ color: "var(--primary-color)" }}
             ></i>
             <p style={{ color: "var(--primary-color)" }}> Import your file </p>
-            <p className="text-sm text-black/50"> Drag or click to upload </p>
+            <p className="text-sm text-black/50"> Click to upload </p>
           </div>
         )}
         <div className="overlay">
