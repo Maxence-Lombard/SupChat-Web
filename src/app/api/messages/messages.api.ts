@@ -24,6 +24,7 @@ export type Message = {
 
 export const MessagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    //GET
     getMessagesByUserId: builder.query<Message[], number>({
       query: (Id, pageNumber = 1, pageSize = 10) => ({
         url: `/api/Message/ByUser?userId=${Id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
@@ -42,6 +43,7 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    //POST
     MessagesForUser: builder.mutation<Message, MessageForUserDto>({
       query: (data) => ({
         url: `/api/Message/PostForUser`,
@@ -62,6 +64,30 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    //PATCH
+    ModifyMessage: builder.mutation<
+      Message,
+      { messageId: number; content: string }
+    >({
+      query: (data) => ({
+        url: `/api/Message/${data.messageId}`,
+        method: "PATCH",
+        body: JSON.stringify({ content: data.content }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+    //DELETE
+    DeleteMessage: builder.mutation<Message, number>({
+      query: (messageId) => ({
+        url: `/api/Message/${messageId}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
   }),
 });
 
@@ -70,4 +96,6 @@ export const {
   useGetMessagesByChannelIdQuery,
   useMessagesForUserMutation,
   useMessagesInChannelMutation,
+  useModifyMessageMutation,
+  useDeleteMessageMutation,
 } = MessagesApi;

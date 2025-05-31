@@ -18,16 +18,11 @@ function Conversation() {
   const dispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const currentUserPPId = useSelector(
-    (state: RootState) =>
-      state.users.byId[state.users.currentUserId!]?.profilePictureId,
-  );
   const userId = useSelector((state: RootState) => state.users.currentUserId);
 
   const location = useLocation();
   const user: ApplicationUser = location.state?.user;
   const userImage = useProfilePicture(user.profilePictureId);
-  const currentUserImage = useProfilePicture(currentUserPPId || "");
 
   const { data: oldMessages } = useGetMessagesByUserIdQuery(Number(id));
 
@@ -127,7 +122,6 @@ function Conversation() {
                   key={message.id}
                   message={message}
                   currentUserId={userId!}
-                  currentUserImage={currentUserImage}
                 />
               ))}
             </div>

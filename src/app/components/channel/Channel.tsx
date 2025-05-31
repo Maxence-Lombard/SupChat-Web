@@ -5,7 +5,6 @@ import { RootState } from "../../store/store.ts";
 import useSignalR from "../../hooks/useSignalR.tsx";
 import { useEffect, useRef, useState } from "react";
 import { addMessage } from "../../store/slices/messageSlice.ts";
-import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
 
 function Channel() {
@@ -15,15 +14,9 @@ function Channel() {
   const dispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const currentUserPPId = useSelector(
-    (state: RootState) =>
-      state.users.byId[state.users.currentUserId!]?.profilePictureId,
-  );
   const currentUserId = useSelector(
     (state: RootState) => state.users.byId[state.users.currentUserId!]?.id,
   );
-
-  const currentUserImage = useProfilePicture(currentUserPPId || "");
 
   const { data: oldMessages } = useGetMessagesByChannelIdQuery(
     Number(channelId),
@@ -73,7 +66,6 @@ function Channel() {
               key={message.id}
               message={message}
               currentUserId={currentUserId!}
-              currentUserImage={currentUserImage}
             />
           ))}
         </div>
