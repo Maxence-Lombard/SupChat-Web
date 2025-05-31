@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     dispatch(logoutSuccess());
     setCookie(cookieConstants.accessToken, "", { path: "/", maxAge: -1 });
     setCookie(cookieConstants.refreshToken, "", { path: "/", maxAge: -1 });
+    setCookie(cookieConstants.aspNetCoreToken, "", { path: "/", maxAge: -1 });
     dispatch({ type: "RESET" });
   };
 
