@@ -22,3 +22,9 @@ export enum attachmentType {
   "link" = "Link",
   "profilePicture" = "ProfilePicture",
 }
+
+export enum types {
+  INFO = 0,
+  WARNING = 1,
+  ERROR = 2,
+}
