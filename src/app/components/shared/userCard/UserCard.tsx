@@ -23,6 +23,7 @@ function UserCard({ user }: UserProps) {
             avatarType={"user"}
             url={userImage}
             size={"xlarge"}
+            altText={user?.firstName?.charAt(0).toUpperCase()}
           />
           <div className="status-indicator"></div>
         </div>

@@ -90,6 +90,7 @@ function CreateWorkspacePopup({
       hide();
     } catch (e) {
       const error = e as ErrorResponse;
+      console.error(error);
       setErrorMessage(error.data.detail);
     }
   };
