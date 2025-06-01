@@ -4,7 +4,7 @@ import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import { AvatarGroup } from "primereact/avatargroup";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar } from "primereact/avatar";
 import {
   useGetChannelsByWorkspaceIdQuery,
@@ -81,7 +81,7 @@ function Workspace() {
   return (
     <>
       <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
-        <div className="flex flex-col gap-8 min-w-[231px]">
+        <div className="flex flex-col gap-8 w-[240px]">
           <div className="flex items-center gap-1 p-2 w-full border rounded-lg border-black">
             <i className="pi pi-search text-[#505050]/50"></i>
             <input
@@ -130,24 +130,31 @@ function Workspace() {
                     />
                     <div className="w-[1px] h-full rounded-lg bg-black"></div>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 w-full">
                     <div className="flex gap-3">
                       <p className="font-semibold text-[#6B8AFD]">Channels</p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      {/* TODO: ajouter un .filter pr récup uniquement ceux dans lequel il est (workspaceMember) */}
                       {workspaceChannels?.map((channel) => (
                         <div
-                          className="flex items-center gap-1 cursor-pointer"
+                          className="flex items-center gap-1 cursor-pointer group"
                           key={channel.id}
                           onClick={() => handleChannelNavigate(channel.id)}
                         >
-                          <img
-                            className="w-6 h-6"
-                            src={channelIcon}
-                            alt="channelIcon"
-                          />
-                          <p>{channel.name}</p>
+                          <div className="flex items-center gap-1">
+                            <img
+                              className="w-6 h-6"
+                              src={channelIcon}
+                              alt="channelIcon"
+                            />
+                            <p className="max-w-full truncate">
+                              {channel.name}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <i className="pi pi-pencil text-black/50 cursor-pointer" />
+                            <i className="pi pi-trash cursor-pointer text-red-500" />
+                          </div>
                         </div>
                       ))}
                     </div>
