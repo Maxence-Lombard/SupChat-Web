@@ -31,7 +31,6 @@ function Workspace() {
   const [currentChannelId, setCurrentChannelId] = useState<number>(
     Number(channelId),
   );
-  const [fetchChannelInfo, setFetchChannelInfo] = useState<boolean>(false);
 
   const channelsFromStore = useSelector(
     (state: RootState) => state.channels.byWorkspaceId,
@@ -45,7 +44,6 @@ function Workspace() {
   );
 
   const skipChannels = workspaceChannels.length > 0;
-  const skipFetchChannelInfo = fetchChannelInfo;
 
   const { data: workspace } = useGetWorkspaceByIdQuery(Number(workspaceId));
   const { data: channels, isSuccess } = useGetChannelsByWorkspaceIdQuery(
@@ -54,7 +52,6 @@ function Workspace() {
   );
   const { data: channelInfo } = useGetChannelByIdQuery(
     Number(currentChannelId),
-    { skip: skipFetchChannelInfo },
   );
 
   const workspaceProfilePicture = useProfilePicture(
@@ -174,7 +171,7 @@ function Workspace() {
                   }}
                   content={({ hide }) => (
                     <CreateChannelPopup
-                      hide={hide}
+                      hide={() => hide({} as React.SyntheticEvent)}
                       workspaceId={Number(workspaceId)}
                       onChannelCreated={() => {
                         setVisible(false);

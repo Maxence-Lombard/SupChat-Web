@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useCookieStorage("token", "");
-  const [cookies, setCookie] = useCookies([
+  const [, setCookie] = useCookies([
     cookieConstants.accessToken,
     cookieConstants.refreshToken,
   ]);

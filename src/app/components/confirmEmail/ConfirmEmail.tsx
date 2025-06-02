@@ -13,7 +13,7 @@ function ConfirmEmail() {
   const code = searchParams.get("code");
   const userId = searchParams.get("userId");
   const [confirmEmail] = useConfirmEmailMutation();
-  const [cookies, setCookie] = useCookies([
+  const [, setCookie] = useCookies([
     cookieConstants.accessToken,
     cookieConstants.refreshToken,
   ]);

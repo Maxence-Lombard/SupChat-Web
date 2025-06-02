@@ -26,7 +26,11 @@ function Conversation() {
 
   const { data: oldMessages } = useGetMessagesByUserIdQuery(Number(id));
 
-  const conversationKey = [userId, id].sort((a, b) => a - b).join("_");
+  if (userId == null || id == null) {
+    throw new Error("userId or id is undefined");
+  }
+  const conversationKey = [userId, Number(id)].sort((a, b) => a - b).join("_");
+
   const messages = useSelector((state: RootState) =>
     (state.messages.privateMessages[Number(conversationKey)] || [])
       .slice()

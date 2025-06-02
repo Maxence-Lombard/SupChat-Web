@@ -56,8 +56,7 @@ function WorkspaceParameters() {
   >(undefined);
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
-  const [maxWorkspaceDescription, setMaxWorkspaceDescription] =
-    useState<number>(500);
+  const [maxWorkspaceDescription] = useState<number>(500);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
     useState<string>("");

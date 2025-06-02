@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
@@ -143,7 +143,7 @@ function NavBar() {
               }}
               content={({ hide }) => (
                 <NewWorkspaceActionsPopup
-                  hide={() => hide()}
+                  hide={() => hide({} as React.SyntheticEvent)}
                   onClose={(action?: string) => {
                     setNewWorkspaceVisible(false);
                     if (action === "create") {
@@ -164,7 +164,7 @@ function NavBar() {
               }}
               content={({ hide }) => (
                 <CreateWorkspacePopup
-                  hide={hide}
+                  hide={() => hide({} as React.SyntheticEvent)}
                   onWorkspaceCreated={() => {
                     setCreateWorkspaceVisible(false);
                   }}
