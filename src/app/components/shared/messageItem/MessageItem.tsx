@@ -5,10 +5,11 @@ import {
   Message,
   useCreateMessageReactionsMutation,
   useDeleteMessageMutation,
+  useDeleteMessageReactionsMutation,
   useGetMessageReactionsQuery,
   useModifyMessageMutation,
 } from "../../../api/messages/messages.api.ts";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
 import { ApplicationUser } from "../../../Models/User.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
@@ -22,6 +23,10 @@ import { InputText } from "primereact/inputtext";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { Emoji } from "../../../Models/Emoji.ts";
+import {
+  addReaction,
+  removeReaction,
+} from "../../../store/slices/reactionSlice.ts";
 
 type MessageProps = {
   message: Message;
@@ -30,6 +35,7 @@ type MessageProps = {
 
 function MessageItem({ message, currentUserId }: MessageProps) {
   const dispatch = useDispatch();
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedMessage, setEditedMessage] = useState<Message>(message);
@@ -38,6 +44,12 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   const storeUser = useSelector(
     (state: RootState) => state.users.byId[message.senderId],
   );
+  const reactions = useSelector((state: RootState) =>
+    Object.values(state.reactions.reaction).filter(
+      (r) => r.messageId === message.id,
+    ),
+  );
+
   const [user, setUser] = useState<Partial<ApplicationUser> | undefined>(
     storeUser,
   );
@@ -46,8 +58,9 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   );
 
   const { formatDate } = useDateFormatter();
-  const { data: reactions } = useGetMessageReactionsQuery(message.id);
+  const { data: fetchedReactions } = useGetMessageReactionsQuery(message.id);
   const [addReactionRequest] = useCreateMessageReactionsMutation();
+  const [deleteReaction] = useDeleteMessageReactionsMutation();
   const [getUserInfos] = useGetUserInfosByIdMutation();
   const [modifyMessageRequest] = useModifyMessageMutation();
   const [deleteMessage] = useDeleteMessageMutation();
@@ -85,12 +98,48 @@ function MessageItem({ message, currentUserId }: MessageProps) {
     );
   };
 
-  const handleAddReaction = (emoji: Emoji) => {
-    console.log("Adding reaction:", emoji.native);
-    addReactionRequest({
-      messageId: message.id,
-      content: { content: emoji.native },
-    });
+  const handleAddReaction = async (emoji: Emoji) => {
+    try {
+      const createdReaction = await addReactionRequest({
+        messageId: message.id,
+        content: { content: emoji.native },
+      }).unwrap();
+      dispatch(addReaction(createdReaction));
+      setPickerIsEnabled(false);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const handleToggleReaction = async (reactionContent: string) => {
+    const userReaction = reactions?.find(
+      (reaction) =>
+        reaction.content === reactionContent &&
+        reaction.senderId === currentUserId,
+    );
+    if (userReaction) {
+      await deleteReaction({
+        messageId: userReaction.messageId,
+        reactionId: userReaction.id,
+      }).unwrap();
+      dispatch(removeReaction(userReaction.id));
+    } else {
+      await handleAddReaction({ native: reactionContent } as Emoji);
+    }
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      pickerRef.current &&
+      !pickerRef.current.contains(event.target as Node)
+    ) {
+      setPickerIsEnabled(false);
+    }
+  };
+  const handleEscape = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setPickerIsEnabled(false);
+    }
   };
 
   useEffect(() => {
@@ -103,18 +152,25 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           dispatch(addUser(data));
         });
     }
-  }, [storeUser, message.senderId]);
+    if (reactions.length === 0 && fetchedReactions) {
+      fetchedReactions.forEach((reaction) => dispatch(addReaction(reaction)));
+    }
+    if (pickerIsEnabled) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+    }
+  }, [storeUser, message.senderId, fetchedReactions, pickerIsEnabled]);
 
   const userImage = useProfilePicture(profilePictureId);
 
   if (message.senderId === currentUserId) {
     return (
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-2 w-full group">
         <div
-          className="flex justify-end items-end w-full gap-3 group"
+          className="flex justify-end items-end w-full gap-3"
           key={message.id}
         >
-          <div className="flex flex-col w-full gap-1 items-end">
+          <div className="flex flex-col gap-1 items-end">
             {isEditing ? (
               <>
                 <InputText
@@ -134,60 +190,31 @@ function MessageItem({ message, currentUserId }: MessageProps) {
                   <p className="text-xs text-[var(--main-color-500)]">Enter</p>
                   <p className="text-xs"> to save </p>
                   <p className="text-xs"> - </p>
-                  <p className="text-xs text-[var(--main-color-500)]">
-                    {" "}
-                    Escape{" "}
-                  </p>
+                  <p className="text-xs text-[var(--main-color-500)]">Escape</p>
                   <p className="text-xs"> to cancel </p>
                 </div>
               </>
             ) : (
               <>
-                <div className="flex gap-4 items-center justify-between">
-                  <p className="text-black/50">
-                    {formatDate(message.sendDate, "HH'h'mm")}
-                  </p>
-                  <div className="hidden group-hover:flex gap-2">
-                    <i
-                      className="pi pi-pencil text-black/50 cursor-pointer"
-                      onClick={handleModifyMessage}
-                    />
-                    <i
-                      className="pi pi-trash cursor-pointer text-red-500"
-                      onClick={() => handleDeleteMessage(message.id)}
-                    />
-                  </div>
-                </div>
-                <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
-                  <p className="text-white">{editedMessage.content}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  {reactions && reactions.length > 0 ? (
-                    <div className="flex gap-2 items-center">
-                      {Object.entries(
-                        reactions.reduce(
-                          (acc, reaction) => {
-                            acc[reaction.content] =
-                              (acc[reaction.content] || 0) + 1;
-                            return acc;
-                          },
-                          {} as Record<string, number>,
-                        ),
-                      ).map(([content, count]) => (
-                        <p
-                          key={content}
-                          className="flex p-1 items-center gap-1 border border-[var(--main-color-500)] rounded text-xs cursor-pointer"
-                        >
-                          {content}
-                          <span className="font-semibold">{count}</span>
-                        </p>
-                      ))}
+                <div className="flex flex-col gap-1 items-end">
+                  <div className="flex w-full gap-4 items-center justify-between">
+                    <div className="hidden group-hover:flex gap-2">
+                      <i
+                        className="pi pi-trash cursor-pointer text-red-500"
+                        onClick={() => handleDeleteMessage(message.id)}
+                      />
+                      <i
+                        className="pi pi-pencil text-black/50 cursor-pointer"
+                        onClick={handleModifyMessage}
+                      />
                     </div>
-                  ) : null}
-                  <i
-                    className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
-                    onClick={() => setPickerIsEnabled(true)}
-                  />
+                    <p className="text-black/50 text-right w-full">
+                      {formatDate(message.sendDate, "HH'h'mm")}
+                    </p>
+                  </div>
+                  <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
+                    <p className="text-white">{editedMessage.content}</p>
+                  </div>
                 </div>
               </>
             )}
@@ -198,31 +225,123 @@ function MessageItem({ message, currentUserId }: MessageProps) {
             altText={user?.firstName?.charAt(0).toUpperCase()}
           />
         </div>
-        {pickerIsEnabled ? (
-          <Picker
-            data={data}
-            onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
+        <div className="flex justify-end mr-[60px] gap-2 items-center">
+          <i
+            className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
+            onClick={() => setPickerIsEnabled(true)}
           />
+          {reactions && reactions.length > 0 ? (
+            <div className="flex gap-2 items-center">
+              {Object.entries(
+                reactions.reduce(
+                  (acc, reaction) => {
+                    acc[reaction.content] = (acc[reaction.content] || 0) + 1;
+                    return acc;
+                  },
+                  {} as Record<string, number>,
+                ),
+              ).map(([content, count]) => {
+                const userHasReacted = reactions.some(
+                  (reaction) =>
+                    reaction.content === content &&
+                    reaction.senderId === currentUserId,
+                );
+                return (
+                  <p
+                    key={content}
+                    className={`flex p-1 items-center gap-1 border rounded text-xs cursor-pointer ${
+                      userHasReacted
+                        ? "border-[var(--main-color-500)] bg-[var(--main-color-500)] text-white"
+                        : "border-[#ECECEC] bg-[#F3F3F3]"
+                    }`}
+                    onClick={() => handleToggleReaction(content)}
+                  >
+                    {content}
+                    <span className="font-semibold">{count}</span>
+                  </p>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+
+        {pickerIsEnabled ? (
+          <div ref={pickerRef} className="absolute">
+            <Picker
+              data={data}
+              onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
+            />
+          </div>
         ) : null}
       </div>
     );
   }
 
   return (
-    <div className="flex items-end gap-3" key={message.id}>
-      <ProfilePictureAvatar
-        avatarType={"user"}
-        url={userImage}
-        altText={user?.firstName?.charAt(0).toUpperCase()}
-      />
-      <div className="flex flex-col gap-1">
-        <p className="text-black/50">
-          {formatDate(message.sendDate, "HH'h'mm")}
-        </p>
-        <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
-          <p className="text-black">{message.content}</p>
+    <div className="flex flex-col gap-2 w-full group">
+      <div className="flex items-end w-full gap-3" key={message.id}>
+        <ProfilePictureAvatar
+          avatarType={"user"}
+          url={userImage}
+          altText={user?.firstName?.charAt(0).toUpperCase()}
+        />
+        <div className="flex flex-col gap-1">
+          <p className="text-black/50">
+            {formatDate(message.sendDate, "HH'h'mm")}
+          </p>
+          <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
+            <p className="text-black">{message.content}</p>
+          </div>
         </div>
       </div>
+      <div className="flex ml-[60px] gap-2 items-center">
+        {reactions && reactions.length > 0 ? (
+          <div className="flex gap-2 items-center">
+            {Object.entries(
+              reactions.reduce(
+                (acc, reaction) => {
+                  acc[reaction.content] = (acc[reaction.content] || 0) + 1;
+                  return acc;
+                },
+                {} as Record<string, number>,
+              ),
+            ).map(([content, count]) => {
+              const userHasReacted = reactions.some(
+                (reaction) =>
+                  reaction.content === content &&
+                  reaction.senderId === currentUserId,
+              );
+              return (
+                <p
+                  key={content}
+                  className={`flex p-1 items-center gap-1 border rounded text-xs cursor-pointer ${
+                    userHasReacted
+                      ? "border-[var(--main-color-500)] bg-[var(--main-color-500)] text-white"
+                      : "border-[#ECECEC] bg-[#F3F3F3]"
+                  }`}
+                  onClick={() => handleToggleReaction(content)}
+                >
+                  {content}
+                  <span className="font-semibold">{count}</span>
+                </p>
+              );
+            })}
+          </div>
+        ) : null}
+        <i
+          className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
+          onClick={() => setPickerIsEnabled(true)}
+        />
+      </div>
+
+      {pickerIsEnabled ? (
+        <div ref={pickerRef} className="absolute">
+          <Picker
+            data={data}
+            onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

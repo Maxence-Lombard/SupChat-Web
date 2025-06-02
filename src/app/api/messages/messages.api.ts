@@ -22,7 +22,7 @@ export type Message = {
   parentId: number;
 };
 
-type Reaction = {
+export type Reaction = {
   id: number;
   content: string;
   messageId: number;
@@ -126,9 +126,6 @@ export const MessagesApi = api.injectEndpoints({
       query: (data) => ({
         url: `/api/Message/${data.messageId}/Reactions/${data.reactionId}`,
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
       }),
     }),
   }),
