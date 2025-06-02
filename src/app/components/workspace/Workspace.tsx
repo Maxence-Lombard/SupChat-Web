@@ -11,12 +11,15 @@ import {
   useGetWorkspaceByIdQuery,
 } from "../../api/workspaces/workspaces.api.ts";
 import { Dialog } from "primereact/dialog";
-import CreateChannelPopup from "../shared/popups/createChannelPopup/CreateChannelPopup.tsx";
+import ChannelActionPopup from "../shared/popups/channelActionPopup/ChannelActionPopup.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { addChannel } from "../../store/slices/channelSlice.ts";
+import { addChannel, deleteChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
 import Channel from "../channel/Channel.tsx";
-import { useGetChannelByIdQuery } from "../../api/channels/channels.api.ts";
+import {
+  useDeleteChannelMutation,
+  useGetChannelByIdQuery,
+} from "../../api/channels/channels.api.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
 
@@ -27,7 +30,10 @@ function Workspace() {
   const { workspaceId } = useParams();
   const { channelId } = useParams();
   const [search, setSearch] = useState<string>("");
-  const [visible, setVisible] = useState<boolean>(false);
+  const [createChannelVisible, setCreateChannelVisibleVisible] =
+    useState<boolean>(false);
+  const [modifyChannelVisible, setModifyChannelVisible] =
+    useState<boolean>(false);
   const [currentChannelId, setCurrentChannelId] = useState<number>(
     Number(channelId),
   );
@@ -56,6 +62,7 @@ function Workspace() {
     Number(currentChannelId),
     { skip: skipFetchChannelInfo },
   );
+  const [deleteChannelRequest] = useDeleteChannelMutation();
 
   const workspaceProfilePicture = useProfilePicture(
     workspace?.profilePictureId ?? "",
@@ -81,7 +88,7 @@ function Workspace() {
   return (
     <>
       <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
-        <div className="flex flex-col gap-8 min-w-[231px]">
+        <div className="flex flex-col gap-8 w-[240px]">
           <div className="flex items-center gap-1 p-2 w-full border rounded-lg border-black">
             <i className="pi pi-search text-[#505050]/50"></i>
             <input
@@ -130,24 +137,44 @@ function Workspace() {
                     />
                     <div className="w-[1px] h-full rounded-lg bg-black"></div>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 w-full">
                     <div className="flex gap-3">
                       <p className="font-semibold text-[#6B8AFD]">Channels</p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      {/* TODO: ajouter un .filter pr récup uniquement ceux dans lequel il est (workspaceMember) */}
                       {workspaceChannels?.map((channel) => (
                         <div
-                          className="flex items-center gap-1 cursor-pointer"
+                          className="flex items-center gap-1 cursor-pointer group"
                           key={channel.id}
                           onClick={() => handleChannelNavigate(channel.id)}
                         >
-                          <img
-                            className="w-6 h-6"
-                            src={channelIcon}
-                            alt="channelIcon"
-                          />
-                          <p>{channel.name}</p>
+                          <div className="flex items-center gap-1">
+                            <img
+                              className="w-6 h-6"
+                              src={channelIcon}
+                              alt="channelIcon"
+                            />
+                            <p className="max-w-full truncate">
+                              {channel.name}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <i
+                              className="pi pi-pencil text-black/50 cursor-pointer"
+                              onClick={() => {
+                                setCurrentChannelId(channel.id);
+                                setModifyChannelVisible(true);
+                              }}
+                            />
+                            <i
+                              className="pi pi-trash cursor-pointer text-red-500"
+                              onClick={() => {
+                                setCurrentChannelId(channel.id);
+                                deleteChannelRequest(Number(currentChannelId));
+                                dispatch(deleteChannel(currentChannelId));
+                              }}
+                            />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -155,7 +182,7 @@ function Workspace() {
                 </div>
                 <div
                   className="flex items-center gap-3 ml-1 cursor-pointer"
-                  onClick={() => setVisible(true)}
+                  onClick={() => setCreateChannelVisibleVisible(true)}
                 >
                   <i
                     className="pi pi-plus-circle"
@@ -163,25 +190,6 @@ function Workspace() {
                   />
                   <p>Add Channel</p>
                 </div>
-                {/* CREATE CHANNEL POPUP */}
-                <Dialog
-                  className="rounded-2xl"
-                  visible={visible}
-                  modal
-                  onHide={() => {
-                    if (!visible) return;
-                    setVisible(false);
-                  }}
-                  content={({ hide }) => (
-                    <CreateChannelPopup
-                      hide={hide}
-                      workspaceId={Number(workspaceId)}
-                      onChannelCreated={() => {
-                        setVisible(false);
-                      }}
-                    />
-                  )}
-                ></Dialog>
               </div>
             </div>
           </div>
@@ -197,7 +205,6 @@ function Workspace() {
               />
               <div>
                 <p className="font-semibold">
-                  {" "}
                   {workspace?.name} - {channelInfo?.name}
                 </p>
                 <div className="flex items-center gap-2">
@@ -257,6 +264,47 @@ function Workspace() {
           <Channel />
         </div>
       </div>
+      {/* MODIFY CHANNEL POPUP */}
+      <Dialog
+        className="rounded-2xl"
+        visible={modifyChannelVisible}
+        modal
+        onHide={() => {
+          if (!modifyChannelVisible) return;
+          setModifyChannelVisible(false);
+        }}
+        content={({ hide }) => (
+          <ChannelActionPopup
+            hide={hide}
+            workspaceId={Number(workspaceId)}
+            channelId={currentChannelId}
+            onChannelActionDone={() => {
+              setModifyChannelVisible(false);
+            }}
+            channelAction="modify"
+          />
+        )}
+      ></Dialog>
+      {/* CREATE CHANNEL POPUP */}
+      <Dialog
+        className="rounded-2xl"
+        visible={createChannelVisible}
+        modal
+        onHide={() => {
+          if (!createChannelVisible) return;
+          setCreateChannelVisibleVisible(false);
+        }}
+        content={({ hide }) => (
+          <ChannelActionPopup
+            hide={hide}
+            workspaceId={Number(workspaceId)}
+            onChannelActionDone={() => {
+              setCreateChannelVisibleVisible(false);
+            }}
+            channelAction="create"
+          />
+        )}
+      ></Dialog>
     </>
   );
 }
