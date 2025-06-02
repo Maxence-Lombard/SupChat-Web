@@ -22,8 +22,15 @@ export const channelsSlice = createSlice({
         state.byWorkspaceId[channel.id] = channel;
       }
     },
+    deleteChannel: (state, action: PayloadAction<number>) => {
+      const channelId = action.payload;
+      if (state.byWorkspaceId[channelId]) {
+        delete state.byWorkspaceId[channelId];
+      }
+    },
   },
 });
 
-export const { addChannel, modifyChannel } = channelsSlice.actions;
+export const { addChannel, modifyChannel, deleteChannel } =
+  channelsSlice.actions;
 export default channelsSlice.reducer;

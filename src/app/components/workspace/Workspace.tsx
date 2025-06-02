@@ -13,7 +13,7 @@ import {
 import { Dialog } from "primereact/dialog";
 import ChannelActionPopup from "../shared/popups/channelActionPopup/ChannelActionPopup.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { addChannel } from "../../store/slices/channelSlice.ts";
+import { addChannel, deleteChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
 import Channel from "../channel/Channel.tsx";
 import {
@@ -62,7 +62,7 @@ function Workspace() {
     Number(currentChannelId),
     { skip: skipFetchChannelInfo },
   );
-  const [deleteChannel] = useDeleteChannelMutation();
+  const [deleteChannelRequest] = useDeleteChannelMutation();
 
   const workspaceProfilePicture = useProfilePicture(
     workspace?.profilePictureId ?? "",
@@ -168,7 +168,11 @@ function Workspace() {
                             />
                             <i
                               className="pi pi-trash cursor-pointer text-red-500"
-                              onClick={() => deleteChannel(Number(channelId))}
+                              onClick={() => {
+                                setCurrentChannelId(channel.id);
+                                deleteChannelRequest(Number(currentChannelId));
+                                dispatch(deleteChannel(currentChannelId));
+                              }}
                             />
                           </div>
                         </div>
