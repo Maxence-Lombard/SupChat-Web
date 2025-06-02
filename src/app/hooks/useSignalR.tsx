@@ -72,6 +72,20 @@ const useSignalR = () => {
     };
   }, [token]);
 
+  // TODO: modifier fonctionnement pour écouter lors de l'utilisation de la fonction
+  // const listenReceiveMessage = async () => {
+  //   if (connectionRef.current && isConnected) {
+  //     try {
+  //       connectionRef.on("ReceiveMessage", (message: Message) => {
+  //         console.log("Received message:", message);
+  //         dispatch(addMessage(message));
+  //       });
+  //     } catch (err) {
+  //       console.error("Error when receiving message :", err);
+  //     }
+  //   }
+  // };
+
   const joinChannel = async (channelId: number) => {
     if (connectionRef.current && isConnected && currentChannel !== channelId) {
       try {
