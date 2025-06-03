@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Message } from "../../api/messages/messages.api.ts";
+import { RootState } from "../store.ts";
 
 interface MessageState {
   privateMessages: Record<number, Message[]>;
@@ -100,6 +101,17 @@ const messageSlice = createSlice({
     },
   },
 });
+
+export const selectPrivateMessages = (state: RootState) =>
+  state.messages.privateMessages;
+
+export const selectSortedMessagesByConversationKey = (
+  conversationKey: string,
+) =>
+  createSelector([selectPrivateMessages], (privateMessages) => {
+    const messages = privateMessages[Number(conversationKey)] || [];
+    return [...messages].sort((a, b) => a.id - b.id);
+  });
 
 export const { addMessage, modifyMessage, removeMessage, clearMessages } =
   messageSlice.actions;

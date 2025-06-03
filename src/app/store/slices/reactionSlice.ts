@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Reaction } from "../../api/messages/messages.api.ts";
+import { RootState } from "../store.ts";
 
 interface ReactionState {
   reaction: Record<number, Reaction>;
@@ -23,6 +24,13 @@ export const reactionSlice = createSlice({
     },
   },
 });
+
+export const selectReactionsByMessageId = (messageId: number) =>
+  createSelector(
+    [(state: RootState) => state.reactions.reaction],
+    (reactions) =>
+      Object.values(reactions).filter((r) => r.messageId === messageId),
+  );
 
 export const { addReaction, removeReaction } = reactionSlice.actions;
 export default reactionSlice.reducer;

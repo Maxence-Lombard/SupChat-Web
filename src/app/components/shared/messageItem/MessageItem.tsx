@@ -26,7 +26,9 @@ import { Emoji } from "../../../Models/Emoji.ts";
 import {
   addReaction,
   removeReaction,
+  selectReactionsByMessageId,
 } from "../../../store/slices/reactionSlice.ts";
+import ReactionsDisplay from "../reactionsDisplay/ReactionsDisplay.tsx";
 
 type MessageProps = {
   message: Message;
@@ -44,11 +46,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   const storeUser = useSelector(
     (state: RootState) => state.users.byId[message.senderId],
   );
-  const reactions = useSelector((state: RootState) =>
-    Object.values(state.reactions.reaction).filter(
-      (r) => r.messageId === message.id,
-    ),
-  );
+  const reactions = useSelector(selectReactionsByMessageId(message.id));
 
   const [user, setUser] = useState<Partial<ApplicationUser> | undefined>(
     storeUser,
@@ -152,6 +150,9 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           dispatch(addUser(data));
         });
     }
+  }, [storeUser, message.senderId]);
+
+  useEffect(() => {
     if (reactions.length === 0 && fetchedReactions) {
       fetchedReactions.forEach((reaction) => dispatch(addReaction(reaction)));
     }
@@ -159,7 +160,14 @@ function MessageItem({ message, currentUserId }: MessageProps) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleEscape);
     }
-  }, [storeUser, message.senderId, fetchedReactions, pickerIsEnabled]);
+  }, [fetchedReactions, pickerIsEnabled]);
+
+  useEffect(() => {
+    if (pickerIsEnabled) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+    }
+  }, [pickerIsEnabled]);
 
   const userImage = useProfilePicture(profilePictureId);
 
@@ -225,54 +233,33 @@ function MessageItem({ message, currentUserId }: MessageProps) {
             altText={user?.firstName?.charAt(0).toUpperCase()}
           />
         </div>
-        <div className="flex justify-end mr-[60px] gap-2 items-center">
-          <i
-            className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
-            onClick={() => setPickerIsEnabled(true)}
-          />
-          {reactions && reactions.length > 0 ? (
-            <div className="flex gap-2 items-center">
-              {Object.entries(
-                reactions.reduce(
-                  (acc, reaction) => {
-                    acc[reaction.content] = (acc[reaction.content] || 0) + 1;
-                    return acc;
-                  },
-                  {} as Record<string, number>,
-                ),
-              ).map(([content, count]) => {
-                const userHasReacted = reactions.some(
-                  (reaction) =>
-                    reaction.content === content &&
-                    reaction.senderId === currentUserId,
-                );
-                return (
-                  <p
-                    key={content}
-                    className={`flex p-1 items-center gap-1 border rounded text-xs cursor-pointer ${
-                      userHasReacted
-                        ? "border-[var(--main-color-500)] bg-[var(--main-color-500)] text-white"
-                        : "border-[#ECECEC] bg-[#F3F3F3]"
-                    }`}
-                    onClick={() => handleToggleReaction(content)}
-                  >
-                    {content}
-                    <span className="font-semibold">{count}</span>
-                  </p>
-                );
-              })}
+        <div className="relative">
+          <div className="flex justify-end mr-[60px] gap-2 items-center">
+            <i
+              className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
+              onClick={() => setPickerIsEnabled(true)}
+            />
+            {reactions && reactions.length > 0 ? (
+              <ReactionsDisplay
+                reactions={reactions}
+                currentUserId={currentUserId}
+                onToggleReaction={handleToggleReaction}
+              />
+            ) : null}
+          </div>
+
+          {pickerIsEnabled ? (
+            <div
+              ref={pickerRef}
+              className="absolute z-10 right-0 top-full mt-2"
+            >
+              <Picker
+                data={data}
+                onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
+              />
             </div>
           ) : null}
         </div>
-
-        {pickerIsEnabled ? (
-          <div ref={pickerRef} className="absolute">
-            <Picker
-              data={data}
-              onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
-            />
-          </div>
-        ) : null}
       </div>
     );
   }
@@ -294,54 +281,30 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           </div>
         </div>
       </div>
-      <div className="flex ml-[60px] gap-2 items-center">
-        {reactions && reactions.length > 0 ? (
-          <div className="flex gap-2 items-center">
-            {Object.entries(
-              reactions.reduce(
-                (acc, reaction) => {
-                  acc[reaction.content] = (acc[reaction.content] || 0) + 1;
-                  return acc;
-                },
-                {} as Record<string, number>,
-              ),
-            ).map(([content, count]) => {
-              const userHasReacted = reactions.some(
-                (reaction) =>
-                  reaction.content === content &&
-                  reaction.senderId === currentUserId,
-              );
-              return (
-                <p
-                  key={content}
-                  className={`flex p-1 items-center gap-1 border rounded text-xs cursor-pointer ${
-                    userHasReacted
-                      ? "border-[var(--main-color-500)] bg-[var(--main-color-500)] text-white"
-                      : "border-[#ECECEC] bg-[#F3F3F3]"
-                  }`}
-                  onClick={() => handleToggleReaction(content)}
-                >
-                  {content}
-                  <span className="font-semibold">{count}</span>
-                </p>
-              );
-            })}
-          </div>
-        ) : null}
-        <i
-          className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
-          onClick={() => setPickerIsEnabled(true)}
-        />
-      </div>
-
-      {pickerIsEnabled ? (
-        <div ref={pickerRef} className="absolute">
-          <Picker
-            data={data}
-            onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
+      <div className="relative">
+        <div className="flex ml-[60px] gap-2 items-center">
+          {reactions && reactions.length > 0 ? (
+            <ReactionsDisplay
+              reactions={reactions}
+              currentUserId={currentUserId}
+              onToggleReaction={handleToggleReaction}
+            />
+          ) : null}
+          <i
+            className="pi pi-face-smile hidden group-hover:flex text-black/50 cursor-pointer"
+            onClick={() => setPickerIsEnabled(true)}
           />
         </div>
-      ) : null}
+
+        {pickerIsEnabled ? (
+          <div ref={pickerRef} className="absolute z-10 left-0 top-full mt-2">
+            <Picker
+              data={data}
+              onEmojiSelect={(emoji: Emoji) => handleAddReaction(emoji)}
+            />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
