@@ -1,15 +1,18 @@
 import { useParams } from "react-router-dom";
-import { useGetMessagesByChannelIdQuery } from "../../api/messages/messages.api.ts";
+import {
+  Message,
+  useGetMessagesByChannelIdQuery,
+} from "../../api/messages/messages.api.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
-import useSignalR from "../../hooks/useSignalR.tsx";
+import { useSignalR } from "../../context/SignalRContext.tsx";
 import { useEffect, useRef, useState } from "react";
 import { addMessage } from "../../store/slices/messageSlice.ts";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
 
 function Channel() {
   const { channelId } = useParams();
-  const { joinChannel, sendChannelMessage } = useSignalR();
+  const { on, off, joinChannel, sendChannelMessage } = useSignalR();
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -27,6 +30,12 @@ function Channel() {
       .sort((a, b) => a.id - b.id),
   );
 
+  const handleReceiveMessage = (...args: unknown[]) => {
+    const message = args[0] as Message;
+    console.log("Received message:", message);
+    dispatch(addMessage(message));
+  };
+
   useEffect(() => {
     if (channelId) {
       joinChannel(Number(channelId));
@@ -41,6 +50,11 @@ function Channel() {
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
+    on("ReceiveMessage", handleReceiveMessage);
+
+    return () => {
+      off("ReceiveMessage", handleReceiveMessage);
+    };
   }, [
     messages,
     channelId,
@@ -48,6 +62,8 @@ function Channel() {
     messageInput,
     joinChannel,
     sendChannelMessage,
+    on,
+    off,
   ]);
 
   return (

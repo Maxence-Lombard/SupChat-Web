@@ -22,6 +22,13 @@ export type Message = {
   parentId: number;
 };
 
+export type Reaction = {
+  id: number;
+  content: string;
+  messageId: number;
+  senderId: number;
+};
+
 export const MessagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     //GET
@@ -43,6 +50,16 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    getMessageReactions: builder.query<Reaction[], number>({
+      query: (messageId) => ({
+        url: `/api/Message/${messageId}/Reactions`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     //POST
     MessagesForUser: builder.mutation<Message, MessageForUserDto>({
       query: (data) => ({
@@ -64,6 +81,20 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    CreateMessageReactions: builder.mutation<
+      Reaction,
+      { messageId: number; content: Reaction["content"] }
+    >({
+      query: (data) => ({
+        url: `/api/Message/${data.messageId}/Reactions`,
+        method: "POST",
+        body: { content: data.content },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     //PATCH
     ModifyMessage: builder.mutation<
       Message,
@@ -88,14 +119,26 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+    DeleteMessageReactions: builder.mutation<
+      Reaction,
+      { messageId: number; reactionId: number }
+    >({
+      query: (data) => ({
+        url: `/api/Message/${data.messageId}/Reactions/${data.reactionId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
 export const {
   useGetMessagesByUserIdQuery,
   useGetMessagesByChannelIdQuery,
+  useGetMessageReactionsQuery,
   useMessagesForUserMutation,
   useMessagesInChannelMutation,
+  useCreateMessageReactionsMutation,
   useModifyMessageMutation,
   useDeleteMessageMutation,
+  useDeleteMessageReactionsMutation,
 } = MessagesApi;

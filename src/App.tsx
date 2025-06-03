@@ -1,6 +1,6 @@
 import "primeicons/primeicons.css";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./app/components/auth/Login/Login.tsx";
@@ -16,9 +16,12 @@ import AuthLayout from "./app/layouts/AuthLayout.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 import MyProfile from "./app/components/myProfile/MyProfile.tsx";
+import { SignalRProvider } from "./app/context/SignalRContext.tsx";
+import { selectAccessToken } from "./app/store/slices/authSlice.ts";
 
 function App() {
   const dispatch = useDispatch();
+  const token = useSelector(selectAccessToken);
 
   useEffect(() => {
     dispatch({ type: "auth/checkAuth" });
@@ -35,7 +38,15 @@ function App() {
         <BrowserRouter>
           <AuthRedirect />
           <Routes>
-            <Route element={<MainLayout />}>
+            <Route
+              element={
+                token ? (
+                  <SignalRProvider>
+                    <MainLayout />
+                  </SignalRProvider>
+                ) : null
+              }
+            >
               <Route path="/" element={<Home />} />
               <Route path="/conversation/:id" element={<Conversation />} />
               <Route

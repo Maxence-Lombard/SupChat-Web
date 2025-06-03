@@ -1,19 +1,25 @@
-import { useGetMessagesByUserIdQuery } from "../../api/messages/messages.api.ts";
+import {
+  Message,
+  useGetMessagesByUserIdQuery,
+} from "../../api/messages/messages.api.ts";
 import { useLocation, useParams } from "react-router-dom";
+import { useSignalR } from "../../context/SignalRContext.tsx";
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 import { useEffect, useRef, useState } from "react";
 import { ApplicationUser } from "../../Models/User.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
-import { addMessage } from "../../store/slices/messageSlice.ts";
-import useSignalR from "../../hooks/useSignalR.tsx";
+import {
+  addMessage,
+  selectSortedMessagesByConversationKey,
+} from "../../store/slices/messageSlice.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 function Conversation() {
   const { id } = useParams();
-  const { sendUserMessage } = useSignalR();
+  const { on, off, sendUserMessage } = useSignalR();
   const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -27,11 +33,15 @@ function Conversation() {
   const { data: oldMessages } = useGetMessagesByUserIdQuery(Number(id));
 
   const conversationKey = [userId, id].sort((a, b) => a - b).join("_");
-  const messages = useSelector((state: RootState) =>
-    (state.messages.privateMessages[Number(conversationKey)] || [])
-      .slice()
-      .sort((a, b) => a.id - b.id),
+  const messages = useSelector(
+    selectSortedMessagesByConversationKey(conversationKey),
   );
+
+  const handleReceiveMessage = (...args: unknown[]) => {
+    const message = args[0] as Message;
+    console.log("Received message:", message);
+    dispatch(addMessage(message));
+  };
 
   useEffect(() => {
     if (oldMessages) {
@@ -44,7 +54,12 @@ function Conversation() {
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
-  }, [oldMessages, dispatch, messageInput]);
+    on("ReceiveMessage", handleReceiveMessage);
+
+    return () => {
+      off("ReceiveMessage", handleReceiveMessage);
+    };
+  }, [oldMessages, dispatch, messageInput, on, off]);
 
   return (
     <>
@@ -125,55 +140,55 @@ function Conversation() {
                 />
               ))}
             </div>
-            {/* Message input */}
-            <div className="flex flex-col mt-1 gap-2 w-full">
-              <hr className="flex-1 border border-[#EBEBEB]" />
-              <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
-                <textarea
-                  ref={textAreaRef}
-                  name="messageInput"
-                  id="messageInput"
-                  className="messageTextArea"
-                  placeholder="Message..."
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                />
-                <div className="flex justify-between w-full items-center">
-                  <div className="flex gap-4">
-                    <i
-                      className="pi pi-plus-circle text-xl cursor-pointer"
-                      style={{ color: "var(--primary-color)" }}
-                    />
-                    <i
-                      className="pi pi-face-smile text-xl cursor-pointer"
-                      style={{ color: "var(--primary-color)" }}
-                    />
-                    <i
-                      className="pi pi-at text-xl cursor-pointer"
-                      style={{ color: "var(--primary-color)" }}
-                    />
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
-                      <i className="pi pi-times-circle text-white" />
-                      <p className="text-white">Discard</p>
-                    </button>
-                    <button
-                      className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                      onClick={() => {
-                        if (messageInput.trim()) {
-                          sendUserMessage({
-                            content: messageInput,
-                            receiverId: Number(id),
-                          });
-                          setMessageInput("");
-                        }
-                      }}
-                    >
-                      <i className="pi pi-send text-white" />
-                      <p className="text-white">Send</p>
-                    </button>
-                  </div>
+          </div>
+          {/* Message input */}
+          <div className="flex flex-col mt-1 gap-2 w-full">
+            <hr className="flex-1 border border-[#EBEBEB]" />
+            <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
+              <textarea
+                ref={textAreaRef}
+                name="messageInput"
+                id="messageInput"
+                className="messageTextArea"
+                placeholder="Message..."
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+              />
+              <div className="flex justify-between w-full items-center">
+                <div className="flex gap-4">
+                  <i
+                    className="pi pi-plus-circle text-xl cursor-pointer"
+                    style={{ color: "var(--primary-color)" }}
+                  />
+                  <i
+                    className="pi pi-face-smile text-xl cursor-pointer"
+                    style={{ color: "var(--primary-color)" }}
+                  />
+                  <i
+                    className="pi pi-at text-xl cursor-pointer"
+                    style={{ color: "var(--primary-color)" }}
+                  />
+                </div>
+                <div className="flex gap-2 items-center">
+                  <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
+                    <i className="pi pi-times-circle text-white" />
+                    <p className="text-white">Discard</p>
+                  </button>
+                  <button
+                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                    onClick={() => {
+                      if (messageInput.trim()) {
+                        sendUserMessage({
+                          content: messageInput,
+                          receiverId: Number(id),
+                        });
+                        setMessageInput("");
+                      }
+                    }}
+                  >
+                    <i className="pi pi-send text-white" />
+                    <p className="text-white">Send</p>
+                  </button>
                 </div>
               </div>
             </div>
