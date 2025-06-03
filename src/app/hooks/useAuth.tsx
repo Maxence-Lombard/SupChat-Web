@@ -31,6 +31,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (credentials: LoginDto) => {
     const response = await loginRequest(credentials);
 
+    Object.keys(cookies).forEach((cookieName) => {
+      setCookie(cookieName, "", { path: "/", maxAge: -1 });
+    });
     if (response.data?.accessToken) {
       //TODO : ajouter date expiration
       setCookie(cookieConstants.accessToken, response.data.accessToken);
