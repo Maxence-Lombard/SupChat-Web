@@ -35,9 +35,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setCookie(cookieName, "", { path: "/", maxAge: -1 });
     });
     if (response.data?.accessToken) {
-      //TODO : ajouter date expiration
-      setCookie(cookieConstants.accessToken, response.data.accessToken);
-      setCookie(cookieConstants.refreshToken, response.data.refreshToken);
+      const expires = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
+      setCookie(cookieConstants.accessToken, response.data.accessToken, {
+        path: "/",
+        expires,
+      });
+      setCookie(cookieConstants.refreshToken, response.data.refreshToken, {
+        path: "/",
+        expires,
+      });
       return response.data;
     } else {
       throw new Error("Invalid login response");
