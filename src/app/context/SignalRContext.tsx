@@ -16,6 +16,9 @@ import { selectAccessToken } from "../store/slices/authSlice.ts";
 import {
   MessageForUserDto,
   MessageInChannelDto,
+  Reaction,
+  useCreateMessageReactionsMutation,
+  useDeleteMessageReactionsMutation,
   useMessagesForUserMutation,
   useMessagesInChannelMutation,
 } from "../api/messages/messages.api.ts";
@@ -25,6 +28,14 @@ interface SignalRContextType {
   joinChannel: (channelId: number) => Promise<void>;
   sendUserMessage: (data: MessageForUserDto) => Promise<void>;
   sendChannelMessage: (data: MessageInChannelDto) => Promise<void>;
+  sendReaction: (data: {
+    messageId: Reaction["messageId"];
+    content: Reaction["content"];
+  }) => Promise<void>;
+  deleteReaction: (data: {
+    messageId: Reaction["messageId"];
+    reactionId: Reaction["id"];
+  }) => Promise<void>;
   on: (event: string, callback: (...args: unknown[]) => void) => void;
   off: (event: string, callback?: (...args: unknown[]) => void) => void;
 }
@@ -39,8 +50,12 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [currentChannel, setCurrentChannel] = useState<number | null>(null);
 
+  // Message
   const [sendMessageForUser] = useMessagesForUserMutation();
   const [sendMessagesInChannel] = useMessagesInChannelMutation();
+  // Reaction
+  const [addReactionRequest] = useCreateMessageReactionsMutation();
+  const [deleteReactionRequest] = useDeleteMessageReactionsMutation();
 
   useEffect(() => {
     if (!token) return;
@@ -119,6 +134,38 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const sendReaction = async (data: {
+    messageId: Reaction["messageId"];
+    content: Reaction["content"];
+  }) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        await addReactionRequest({
+          messageId: data.messageId,
+          content: data.content,
+        }).unwrap();
+      } catch (err) {
+        console.error("addReaction failed:", err);
+      }
+    }
+  };
+
+  const deleteReaction = async (data: {
+    messageId: Reaction["messageId"];
+    reactionId: Reaction["id"];
+  }) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        await deleteReactionRequest({
+          messageId: data.messageId,
+          reactionId: data.reactionId,
+        }).unwrap();
+      } catch (err) {
+        console.error("deleteReaction failed:", err);
+      }
+    }
+  };
+
   const on = (event: string, callback: (...args: unknown[]) => void) => {
     connectionRef.current?.on(event, callback);
   };
@@ -138,6 +185,8 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         joinChannel,
         sendUserMessage,
         sendChannelMessage,
+        sendReaction,
+        deleteReaction,
         on,
         off,
       }}

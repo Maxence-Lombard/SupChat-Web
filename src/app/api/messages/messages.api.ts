@@ -83,12 +83,12 @@ export const MessagesApi = api.injectEndpoints({
     }),
     CreateMessageReactions: builder.mutation<
       Reaction,
-      { messageId: number; content: Partial<Reaction> }
+      { messageId: number; content: Reaction["content"] }
     >({
       query: (data) => ({
         url: `/api/Message/${data.messageId}/Reactions`,
         method: "POST",
-        body: JSON.stringify(data.content),
+        body: { content: data.content },
         headers: {
           "Content-Type": "application/json",
         },

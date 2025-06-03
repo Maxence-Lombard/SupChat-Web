@@ -3,9 +3,8 @@ import { useDateFormatter } from "../../../hooks/useDateFormatter.tsx";
 import { RootState } from "../../../store/store.ts";
 import {
   Message,
-  useCreateMessageReactionsMutation,
+  Reaction,
   useDeleteMessageMutation,
-  useDeleteMessageReactionsMutation,
   useGetMessageReactionsQuery,
   useModifyMessageMutation,
 } from "../../../api/messages/messages.api.ts";
@@ -29,6 +28,7 @@ import {
   selectReactionsByMessageId,
 } from "../../../store/slices/reactionSlice.ts";
 import ReactionsDisplay from "../reactionsDisplay/ReactionsDisplay.tsx";
+import { useSignalR } from "../../../context/SignalRContext.tsx";
 
 type MessageProps = {
   message: Message;
@@ -38,6 +38,7 @@ type MessageProps = {
 function MessageItem({ message, currentUserId }: MessageProps) {
   const dispatch = useDispatch();
   const pickerRef = useRef<HTMLDivElement>(null);
+  const { on, off, sendReaction, deleteReaction } = useSignalR();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedMessage, setEditedMessage] = useState<Message>(message);
@@ -57,8 +58,6 @@ function MessageItem({ message, currentUserId }: MessageProps) {
 
   const { formatDate } = useDateFormatter();
   const { data: fetchedReactions } = useGetMessageReactionsQuery(message.id);
-  const [addReactionRequest] = useCreateMessageReactionsMutation();
-  const [deleteReaction] = useDeleteMessageReactionsMutation();
   const [getUserInfos] = useGetUserInfosByIdMutation();
   const [modifyMessageRequest] = useModifyMessageMutation();
   const [deleteMessage] = useDeleteMessageMutation();
@@ -97,16 +96,24 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   };
 
   const handleAddReaction = async (emoji: Emoji) => {
-    try {
-      const createdReaction = await addReactionRequest({
-        messageId: message.id,
-        content: { content: emoji.native },
-      }).unwrap();
-      dispatch(addReaction(createdReaction));
-      setPickerIsEnabled(false);
-    } catch (error) {
-      return error;
-    }
+    const createdReaction = {
+      messageId: message.id,
+      content: emoji.native,
+    };
+    sendReaction(createdReaction);
+    setPickerIsEnabled(false);
+  };
+
+  const handleReceiveReaction = (...args: unknown[]) => {
+    const reaction = args[0] as Reaction;
+    console.log("Received reaction:", reaction);
+    dispatch(addReaction(reaction));
+  };
+
+  const handleReceiveDeletedReaction = (...args: unknown[]) => {
+    const reactionId = args[0] as number;
+    console.log("Deleted reaction:", reactionId);
+    dispatch(removeReaction(reactionId));
   };
 
   const handleToggleReaction = async (reactionContent: string) => {
@@ -119,8 +126,8 @@ function MessageItem({ message, currentUserId }: MessageProps) {
       await deleteReaction({
         messageId: userReaction.messageId,
         reactionId: userReaction.id,
-      }).unwrap();
-      dispatch(removeReaction(userReaction.id));
+      });
+      removeReaction(userReaction.id);
     } else {
       await handleAddReaction({ native: reactionContent } as Emoji);
     }
@@ -153,14 +160,20 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   }, [storeUser, message.senderId]);
 
   useEffect(() => {
+    on("AddReaction", handleReceiveReaction);
+    on("DeleteReaction", handleReceiveDeletedReaction);
+
+    return () => {
+      off("AddReaction", handleReceiveReaction);
+      off("DeleteReaction", handleReceiveDeletedReaction);
+    };
+  }, [on, off]);
+
+  useEffect(() => {
     if (reactions.length === 0 && fetchedReactions) {
       fetchedReactions.forEach((reaction) => dispatch(addReaction(reaction)));
     }
-    if (pickerIsEnabled) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleEscape);
-    }
-  }, [fetchedReactions, pickerIsEnabled]);
+  }, [fetchedReactions]);
 
   useEffect(() => {
     if (pickerIsEnabled) {
