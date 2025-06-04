@@ -45,6 +45,15 @@ export const AuthApi = api.injectEndpoints({
         },
       }),
     }),
+    refreshToken: builder.mutation<LoginResponse, string>({
+      query: (refreshToken) => ({
+        url: `/api/Authorization/login/refreshtoken?refreshToken=${refreshToken}`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }),
+    }),
     register: builder.mutation<RegisterResponse, RegisterDto>({
       query: (data: RegisterDto) => ({
         url: `/api/Account/register`,
@@ -71,4 +80,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useConfirmEmailMutation,
+  useRefreshTokenMutation,
 } = AuthApi;

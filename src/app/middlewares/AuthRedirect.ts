@@ -1,18 +1,22 @@
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../store/store.ts";
+import { useAuth } from "../hooks/useAuth.tsx";
 
-const AuthRedirect = () => {
-    const navigate = useNavigate();
-    const shouldRedirect = useSelector((state: any) => state.auth.shouldRedirect);
+export default function AuthRedirect() {
+  const shouldRedirect = useSelector(
+    (state: RootState) => state.auth.shouldRedirect,
+  );
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
-    useEffect(() => {
-        if (shouldRedirect) {
-            navigate('/login');
-        }
-    }, [shouldRedirect, navigate]);
+  useEffect(() => {
+    if (shouldRedirect) {
+      logout();
+      navigate("/login");
+    }
+  }, [shouldRedirect, navigate]);
 
-    return null;
-};
-
-export default AuthRedirect;
+  return null;
+}

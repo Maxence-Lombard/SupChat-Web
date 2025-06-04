@@ -21,13 +21,17 @@ const authSlice = createSlice({
     loginSuccess: (state) => {
       state.accessToken = getCookie(cookieConstants.accessToken);
       state.isAuthenticated = true;
+      state.shouldRedirect = false;
     },
     redirectToLogin(state) {
-      state.shouldRedirect = false;
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.shouldRedirect = true;
     },
     logoutSuccess: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
+      state.shouldRedirect = false;
     },
   },
 });

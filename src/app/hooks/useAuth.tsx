@@ -35,15 +35,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setCookie(cookieName, "", { path: "/", maxAge: -1 });
     });
     if (response.data?.accessToken) {
-      const expires = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
+      const tokenExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
+      const refreshTokenExpires = new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000,
+      ); // 7 jours
       setCookie(cookieConstants.accessToken, response.data.accessToken, {
         path: "/",
-        expires,
+        expires: tokenExpires,
       });
       setCookie(cookieConstants.refreshToken, response.data.refreshToken, {
         path: "/",
-        expires,
+        expires: refreshTokenExpires,
       });
+      dispatch({ type: "auth/loginSuccess" });
       return response.data;
     } else {
       throw new Error("Invalid login response");
