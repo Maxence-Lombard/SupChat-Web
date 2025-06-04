@@ -11,11 +11,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import {
   addMessage,
+  modifyMessage,
+  removeMessage,
   selectSortedMessagesByConversationKey,
 } from "../../store/slices/messageSlice.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
+import { SignalREventConstants } from "../../constants/signalRConstants.ts";
 
 function Conversation() {
   const { id } = useParams();
@@ -43,6 +46,19 @@ function Conversation() {
     dispatch(addMessage(message));
   };
 
+  const handleMessageUpdated = (...args: unknown[]) => {
+    const message = args[0] as Message;
+    console.log("Received updated message:", message);
+    console.log("Message updated:", message);
+    dispatch(modifyMessage(message));
+  };
+
+  const handleMessageDeleted = (...args: unknown[]) => {
+    const messageId = args[0] as number;
+    console.log("Deleted message:", messageId);
+    dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
+  };
+
   useEffect(() => {
     if (oldMessages) {
       oldMessages.forEach((message) => {
@@ -54,10 +70,14 @@ function Conversation() {
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
-    on("ReceiveMessage", handleReceiveMessage);
+    on(SignalREventConstants.receivedMessage, handleReceiveMessage);
+    on(SignalREventConstants.updatedMessage, handleMessageUpdated);
+    on(SignalREventConstants.deletedReaction, handleMessageDeleted);
 
     return () => {
-      off("ReceiveMessage", handleReceiveMessage);
+      off(SignalREventConstants.receivedMessage, handleReceiveMessage);
+      off(SignalREventConstants.updatedMessage, handleMessageUpdated);
+      off(SignalREventConstants.deletedReaction, handleMessageDeleted);
     };
   }, [oldMessages, dispatch, messageInput, on, off]);
 
