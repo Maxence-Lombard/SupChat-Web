@@ -1,12 +1,3 @@
-export const getCookie = (name: string): string | null => {
-  const matches = document.cookie.match(
-    new RegExp(
-      `(?:^|; )${name.replace(/([.$?*|{}()[\]\\/+^])/g, "\\$1")}=([^;]*)`,
-    ),
-  );
-  return matches ? decodeURIComponent(matches[1]) : null;
-};
-
 export function getRawCookie(name: string): string | null {
   const matches = document.cookie.match(
     new RegExp(
@@ -14,6 +5,11 @@ export function getRawCookie(name: string): string | null {
     ),
   );
   return matches ? matches[1] : null;
+}
+
+export function getUnencodedCookie(name: string): string | null {
+  const cookie = getRawCookie(name);
+  return cookie ? decodeURIComponent(cookie) : null;
 }
 
 export const setCookie = (

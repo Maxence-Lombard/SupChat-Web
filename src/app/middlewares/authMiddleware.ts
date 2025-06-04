@@ -1,7 +1,7 @@
 import { Middleware, UnknownAction } from "@reduxjs/toolkit";
 import {
-  getCookie,
   getRawCookie,
+  getUnencodedCookie,
   setCookie,
 } from "../../helpers/cookieHelper.ts";
 import { cookieConstants } from "../constants/cookieConstants.ts";
@@ -10,7 +10,7 @@ import { AuthApi, LoginResponse } from "../api/auth/auth.api.ts";
 const authMiddleware: Middleware =
   (storeAPI) => (next) => async (action: UnknownAction) => {
     if (action.type === "auth/checkAuth") {
-      const token = getCookie(cookieConstants.accessToken);
+      const token = getUnencodedCookie(cookieConstants.accessToken);
       const refreshToken = getRawCookie(cookieConstants.refreshToken);
       if (refreshToken) {
         if (!token) {
