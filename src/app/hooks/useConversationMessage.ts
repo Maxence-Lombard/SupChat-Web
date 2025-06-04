@@ -5,6 +5,7 @@ import {
 } from "../api/messages/messages.api";
 import {
   addMessage,
+  selectSortedChannelMessages,
   selectSortedMessagesByConversationKey,
 } from "../store/slices/messageSlice";
 import { RootState } from "../store/store";
@@ -28,12 +29,8 @@ export function useConversationMessages({
     channelId ? Number(channelId) : skipToken,
   );
 
-  const channelMessages = useSelector((state: RootState) =>
-    channelId
-      ? (state.messages.channelMessages[Number(channelId)] || [])
-          .slice()
-          .sort((a, b) => (a?.id ?? 0) - (b?.id ?? 0))
-      : [],
+  const channelMessages = useSelector(
+    channelId ? selectSortedChannelMessages(Number(channelId)) : () => [],
   );
   const conversationKey = [userId, id].filter(Boolean).sort().join("_");
   const privateMessages = useSelector(

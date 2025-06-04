@@ -113,6 +113,15 @@ export const selectSortedMessagesByConversationKey = (
     return [...messages].sort((a, b) => a.id - b.id);
   });
 
+export const selectChannelMessages = (state: RootState) =>
+  state.messages.channelMessages;
+
+export const selectSortedChannelMessages = (channelId: number) =>
+  createSelector([selectChannelMessages], (channelMessages) => {
+    const messages = channelMessages[channelId] || [];
+    return [...messages].sort((a, b) => (a?.id ?? 0) - (b?.id ?? 0));
+  });
+
 export const { addMessage, modifyMessage, removeMessage, clearMessages } =
   messageSlice.actions;
 

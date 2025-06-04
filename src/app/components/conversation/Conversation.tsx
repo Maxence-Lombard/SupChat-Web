@@ -18,11 +18,24 @@ function Conversation() {
     id,
     channelId,
   });
+
   const { on, off, sendUserMessage, joinChannel, sendChannelMessage } =
     useSignalR();
-  const [messageInput, setMessageInput] = useState("");
   const dispatch = useDispatch();
+
+  const [messageInput, setMessageInput] = useState("");
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  // REFERENCES
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    const el = scrollableRef.current;
+    if (!el) return;
+    const threshold = 50; // px
+    setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < threshold);
+  };
 
   const sendMessage = () => {
     if (messageInput.trim()) {
@@ -61,6 +74,12 @@ function Conversation() {
   };
 
   useEffect(() => {
+    if (isAtBottom && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isAtBottom]);
+
+  useEffect(() => {
     if (channelId) {
       joinChannel(Number(channelId));
     }
@@ -90,7 +109,10 @@ function Conversation() {
 
   return (
     <>
-      <div className="flex flex-col gap-4 h-full overflow-y-auto">
+      <div
+        className="flex flex-col gap-4 h-full overflow-y-auto"
+        ref={scrollableRef}
+      >
         {/*<div className="flex flex-col gap-1 w-full">*/}
         {/*  <p className="font-semibold"> November 15 2024 </p>*/}
         {/*  <hr className="flex-1 border border-black" />*/}
@@ -134,6 +156,7 @@ function Conversation() {
             />
           ))}
         </div>
+        <div ref={messagesEndRef} className="h-0" />
       </div>
       {/* Message input */}
       <div className="flex flex-col mt-1 gap-2 w-full">
