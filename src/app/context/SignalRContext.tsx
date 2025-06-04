@@ -18,16 +18,27 @@ import {
   MessageInChannelDto,
   Reaction,
   useCreateMessageReactionsMutation,
+  useDeleteMessageMutation,
   useDeleteMessageReactionsMutation,
   useMessagesForUserMutation,
   useMessagesInChannelMutation,
+  useModifyMessageMutation,
 } from "../api/messages/messages.api.ts";
+import { SignalREventConstants } from "../constants/signalRConstants.ts";
 
 interface SignalRContextType {
+  // CONNECTION
   isConnected: boolean;
   joinChannel: (channelId: number) => Promise<void>;
+  // MESSAGE
   sendUserMessage: (data: MessageForUserDto) => Promise<void>;
+  editUserMessage: (data: {
+    messageId: number;
+    content: string;
+  }) => Promise<void>;
+  deleteUserMessage: (messageId: number) => Promise<void>;
   sendChannelMessage: (data: MessageInChannelDto) => Promise<void>;
+  // REACTION
   sendReaction: (data: {
     messageId: Reaction["messageId"];
     content: Reaction["content"];
@@ -53,6 +64,8 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   // Message
   const [sendMessageForUser] = useMessagesForUserMutation();
   const [sendMessagesInChannel] = useMessagesInChannelMutation();
+  const [modifyMessageRequest] = useModifyMessageMutation();
+  const [deleteMessage] = useDeleteMessageMutation();
   // Reaction
   const [addReactionRequest] = useCreateMessageReactionsMutation();
   const [deleteReactionRequest] = useDeleteMessageReactionsMutation();
@@ -69,11 +82,11 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         .withAutomaticReconnect()
         .build();
 
-      connection.on("userconnected", (userData) => {
+      connection.on(SignalREventConstants.userConnected, (userData) => {
         console.log("✅ User connected:", userData);
       });
 
-      connection.on("userdisconnected", (userData) => {
+      connection.on(SignalREventConstants.userDisconnected, (userData) => {
         console.log("✅ User user disconnected:", userData);
       });
 
@@ -114,6 +127,7 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // MESSAGE
   const sendUserMessage = async (data: MessageForUserDto) => {
     if (connectionRef.current && isConnected) {
       try {
@@ -134,6 +148,32 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const editUserMessage = async (data: {
+    messageId: number;
+    content: string;
+  }) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        await modifyMessageRequest(data).unwrap();
+        console.log("Message edited:", data.messageId);
+      } catch (err) {
+        console.error("editUserMessage failed:", err);
+      }
+    }
+  };
+
+  const deleteUserMessage = async (messageId: number) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        deleteMessage(messageId).unwrap();
+        console.log("Message deleted:", messageId);
+      } catch (err) {
+        console.error("deleteUserMessage failed:", err);
+      }
+    }
+  };
+
+  // REACTION
   const sendReaction = async (data: {
     messageId: Reaction["messageId"];
     content: Reaction["content"];
@@ -185,6 +225,8 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         joinChannel,
         sendUserMessage,
         sendChannelMessage,
+        editUserMessage,
+        deleteUserMessage,
         sendReaction,
         deleteReaction,
         on,

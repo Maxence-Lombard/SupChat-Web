@@ -1,6 +1,5 @@
 import "primeicons/primeicons.css";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./app/components/auth/Login/Login.tsx";
@@ -21,12 +20,7 @@ import TokenExpiryChecker from "./app/middlewares/TokenExpiryChecker.ts";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 
 function App() {
-  const dispatch = useDispatch();
   const token = useSelector(selectAccessToken);
-
-  useEffect(() => {
-    dispatch({ type: "auth/checkAuth" });
-  }, [dispatch, location.pathname]);
 
   const users = ["user1", "user2", "user3", "user4", "user5"];
   users.map((user) => {
@@ -40,6 +34,10 @@ function App() {
           <TokenExpiryChecker />
           <AuthRedirect />
           <Routes>
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
             <Route
               element={
                 token ? (
@@ -67,10 +65,6 @@ function App() {
             <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
             <Route path="/login/callback" element={<Callback />} />
 
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Route>
             <Route path="*" element={<h1>404</h1>} />
           </Routes>
         </BrowserRouter>

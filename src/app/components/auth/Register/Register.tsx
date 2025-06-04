@@ -13,6 +13,7 @@ import {
   useRegisterMutation,
 } from "../../../api/auth/auth.api.ts";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { ErrorResponse } from "../../../Models/Error.ts";
 
 function Register() {
   const [email, setEmail] = useState<string>("");
@@ -28,20 +29,19 @@ function Register() {
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
 
-  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleRegister = async (event?: React.FormEvent) => {
+    if (event) event.preventDefault();
     if (!email || !username || !password) {
       setFormStatus("error");
       setErrorMessage("Please fill all the fields");
       return;
     }
-
     if (password !== confirmPassword) {
       setFormStatus("error");
       setErrorMessage("Passwords do not match");
       return;
     }
-
+    setErrorMessage("");
     setFormStatus("pending");
     const body: RegisterDto = {
       email: email,
@@ -64,30 +64,30 @@ function Register() {
           }
         }
       }
-    } catch (error) {
+    } catch (e) {
+      const error = e as ErrorResponse;
       setFormStatus("error");
-      console.log("Register failed:", error);
-      setErrorMessage("An error occurred during register");
+      setErrorMessage(error.data.detail);
     }
   };
 
   return (
     <>
-      <form onSubmit={handleRegister}>
-        <div className="flex justify-center items-center">
-          <div className="inline-flex flex-row justify-center p-10 bg-white gap-16">
-            <div className="flex flex-col gap-12 w-[480px]">
-              <div className="gap-12">
-                <div className="flex flex-row gap-1">
-                  <h1 className="text-4xl font-bold"> Welcome ! </h1>
-                </div>
-                <div className="flex">
-                  <p className="text-[#000000]/50">
-                    {" "}
-                    Please enter your register informations{" "}
-                  </p>
-                </div>
+      <div className="flex justify-center items-center">
+        <div className="inline-flex flex-row justify-center p-10 bg-white gap-16">
+          <div className="flex flex-col gap-10 w-[408px]">
+            <div>
+              <div className="flex flex-row gap-1">
+                <h1 className="text-4xl font-bold"> Welcome ! </h1>
               </div>
+              <div className="flex">
+                <p className="text-[#000000]/50">
+                  {" "}
+                  Please enter your register informations{" "}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-1 bg-[#EEEEEE] rounded-lg border border-[#EEEEEE] p-1">
                   <button
@@ -100,98 +100,105 @@ function Register() {
                     Sign in
                   </button>
                 </div>
-                <div className="flex gap-4">
+              </div>
+              <form className="flex flex-col gap-10" onSubmit={handleRegister}>
+                <div className="flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="flex" htmlFor="email">
+                        Email
+                      </label>
+                      <InputText
+                        id="email"
+                        type="email"
+                        className="w-full border rounded border-black px-2 py-1"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="flex" htmlFor="username">
+                        Username
+                      </label>
+                      <InputText
+                        id="username"
+                        className="w-full border rounded border-black px-2 py-1"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
+                    </div>
+                  </div>
                   <div className="flex flex-col gap-1">
-                    <label className="flex" htmlFor="email">
-                      Email
+                    <label className="flex" htmlFor="password">
+                      Password
                     </label>
-                    <InputText
-                      id="email"
-                      type="email"
-                      className="w-full border rounded border-black px-2 py-1"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                    <Password
+                      id="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      toggleMask
+                      feedback={false}
+                      tabIndex={1}
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="flex" htmlFor="username">
-                      Username
+                    <label className="flex" htmlFor="password">
+                      Confirm Password
                     </label>
-                    <InputText
-                      id="username"
-                      className="w-full border rounded border-black px-2 py-1"
-                      placeholder="Username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                    <Password
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      toggleMask
+                      feedback={false}
+                      tabIndex={1}
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="flex" htmlFor="password">
-                    Password
-                  </label>
-                  <Password
-                    id="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    toggleMask
-                    feedback={false}
-                    tabIndex={1}
+                  <p
+                    className={`flex m-0 min-h-6 text-red-500 ${formStatus === "error" ? "visible" : "invisible"}`}
+                  >
+                    {errorMessage}
+                  </p>
+                  <Button
+                    label="Continue"
+                    type="submit"
+                    className="w-full h-10 text-white bg-[#6B8AFD]"
                   />
                 </div>
-                <div className="flex flex-col gap-1">
-                  <label className="flex" htmlFor="password">
-                    Confirm Password
-                  </label>
-                  <Password
-                    id="confirmPassword"
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    toggleMask
-                    feedback={false}
-                    tabIndex={1}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p
-                  className={`flex m-0 min-h-6 text-red-500 ${formStatus === "error" ? "visible" : "invisible"}`}
-                >
-                  {errorMessage}
-                </p>
-                <Button
-                  label="Continue"
-                  type="submit"
-                  className="w-full h-12 text-white bg-[#6B8AFD]"
-                />
-              </div>
-              <div className="flex items-center gap-1 text-black/30">
-                <hr className="flex-1" />
-                <span className="inline"> Or connect with </span>
-                <hr className="flex-1" />
-              </div>
-              <div className="flex gap-4">
-                <button className="flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg">
-                  <img src={googleIcon} alt="Google" />
-                  <span>Google</span>
-                </button>
-                <button className="flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg">
-                  <img src={microsoftIcon} alt="Microsoft" />
-                  <span>Microsoft</span>
-                </button>
-                <button className="flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg">
-                  <img src={GitHubIcon} alt="GitHub" />
-                  <span>GitHub</span>
-                </button>
-              </div>
+              </form>
             </div>
-            <Lottie animationData={welcomeAnimation} className="" />
+            <div className="flex items-center gap-1 text-black/30">
+              <hr className="flex-1" />
+              <span className="inline"> Or connect with </span>
+              <hr className="flex-1" />
+            </div>
+            <div className="flex gap-4">
+              <button className="flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg">
+                <img src={googleIcon} alt="Google" />
+                <span>Google</span>
+              </button>
+              <button className="flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg">
+                <img src={microsoftIcon} alt="Microsoft" />
+                <span>Microsoft</span>
+              </button>
+              <button className="flex gap-2 items-center justify-center w-full h-12 bg-white border border-black rounded-lg">
+                <img src={GitHubIcon} alt="GitHub" />
+                <span>GitHub</span>
+              </button>
+            </div>
           </div>
+          <Lottie
+            animationData={welcomeAnimation}
+            className="flex-1 hidden lg:block"
+          />
         </div>
-      </form>
+      </div>
     </>
   );
 }

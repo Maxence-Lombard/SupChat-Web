@@ -7,8 +7,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import { useSignalR } from "../../context/SignalRContext.tsx";
 import { useEffect, useRef, useState } from "react";
-import { addMessage } from "../../store/slices/messageSlice.ts";
+import {
+  addMessage,
+  modifyMessage,
+  removeMessage,
+} from "../../store/slices/messageSlice.ts";
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
+import { SignalREventConstants } from "../../constants/signalRConstants.ts";
 
 function Channel() {
   const { channelId } = useParams();
@@ -36,6 +41,19 @@ function Channel() {
     dispatch(addMessage(message));
   };
 
+  const handleMessageUpdated = (...args: unknown[]) => {
+    const message = args[0] as Message;
+    console.log("Received updated message:", message);
+    console.log("Message updated:", message);
+    dispatch(modifyMessage(message));
+  };
+
+  const handleMessageDeleted = (...args: unknown[]) => {
+    const messageId = args[0] as number;
+    console.log("Deleted message:", messageId);
+    dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
+  };
+
   useEffect(() => {
     if (channelId) {
       joinChannel(Number(channelId));
@@ -50,10 +68,14 @@ function Channel() {
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
-    on("ReceiveMessage", handleReceiveMessage);
+    on(SignalREventConstants.receivedMessage, handleReceiveMessage);
+    on(SignalREventConstants.updatedMessage, handleMessageUpdated);
+    on(SignalREventConstants.deletedReaction, handleMessageDeleted);
 
     return () => {
-      off("ReceiveMessage", handleReceiveMessage);
+      off(SignalREventConstants.receivedMessage, handleReceiveMessage);
+      off(SignalREventConstants.updatedMessage, handleMessageUpdated);
+      off(SignalREventConstants.deletedReaction, handleMessageDeleted);
     };
   }, [
     messages,

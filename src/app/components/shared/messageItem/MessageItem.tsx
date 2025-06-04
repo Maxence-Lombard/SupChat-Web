@@ -4,9 +4,7 @@ import { RootState } from "../../../store/store.ts";
 import {
   Message,
   Reaction,
-  useDeleteMessageMutation,
   useGetMessageReactionsQuery,
-  useModifyMessageMutation,
 } from "../../../api/messages/messages.api.ts";
 import React, { useEffect, useRef, useState } from "react";
 import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
@@ -29,6 +27,7 @@ import {
 } from "../../../store/slices/reactionSlice.ts";
 import ReactionsDisplay from "../reactionsDisplay/ReactionsDisplay.tsx";
 import { useSignalR } from "../../../context/SignalRContext.tsx";
+import { SignalREventConstants } from "../../../constants/signalRConstants.ts";
 
 type MessageProps = {
   message: Message;
@@ -38,7 +37,14 @@ type MessageProps = {
 function MessageItem({ message, currentUserId }: MessageProps) {
   const dispatch = useDispatch();
   const pickerRef = useRef<HTMLDivElement>(null);
-  const { on, off, sendReaction, deleteReaction } = useSignalR();
+  const {
+    on,
+    off,
+    editUserMessage,
+    deleteUserMessage,
+    sendReaction,
+    deleteReaction,
+  } = useSignalR();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedMessage, setEditedMessage] = useState<Message>(message);
@@ -59,22 +65,18 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   const { formatDate } = useDateFormatter();
   const { data: fetchedReactions } = useGetMessageReactionsQuery(message.id);
   const [getUserInfos] = useGetUserInfosByIdMutation();
-  const [modifyMessageRequest] = useModifyMessageMutation();
-  const [deleteMessage] = useDeleteMessageMutation();
 
   const handleModifyMessage = () => {
     setIsEditing(true);
     setEditedMessage(message);
   };
 
-  const handleEditingKeyDown = async (
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
+  const handleEditingKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      await modifyMessageRequest({
+      editUserMessage({
         messageId: message.id,
         content: editedMessage.content,
-      }).unwrap();
+      });
       dispatch(modifyMessage(editedMessage));
       setIsEditing(false);
     } else if (e.key === "Escape") {
@@ -89,9 +91,12 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   };
 
   const handleDeleteMessage = (messageId: number) => {
-    deleteMessage(messageId).unwrap();
+    deleteUserMessage(messageId);
     dispatch(
-      removeMessage({ messageId, channelId: message.channelId || undefined }),
+      removeMessage({
+        messageId: messageId,
+        channelId: message.channelId || undefined,
+      }),
     );
   };
 
@@ -113,6 +118,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   const handleReceiveDeletedReaction = (...args: unknown[]) => {
     const reactionId = args[0] as number;
     console.log("Deleted reaction:", reactionId);
+    dispatch(removeReaction(reactionId));
     dispatch(removeReaction(reactionId));
   };
 
@@ -160,7 +166,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   }, [storeUser, message.senderId]);
 
   useEffect(() => {
-    on("AddReaction", handleReceiveReaction);
+    on(SignalREventConstants.receivedReaction, handleReceiveReaction);
     on("DeleteReaction", handleReceiveDeletedReaction);
 
     return () => {
@@ -234,7 +240,9 @@ function MessageItem({ message, currentUserId }: MessageProps) {
                     </p>
                   </div>
                   <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
-                    <p className="text-white">{editedMessage.content}</p>
+                    <p className="text-white w-full break-words">
+                      {editedMessage.content}
+                    </p>
                   </div>
                 </div>
               </>
@@ -290,7 +298,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
             {formatDate(message.sendDate, "HH'h'mm")}
           </p>
           <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
-            <p className="text-black">{message.content}</p>
+            <p className="text-black w-full break-words">{message.content}</p>
           </div>
         </div>
       </div>
