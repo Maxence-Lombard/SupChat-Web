@@ -103,8 +103,7 @@ function Login() {
               </div>
               <div className="flex">
                 <p className="text-[#000000]/50">
-                  {" "}
-                  Sign in to your account to continue{" "}
+                  Sign in to your account to continue
                 </p>
               </div>
             </div>

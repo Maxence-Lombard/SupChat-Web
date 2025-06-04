@@ -168,7 +168,7 @@ function Register() {
                   <Button
                     label="Continue"
                     type="submit"
-                    className="w-full h-10 text-white bg-[#6B8AFD]"
+                    className="w-full h-12 text-white bg-[#6B8AFD]"
                   />
                 </div>
               </form>
