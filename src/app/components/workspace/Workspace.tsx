@@ -22,6 +22,7 @@ import {
 } from "../../api/channels/channels.api.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
+import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -33,6 +34,8 @@ function Workspace() {
   const [createChannelVisible, setCreateChannelVisibleVisible] =
     useState<boolean>(false);
   const [modifyChannelVisible, setModifyChannelVisible] =
+    useState<boolean>(false);
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
     useState<boolean>(false);
   const [currentChannelId, setCurrentChannelId] = useState<number>(
     Number(channelId),
@@ -170,8 +173,7 @@ function Workspace() {
                               className="pi pi-trash cursor-pointer text-red-500"
                               onClick={() => {
                                 setCurrentChannelId(channel.id);
-                                deleteChannelRequest(Number(currentChannelId));
-                                dispatch(deleteChannel(currentChannelId));
+                                setDeleteConfirmationVisible(true);
                               }}
                             />
                           </div>
@@ -302,6 +304,28 @@ function Workspace() {
               setCreateChannelVisibleVisible(false);
             }}
             channelAction="create"
+          />
+        )}
+      ></Dialog>
+      {/* CONFIRM DELETE POPUP */}
+      <Dialog
+        className="rounded-2xl"
+        visible={deleteConfirmationVisible}
+        modal
+        onHide={() => {
+          if (!deleteConfirmationVisible) return;
+          setDeleteConfirmationVisible(false);
+        }}
+        content={({ hide }) => (
+          <DeletePopup
+            itemToDelete={"channel"}
+            deleteAction={async () => {
+              await deleteChannelRequest(Number(currentChannelId));
+              setDeleteConfirmationVisible(false);
+              dispatch(deleteChannel(currentChannelId));
+              hide();
+            }}
+            hide={hide}
           />
         )}
       ></Dialog>

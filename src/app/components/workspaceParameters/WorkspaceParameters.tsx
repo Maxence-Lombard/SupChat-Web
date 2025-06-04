@@ -20,6 +20,8 @@ import {
   removeWorkspace,
 } from "../../store/slices/workspaceSlice.ts";
 import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
+import { Dialog } from "primereact/dialog";
+import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
 
 function WorkspaceParameters() {
   const { workspaceId } = useParams();
@@ -42,6 +44,7 @@ function WorkspaceParameters() {
       ? profilePictureUrls[workspace.profilePictureId]
       : "";
 
+  // ERROR MESSAGES
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined,
   );
@@ -54,6 +57,7 @@ function WorkspaceParameters() {
   const [descriptionErrorMessage, setDescriptionInputErrorMessage] = useState<
     string | undefined
   >(undefined);
+  // MODIFICATION STATES
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
   const [maxWorkspaceDescription, setMaxWorkspaceDescription] =
@@ -62,6 +66,9 @@ function WorkspaceParameters() {
   const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
     useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
+  // DELETE CONFIRMATION STATE
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
+    useState<boolean>(false);
 
   const resetWorkspaceInfos = () => {
     if (!workspace) return;
@@ -202,9 +209,7 @@ function WorkspaceParameters() {
                 </div>
                 <div
                   className="flex gap-2 items-center text-red-500 cursor-pointer"
-                  onClick={() => {
-                    handleDeleteWorkspace(Number(workspaceId));
-                  }}
+                  onClick={() => setDeleteConfirmationVisible(true)}
                 >
                   <p> Delete Workspace </p>
                   <i className="pi pi-trash"></i>
@@ -321,6 +326,27 @@ function WorkspaceParameters() {
           </div>
         </div>
       </div>
+      {/* CONFIRM DELETE POPUP */}
+      <Dialog
+        className="rounded-2xl"
+        visible={deleteConfirmationVisible}
+        modal
+        onHide={() => {
+          if (!deleteConfirmationVisible) return;
+          setDeleteConfirmationVisible(false);
+        }}
+        content={({ hide }) => (
+          <DeletePopup
+            itemToDelete={"workspace"}
+            deleteAction={async () => {
+              await handleDeleteWorkspace(Number(workspaceId));
+              setDeleteConfirmationVisible(false);
+              hide();
+            }}
+            hide={hide}
+          />
+        )}
+      ></Dialog>
     </>
   );
 }
