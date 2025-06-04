@@ -11,7 +11,7 @@ function ShortInfoUserCard({ user }: UserProps) {
   const userImage = useProfilePicture(user.profilePictureId);
 
   const handleNavigation = () => {
-    navigate(`/conversation/${user.id}`, {
+    navigate(`/privateMessage/${user.id}`, {
       state: {
         user: user,
       },

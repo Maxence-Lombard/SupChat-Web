@@ -15,7 +15,6 @@ import ChannelActionPopup from "../shared/popups/channelActionPopup/ChannelActio
 import { useDispatch, useSelector } from "react-redux";
 import { addChannel, deleteChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
-import Channel from "../channel/Channel.tsx";
 import {
   useDeleteChannelMutation,
   useGetChannelByIdQuery,
@@ -23,6 +22,7 @@ import {
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
 import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
+import Conversation from "../conversation/Conversation.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -262,8 +262,8 @@ function Workspace() {
               </div>
             </div>
           </div>
-          {/* CHANNEL CONVERSATIONS */}
-          <Channel />
+          {/* CHANNEL CONVERSATION */}
+          <Conversation />
         </div>
       </div>
       {/* MODIFY CHANNEL POPUP */}

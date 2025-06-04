@@ -6,7 +6,6 @@ import Login from "./app/components/auth/Login/Login.tsx";
 import Register from "./app/components/auth/Register/Register.tsx";
 import Callback from "./app/components/callback/Callback.tsx";
 import ConfirmEmail from "./app/components/confirmEmail/ConfirmEmail.tsx";
-import Conversation from "./app/components/conversation/Conversation.tsx";
 import Home from "./app/components/home/Home.tsx";
 import JoinWorkspaces from "./app/components/joinWorkspaces/JoinWorkspaces.tsx";
 import Workspace from "./app/components/workspace/Workspace.tsx";
@@ -18,6 +17,7 @@ import { SignalRProvider } from "./app/context/SignalRContext.tsx";
 import { selectAccessToken } from "./app/store/slices/authSlice.ts";
 import TokenExpiryChecker from "./app/middlewares/TokenExpiryChecker.ts";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
+import PrivateMessage from "./app/components/privateMessage/PrivateMessage.tsx";
 
 function App() {
   const token = useSelector(selectAccessToken);
@@ -48,7 +48,7 @@ function App() {
               }
             >
               <Route path="/" element={<Home />} />
-              <Route path="/conversation/:id" element={<Conversation />} />
+              <Route path="/privateMessage/:id" element={<PrivateMessage />} />
               <Route
                 path="/workspace/:workspaceId/channel/:channelId"
                 element={<Workspace />}
