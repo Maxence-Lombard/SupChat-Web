@@ -40,6 +40,17 @@ function Conversation() {
     selectSortedMessagesByConversationKey(conversationKey),
   );
 
+  const sendMessage = () => {
+    if (messageInput.trim()) {
+      console.log("Sending message:", messageInput);
+      sendUserMessage({
+        content: messageInput,
+        receiverId: Number(id),
+      });
+      setMessageInput("");
+    }
+  };
+
   const handleReceiveMessage = (...args: unknown[]) => {
     const message = args[0] as Message;
     console.log("Received message:", message);
@@ -173,6 +184,12 @@ function Conversation() {
                 placeholder="Message..."
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
               />
               <div className="flex justify-between w-full items-center">
                 <div className="flex gap-4">
@@ -189,27 +206,13 @@ function Conversation() {
                     style={{ color: "var(--primary-color)" }}
                   />
                 </div>
-                <div className="flex gap-2 items-center">
-                  <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
-                    <i className="pi pi-times-circle text-white" />
-                    <p className="text-white">Discard</p>
-                  </button>
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                    onClick={() => {
-                      if (messageInput.trim()) {
-                        sendUserMessage({
-                          content: messageInput,
-                          receiverId: Number(id),
-                        });
-                        setMessageInput("");
-                      }
-                    }}
-                  >
-                    <i className="pi pi-send text-white" />
-                    <p className="text-white">Send</p>
-                  </button>
-                </div>
+                <button
+                  className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                  onClick={() => sendMessage()}
+                >
+                  <i className="pi pi-send text-white" />
+                  <p className="text-white">Send</p>
+                </button>
               </div>
             </div>
           </div>

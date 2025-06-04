@@ -131,6 +131,7 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   const sendUserMessage = async (data: MessageForUserDto) => {
     if (connectionRef.current && isConnected) {
       try {
+        console.log("Sending user message:", data);
         await sendMessageForUser(data).unwrap();
       } catch (err) {
         console.error("sendUserMessage failed:", err);

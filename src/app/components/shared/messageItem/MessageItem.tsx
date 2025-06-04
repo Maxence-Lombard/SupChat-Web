@@ -240,7 +240,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
                     </p>
                   </div>
                   <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
-                    <p className="text-white w-full break-words">
+                    <p className="text-white w-full whitespace-pre-line break-words">
                       {editedMessage.content}
                     </p>
                   </div>
@@ -298,7 +298,9 @@ function MessageItem({ message, currentUserId }: MessageProps) {
             {formatDate(message.sendDate, "HH'h'mm")}
           </p>
           <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
-            <p className="text-black w-full break-words">{message.content}</p>
+            <p className="text-black w-full whitespace-pre-line break-words">
+              {message.content}
+            </p>
           </div>
         </div>
       </div>
