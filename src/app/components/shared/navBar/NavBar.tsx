@@ -175,6 +175,7 @@ function NavBar() {
         </div>
         <ProfilePictureAvatar
           avatarType={"user"}
+          isCurrentUser={true}
           url={userImage}
           altText={username?.charAt(0).toUpperCase()}
         />

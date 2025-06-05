@@ -250,6 +250,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           </div>
           <ProfilePictureAvatar
             avatarType={"user"}
+            isCurrentUser={true}
             url={userImage}
             altText={user?.firstName?.charAt(0).toUpperCase()}
           />
@@ -290,6 +291,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
       <div className="flex items-end w-full gap-3" key={message.id}>
         <ProfilePictureAvatar
           avatarType={"user"}
+          isCurrentUser={false}
           url={userImage}
           altText={user?.firstName?.charAt(0).toUpperCase()}
         />
