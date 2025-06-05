@@ -8,7 +8,7 @@ function TokenExpiryChecker() {
 
   useEffect(() => {
     if (!token) {
-      dispatch({ type: "auth/redirectToLogin" });
+      dispatch({ type: "auth/checkAuth" });
       return;
     }
 

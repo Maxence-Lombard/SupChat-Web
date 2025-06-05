@@ -38,7 +38,7 @@ function NewWorkspaceActionsPopup({ hide, onClose }: NewWorkspaceActionProps) {
           </div>
           <i
             className="pi pi-plus-circle text-2xl cursor-pointer"
-            style={{ color: "var(--primary-color)" }}
+            style={{ color: "var(--main-color-500)" }}
           />
         </div>
         <div
@@ -54,7 +54,7 @@ function NewWorkspaceActionsPopup({ hide, onClose }: NewWorkspaceActionProps) {
           </div>
           <i
             className="pi pi-search text-2xl"
-            style={{ color: "var(--primary-color)" }}
+            style={{ color: "var(--main-color-500)" }}
           />
         </div>
       </div>

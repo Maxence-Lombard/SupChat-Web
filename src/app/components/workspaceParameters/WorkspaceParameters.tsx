@@ -309,7 +309,7 @@ function WorkspaceParameters() {
                   >
                     <i
                       className="pi pi-times"
-                      style={{ color: "var(--primary-color)" }}
+                      style={{ color: "var(--main-color-500)" }}
                     ></i>
                     <p className="text-[#687BEC]"> Cancel </p>
                   </button>

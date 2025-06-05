@@ -32,8 +32,11 @@ export type Reaction = {
 export const MessagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     //GET
-    getMessagesByUserId: builder.query<Message[], number>({
-      query: (Id, pageNumber = 1, pageSize = 10) => ({
+    getMessagesByUserId: builder.query<
+      Message[],
+      { Id: number; pageNumber: number; pageSize: number }
+    >({
+      query: ({ Id, pageNumber = 1, pageSize = 10 }) => ({
         url: `/api/Message/ByUser?userId=${Id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
         method: "GET",
         headers: {
@@ -41,8 +44,11 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
-    getMessagesByChannelId: builder.query<Message[], number>({
-      query: (Id, pageNumber = 1, pageSize = 10) => ({
+    getMessagesByChannelId: builder.query<
+      Message[],
+      { Id: number; pageNumber: number; pageSize: number }
+    >({
+      query: ({ Id, pageNumber = 1, pageSize = 10 }) => ({
         url: `/api/Message/ByChannel?channelId=${Id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
         method: "GET",
         headers: {
@@ -133,7 +139,9 @@ export const MessagesApi = api.injectEndpoints({
 
 export const {
   useGetMessagesByUserIdQuery,
+  useLazyGetMessagesByUserIdQuery,
   useGetMessagesByChannelIdQuery,
+  useLazyGetMessagesByChannelIdQuery,
   useGetMessageReactionsQuery,
   useMessagesForUserMutation,
   useMessagesInChannelMutation,

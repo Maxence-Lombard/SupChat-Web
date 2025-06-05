@@ -85,9 +85,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected }) => {
           <div className="text-center">
             <i
               className="pi pi-file-import text-4xl"
-              style={{ color: "var(--primary-color)" }}
+              style={{ color: "var(--main-color-500)" }}
             ></i>
-            <p style={{ color: "var(--primary-color)" }}> Import your file </p>
+            <p style={{ color: "var(--main-color-500)" }}> Import your file </p>
             <p className="text-sm text-black/50"> Drag or click to upload </p>
           </div>
         )}

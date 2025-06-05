@@ -15,7 +15,6 @@ import ChannelActionPopup from "../shared/popups/channelActionPopup/ChannelActio
 import { useDispatch, useSelector } from "react-redux";
 import { addChannel, deleteChannel } from "../../store/slices/channelSlice.ts";
 import { RootState } from "../../store/store.ts";
-import Channel from "../channel/Channel.tsx";
 import {
   useDeleteChannelMutation,
   useGetChannelByIdQuery,
@@ -23,6 +22,7 @@ import {
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
 import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
+import Conversation from "../conversation/Conversation.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -188,7 +188,7 @@ function Workspace() {
                 >
                   <i
                     className="pi pi-plus-circle"
-                    style={{ color: "var(--primary-color)" }}
+                    style={{ color: "var(--main-color-500)" }}
                   />
                   <p>Add Channel</p>
                 </div>
@@ -249,21 +249,21 @@ function Workspace() {
               <div className="flex items-center gap-6">
                 <i
                   className="pi pi-search text-xl cursor-pointer"
-                  style={{ color: "var(--primary-color)" }}
+                  style={{ color: "var(--main-color-500)" }}
                 />
                 <i
                   className="pi pi-info-circle text-xl cursor-pointer"
-                  style={{ color: "var(--primary-color)" }}
+                  style={{ color: "var(--main-color-500)" }}
                 />
                 <i
                   className="pi pi-ellipsis-v text-xl cursor-pointer"
-                  style={{ color: "var(--primary-color)" }}
+                  style={{ color: "var(--main-color-500)" }}
                 />
               </div>
             </div>
           </div>
-          {/* CHANNEL CONVERSATIONS */}
-          <Channel />
+          {/* CHANNEL CONVERSATION */}
+          <Conversation />
         </div>
       </div>
       {/* MODIFY CHANNEL POPUP */}
