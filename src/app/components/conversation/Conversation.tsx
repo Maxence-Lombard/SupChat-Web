@@ -14,7 +14,7 @@ import { useConversationMessages } from "../../hooks/useConversationMessage.ts";
 
 function Conversation() {
   const { id, channelId } = useParams();
-  const { messages, oldMessages, userId } = useConversationMessages({
+  const { messages, userId, loadMore } = useConversationMessages({
     id,
     channelId,
   });
@@ -67,12 +67,25 @@ function Conversation() {
     dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
   };
 
+  const handleScroll = () => {
+    const scrollElement = scrollableRef.current;
+    if (!scrollElement) return;
+
+    if (scrollElement.scrollTop === 0) {
+      loadMore();
+    }
+    const isAtBottomNow =
+      scrollElement.scrollHeight - scrollElement.scrollTop ===
+      scrollElement.clientHeight;
+    setIsAtBottom(isAtBottomNow);
+  };
+
   // SCROLLING EFFECTS
   useEffect(() => {
-    if (oldMessages?.length && messagesEndRef.current) {
+    if (messageInput && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "auto" });
     }
-  }, [oldMessages]);
+  }, [messageInput]);
 
   useEffect(() => {
     const el = scrollableRef.current;
@@ -111,27 +124,23 @@ function Conversation() {
       off(SignalREventConstants.updatedMessage, handleMessageUpdated);
       off(SignalREventConstants.deletedReaction, handleMessageDeleted);
     };
-  }, [channelId, on, off, sendUserMessage, joinChannel, sendChannelMessage]);
+  }, [channelId, on, off, sendUserMessage, joinChannel]);
 
-  // MESSAGES STORAGE & TEXTAREA RESIZE EFFECT
+  // TEXTAREA RESIZE EFFECT
   useEffect(() => {
-    if (oldMessages) {
-      oldMessages.forEach((message) => {
-        dispatch(addMessage(message));
-      });
-    }
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "auto";
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
-  }, [oldMessages, dispatch]);
+  }, []);
 
   return (
     <>
       <div
         className="flex flex-col gap-4 h-full overflow-y-auto"
         ref={scrollableRef}
+        onScroll={handleScroll}
       >
         {/*<div className="flex flex-col gap-1 w-full">*/}
         {/*  <p className="font-semibold"> November 15 2024 </p>*/}
