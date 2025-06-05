@@ -140,7 +140,7 @@ function MyProfile() {
                 <div
                   onClick={handleLogout}
                   className="flex gap-2 items-center cursor-pointer"
-                  style={{ color: "var(--primary-color)" }}
+                  style={{ color: "var(--main-color-500)" }}
                 >
                   <p> Log out </p>
                   <i className="pi pi-sign-out" />
@@ -225,7 +225,7 @@ function MyProfile() {
                   >
                     <i
                       className="pi pi-times"
-                      style={{ color: "var(--primary-color)" }}
+                      style={{ color: "var(--main-color-500)" }}
                     ></i>
                     <p className="text-[#687BEC]"> Cancel </p>
                   </button>

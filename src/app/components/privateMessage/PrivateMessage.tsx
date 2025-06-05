@@ -32,15 +32,15 @@ function PrivateMessage() {
             <div className="flex items-center gap-6">
               <i
                 className="pi pi-search text-xl cursor-pointer"
-                style={{ color: "var(--primary-color)" }}
+                style={{ color: "var(--main-color-500)" }}
               ></i>
               <i
                 className="pi pi-info-circle text-xl cursor-pointer"
-                style={{ color: "var(--primary-color)" }}
+                style={{ color: "var(--main-color-500)" }}
               ></i>
               <i
                 className="pi pi-ellipsis-v text-xl cursor-pointer"
-                style={{ color: "var(--primary-color)" }}
+                style={{ color: "var(--main-color-500)" }}
               ></i>
             </div>
           </div>

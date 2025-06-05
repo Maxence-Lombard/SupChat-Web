@@ -25,17 +25,11 @@ function Conversation() {
 
   const [messageInput, setMessageInput] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const previousMessagesLength = useRef(0);
   // REFERENCES
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = () => {
-    const el = scrollableRef.current;
-    if (!el) return;
-    const threshold = 50; // px
-    setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < threshold);
-  };
 
   const sendMessage = () => {
     if (messageInput.trim()) {
@@ -73,12 +67,37 @@ function Conversation() {
     dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
   };
 
+  // SCROLLING EFFECTS
   useEffect(() => {
-    if (isAtBottom && messagesEndRef.current) {
+    if (oldMessages?.length && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+    }
+  }, [oldMessages]);
+
+  useEffect(() => {
+    const el = scrollableRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const threshold = 50;
+      setIsAtBottom(
+        el.scrollHeight - el.scrollTop - el.clientHeight < threshold,
+      );
+    };
+
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const hasNewMessage = messages.length > previousMessagesLength.current;
+    previousMessagesLength.current = messages.length;
+
+    if (hasNewMessage && isAtBottom && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isAtBottom]);
 
+  // SIGNALR EVENT EFFECT
   useEffect(() => {
     if (channelId) {
       joinChannel(Number(channelId));
@@ -94,6 +113,7 @@ function Conversation() {
     };
   }, [channelId, on, off, sendUserMessage, joinChannel, sendChannelMessage]);
 
+  // MESSAGES STORAGE & TEXTAREA RESIZE EFFECT
   useEffect(() => {
     if (oldMessages) {
       oldMessages.forEach((message) => {
@@ -156,6 +176,16 @@ function Conversation() {
             />
           ))}
         </div>
+        {!isAtBottom ? (
+          <button
+            onClick={() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="fixed py-1 px-2 bottom-40 right-6 bg-[#F3F3F3] rounded-full"
+          >
+            <i className="pi pi-arrow-down" />
+          </button>
+        ) : null}
         <div ref={messagesEndRef} className="h-0" />
       </div>
       {/* Message input */}
@@ -181,19 +211,19 @@ function Conversation() {
             <div className="flex gap-4">
               <i
                 className="pi pi-plus-circle text-xl cursor-pointer"
-                style={{ color: "var(--primary-color)" }}
+                style={{ color: "var(--main-color-500)" }}
               />
               <i
                 className="pi pi-face-smile text-xl cursor-pointer"
-                style={{ color: "var(--primary-color)" }}
+                style={{ color: "var(--main-color-500)" }}
               />
               <i
                 className="pi pi-at text-xl cursor-pointer"
-                style={{ color: "var(--primary-color)" }}
+                style={{ color: "var(--main-color-500)" }}
               />
             </div>
             <button
-              className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+              className="flex gap-2 px-2 py-1 items-center bg-[var(--main-color-500)] rounded-lg"
               onClick={() => sendMessage()}
             >
               <i className="pi pi-send text-white" />
