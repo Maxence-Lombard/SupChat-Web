@@ -18,6 +18,7 @@ import { selectAccessToken } from "./app/store/slices/authSlice.ts";
 import TokenExpiryChecker from "./app/middlewares/TokenExpiryChecker.ts";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 import PrivateMessage from "./app/components/privateMessage/PrivateMessage.tsx";
+import RolesParameters from "./app/components/rolesParameters/RolesParameters.tsx";
 
 function App() {
   const token = useSelector(selectAccessToken);
@@ -54,9 +55,14 @@ function App() {
                 element={<Workspace />}
               />
               <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
+              {/* TODO: REPLACE WORKSPACE SETTINGS ROUTES BY A LAYOUT */}
               <Route
                 path="/workspace/settings/:workspaceId"
                 element={<WorkspaceParameters />}
+              />
+              <Route
+                path="/workspace/settings/:workspaceId/rolesListing"
+                element={<RolesParameters />}
               />
               {/* User settings */}
               <Route path="/settings/myprofile" element={<MyProfile />} />

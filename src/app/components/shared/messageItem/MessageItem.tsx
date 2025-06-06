@@ -166,12 +166,15 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   }, [storeUser, message.senderId]);
 
   useEffect(() => {
-    on(SignalREventConstants.receivedReaction, handleReceiveReaction);
-    on("DeleteReaction", handleReceiveDeletedReaction);
+    on(SignalREventConstants.onReactionAdded, handleReceiveReaction);
+    on(SignalREventConstants.onReactionDeleted, handleReceiveDeletedReaction);
 
     return () => {
-      off("AddReaction", handleReceiveReaction);
-      off("DeleteReaction", handleReceiveDeletedReaction);
+      off(SignalREventConstants.onReactionAdded, handleReceiveReaction);
+      off(
+        SignalREventConstants.onReactionDeleted,
+        handleReceiveDeletedReaction,
+      );
     };
   }, [on, off]);
 

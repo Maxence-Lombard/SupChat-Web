@@ -82,11 +82,11 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         .withAutomaticReconnect()
         .build();
 
-      connection.on(SignalREventConstants.userConnected, (userData) => {
+      connection.on(SignalREventConstants.onUserConnected, (userData) => {
         console.log("✅ User connected:", userData);
       });
 
-      connection.on(SignalREventConstants.userDisconnected, (userData) => {
+      connection.on(SignalREventConstants.onUserDisconnected, (userData) => {
         console.log("✅ User user disconnected:", userData);
       });
 

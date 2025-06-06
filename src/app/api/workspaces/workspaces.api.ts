@@ -1,4 +1,4 @@
-import { visibility } from "../../Models/Enums.ts";
+import { roles, visibility } from "../../Models/Enums.ts";
 import { api } from "../api";
 import {
   CreateChannelDto,
@@ -23,6 +23,13 @@ export type CreateWorkspaceDto = {
 export type addMemberDto = {
   workspaceId: number;
   userId: number;
+};
+
+type RoleDto = {
+  id: number;
+  name: string;
+  hierarchy: number;
+  permissionsIds: roles[];
 };
 
 //Response
@@ -106,6 +113,42 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    getWorkspaceRoles: builder.query<RoleDto[], number>({
+      query: (Id) => ({
+        url: `/api/Workspace/${Id}/Roles`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getWorkspaceRoleMembersCount: builder.query<
+      RoleDto[],
+      { workspaceId: number; roleId: number }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getWorkspaceRoleNonMembers: builder.query<
+      RoleDto[],
+      { workspaceId: number; roleId: number }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     // POST
     createWorkspace: builder.mutation<GetWorkspaceResponse, CreateWorkspaceDto>(
       {
@@ -149,6 +192,20 @@ export const WorkspaceApi = api.injectEndpoints({
         url: `/api/Workspace/AddMember`,
         method: "POST",
         body: JSON.stringify(member),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    createWorkspaceRole: builder.mutation<
+      RoleDto,
+      { workspaceId: number; newRole: Omit<WorkspaceDto, "id"> }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles`,
+        method: "GET",
+        body: JSON.stringify(data.newRole),
         headers: {
           "Content-Type": "application/json",
         },
@@ -208,22 +265,44 @@ export const WorkspaceApi = api.injectEndpoints({
         },
       }),
     }),
+
+    deleteWorkspaceRole: builder.mutation<
+      RoleDto,
+      { workspaceId: number; roleId: number }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
   }),
 });
 
 export const {
+  // GET
   useGetWorkspacesQuery,
   useGetWorkspacesJoinedQuery,
   useGetWorkspaceByIdQuery,
   useGetWorkspacesAvailableQuery,
   useGetFirstChannelMutation,
   useGetChannelsByWorkspaceIdQuery,
+  useGetWorkspaceRolesQuery,
+  useGetWorkspaceRoleMembersCountQuery,
+  useGetWorkspaceRoleNonMembersQuery,
+  // POST
   useCreateWorkspaceMutation,
   useCreateChannelInWorkspaceMutation,
   useAddMemberInWorkspaceMutation,
   useJoinWorkspaceMutation,
+  useCreateWorkspaceRoleMutation,
+  // PATCH
   useModifyWorkspaceMutation,
   useModifyWorkspaceProfilePictureMutation,
+  // DELETE
   useLeaveWorkspaceMutation,
   useDeleteWorkspaceMutation,
+  useDeleteWorkspaceRoleMutation,
 } = WorkspaceApi;

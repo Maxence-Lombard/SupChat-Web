@@ -115,14 +115,14 @@ function Conversation() {
     if (channelId) {
       joinChannel(Number(channelId));
     }
-    on(SignalREventConstants.receivedMessage, handleReceiveMessage);
-    on(SignalREventConstants.updatedMessage, handleMessageUpdated);
-    on(SignalREventConstants.deletedReaction, handleMessageDeleted);
+    on(SignalREventConstants.onMessageReceived, handleReceiveMessage);
+    on(SignalREventConstants.onMessageUpdated, handleMessageUpdated);
+    on(SignalREventConstants.onMessageDeleted, handleMessageDeleted);
 
     return () => {
-      off(SignalREventConstants.receivedMessage, handleReceiveMessage);
-      off(SignalREventConstants.updatedMessage, handleMessageUpdated);
-      off(SignalREventConstants.deletedReaction, handleMessageDeleted);
+      off(SignalREventConstants.onMessageReceived, handleReceiveMessage);
+      off(SignalREventConstants.onMessageUpdated, handleMessageUpdated);
+      off(SignalREventConstants.onMessageDeleted, handleMessageDeleted);
     };
   }, [channelId, on, off, sendUserMessage, joinChannel]);
 

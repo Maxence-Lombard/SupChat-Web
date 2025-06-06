@@ -20,13 +20,26 @@ import {
   removeWorkspace,
 } from "../../store/slices/workspaceSlice.ts";
 import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
-import { Dialog } from "primereact/dialog";
-import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
+import ParametersLeftPanel from "../shared/parametersLeftPanel/ParametersLeftPanel.tsx";
+import TitleBanner from "../shared/titleBanner/TitleBanner.tsx";
 
 function WorkspaceParameters() {
+  // TODO: ADD WORKSPACE EDITION COMPONENT AND REFACTO TO USE THIS COMPONENT AS A LAYOUT
   const { workspaceId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // NAVIGATION ITEMS
+  const navigationItems = [
+    {
+      name: "Workspace",
+      urlToNavigate: `/workspace/settings/${workspaceId}`,
+    },
+    {
+      name: "Roles",
+      urlToNavigate: `/workspace/settings/${workspaceId}/rolesListing`,
+    },
+  ];
 
   const { data: workspace } = useGetWorkspaceByIdQuery(Number(workspaceId));
   const [GetFirstChannel] = useGetFirstChannelMutation();
@@ -60,20 +73,16 @@ function WorkspaceParameters() {
   // MODIFICATION STATES
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
-  const [maxWorkspaceDescription, setMaxWorkspaceDescription] =
-    useState<number>(500);
+  const [maxWorkspaceDescription] = useState<number>(500);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [workspaceProfilePictureId, setWorkspaceProfilePictureId] =
     useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
-  // DELETE CONFIRMATION STATE
-  const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
-    useState<boolean>(false);
 
   const resetWorkspaceInfos = () => {
     if (!workspace) return;
-    setWorkspaceName(workspace.name);
-    setWorkspaceDescription(workspace.description);
+    setWorkspaceName(workspace.name || "");
+    setWorkspaceDescription(workspace.description || "");
     setWorkspaceProfilePictureId(workspace.profilePictureId || "");
     setPreviewUrl(undefined);
     setSelectedFile(undefined);
@@ -178,8 +187,8 @@ function WorkspaceParameters() {
 
   useEffect(() => {
     if (workspace) {
-      setWorkspaceName(workspace.name);
-      setWorkspaceDescription(workspace.description);
+      setWorkspaceName(workspace.name || "");
+      setWorkspaceDescription(workspace.description || "");
       setWorkspaceProfilePictureId(workspace.profilePictureId || "");
       setPreviewUrl(undefined);
     }
@@ -190,34 +199,16 @@ function WorkspaceParameters() {
       <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
         <div className="flex flex-col flex-1 gap-10">
           {/* Banner */}
-          <div className="flex flex-col w-full p-6 rounded-2xl bg-[#6B8AFD]">
-            <h1 className="font-semibold text-white text-xl">
-              Workspace Parameters
-            </h1>
-            <p className="text-white/75">
-              Choose how users can find and view your workspace.
-            </p>
-          </div>
+          <TitleBanner
+            title={"Workspace Parameters"}
+            description={"Choose how users can find and view your workspace"}
+          />
           <div className="flex h-full bg-[#F9FAFC] rounded-3xl py-8 px-6 gap-4">
-            <div className="flex gap-2">
-              <div className="flex flex-col justify-between">
-                <div className="flex flex-col gap-2">
-                  <p className="w-max px-2 py-1 bg-[#6B8AFD]/10 text-[#6B8AFD] rounded-2xl cursor-pointer">
-                    Workspace
-                  </p>
-                  <p className="cursor-pointer px-2 "> Roles </p>
-                </div>
-                <div
-                  className="flex gap-2 items-center text-red-500 cursor-pointer"
-                  onClick={() => setDeleteConfirmationVisible(true)}
-                >
-                  <p> Delete Workspace </p>
-                  <i className="pi pi-trash"></i>
-                </div>
-              </div>
-              {/* Separation line */}
-              <div className="w-px h-full bg-black rounded-full"></div>
-            </div>
+            <ParametersLeftPanel
+              navigationItems={navigationItems}
+              deleteAction={() => handleDeleteWorkspace(Number(workspaceId))}
+              itemToDelete={"workspace"}
+            />
             <div className="flex flex-col flex-1 justify-between">
               <div className="flex flex-col gap-8">
                 <div className="flex justify-between">
@@ -326,27 +317,6 @@ function WorkspaceParameters() {
           </div>
         </div>
       </div>
-      {/* CONFIRM DELETE POPUP */}
-      <Dialog
-        className="rounded-2xl"
-        visible={deleteConfirmationVisible}
-        modal
-        onHide={() => {
-          if (!deleteConfirmationVisible) return;
-          setDeleteConfirmationVisible(false);
-        }}
-        content={({ hide }) => (
-          <DeletePopup
-            itemToDelete={"workspace"}
-            deleteAction={async () => {
-              await handleDeleteWorkspace(Number(workspaceId));
-              setDeleteConfirmationVisible(false);
-              hide();
-            }}
-            hide={hide}
-          />
-        )}
-      ></Dialog>
     </>
   );
 }

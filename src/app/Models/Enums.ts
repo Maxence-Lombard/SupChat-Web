@@ -28,3 +28,12 @@ export enum types {
   WARNING = 1,
   ERROR = 2,
 }
+
+export enum roles {
+  "owner" = "Owner",
+  "admin" = "Admin",
+  "editor" = "Editor",
+  "viewer" = "Viewer",
+  "guest" = "Guest",
+  "custom" = "Custom",
+}
