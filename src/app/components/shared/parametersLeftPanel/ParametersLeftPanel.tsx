@@ -8,7 +8,7 @@ interface ParametersLeftPanelProps {
     name: string;
     urlToNavigate: string;
   }[];
-  deleteAction: () => Promise<void> | void;
+  deleteAction: () => Promise<void>;
   itemToDelete: string;
 }
 
