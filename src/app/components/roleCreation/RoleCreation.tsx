@@ -247,7 +247,6 @@ function RoleCreation() {
       return;
     }
     setInputErrorMessage("");
-    console.log("Creating role with name:", name);
 
     const permissionsIds: number[] = [];
     optionsSections.forEach((section) => {
@@ -267,14 +266,11 @@ function RoleCreation() {
       hierarchy: 0,
       permissionsIds: permissionsIds,
     };
-    console.log("New role data:", newRole);
     try {
-      console.log("Creating role with data:", newRole);
       const createdRole = await createRoleRequest({
-        workspaceId: 2,
+        workspaceId: Number(workspaceId),
         newRole,
       });
-      console.log("Role created successfully:", createdRole);
     } catch (error) {
       console.error("Failed to create role:", error);
     }
