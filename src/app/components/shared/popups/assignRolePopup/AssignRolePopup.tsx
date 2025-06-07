@@ -16,7 +16,13 @@ function AssignRolePopup({ hide, roleName, roleId }: AssignRolePopupProps) {
   return (
     <div className="flex flex-col text-black px-8 py-6 border bg-white border-[#ECECEC] rounded-2xl">
       <div className="flex flex-col gap-4">
-        <p className="font-semibold text-xl"> Assign {roleName} role </p>
+        <div className="flex gap-2">
+          <p className="font-semibold text-xl"> Assign </p>
+          <p className="font-semibold text-xl text-[var(--main-color-500)]">
+            {roleName}
+          </p>
+          <p className="font-semibold text-xl"> to : </p>
+        </div>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
             {workspaceMembers?.map((member, index) => (
@@ -42,7 +48,7 @@ function AssignRolePopup({ hide, roleName, roleId }: AssignRolePopupProps) {
             </button>
             <button className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg">
               <i className="pi pi-plus text-white"></i>
-              <p className="text-white">Create the workspace</p>
+              <p className="text-white">Assign role</p>
             </button>
           </div>
         </div>

@@ -10,6 +10,7 @@ interface CheckUserCardProps {
 
 function CheckUserCard({ user }: CheckUserCardProps) {
   const [checked, setChecked] = useState(false);
+  //TODO: recup url de l'image via store, sinon get puis ajouter dans le store
 
   return (
     <div
@@ -19,7 +20,7 @@ function CheckUserCard({ user }: CheckUserCardProps) {
       <div className="flex items-center gap-3 w-[400px]">
         <ProfilePictureAvatar
           avatarType={"user"}
-          url={user.image}
+          url={""}
           size={"xlarge"}
           altText={user?.firstName?.charAt(0).toUpperCase()}
         />
