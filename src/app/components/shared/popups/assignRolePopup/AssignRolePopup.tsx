@@ -16,7 +16,7 @@ function AssignRolePopup({
       <div className="flex flex-col gap-4">
         <p className="font-semibold text-xl"> Assign {name} role </p>
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
             {workspaceMembers.map((member, index) => (
               <CheckUserCard
                 key={index}
