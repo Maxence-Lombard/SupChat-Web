@@ -165,7 +165,6 @@ function WorkspaceParameters() {
   return (
     <>
       <WorkspaceParametersLayout
-        workspaceId={Number(workspaceId)}
         titleBanner={"Workspace Parameters"}
         descriptionBanner={"Choose how users can find and view your workspace"}
       >

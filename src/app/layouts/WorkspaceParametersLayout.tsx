@@ -1,24 +1,23 @@
 import ParametersLeftPanel from "../components/shared/parametersLeftPanel/ParametersLeftPanel.tsx";
 import TitleBanner from "../components/shared/titleBanner/TitleBanner.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { removeWorkspace } from "../store/slices/workspaceSlice.ts";
 import { useDispatch } from "react-redux";
 import { useDeleteWorkspaceMutation } from "../api/workspaces/workspaces.api.ts";
 import React from "react";
 
 type ParametersLayoutProps = {
-  workspaceId: number;
   titleBanner: string;
   descriptionBanner: string;
   children: React.ReactNode;
 };
 
 function WorkspaceParametersLayout({
-  workspaceId,
   titleBanner,
   descriptionBanner,
   children,
 }: ParametersLayoutProps) {
+  const { workspaceId } = useParams<{ workspaceId: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,8 +30,12 @@ function WorkspaceParametersLayout({
       urlToNavigate: `/workspace/settings/${workspaceId}`,
     },
     {
-      name: "Roles",
-      urlToNavigate: `/workspace/settings/${workspaceId}/rolesListing`,
+      name: "Roles listing",
+      urlToNavigate: `/workspace/settings/${workspaceId}/roleListing`,
+    },
+    {
+      name: "Role creation",
+      urlToNavigate: `/workspace/settings/${workspaceId}/roleCreation`,
     },
   ];
 

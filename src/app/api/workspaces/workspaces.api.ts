@@ -1,9 +1,10 @@
-import { roles, visibility } from "../../Models/Enums.ts";
+import { visibility } from "../../Models/Enums.ts";
 import { api } from "../api";
 import {
   CreateChannelDto,
   GetChannelResponse,
 } from "../channels/channels.api.ts";
+import { ApplicationUser } from "../../Models/User.ts";
 
 //DTO
 export type WorkspaceDto = {
@@ -25,11 +26,17 @@ export type addMemberDto = {
   userId: number;
 };
 
-type RoleDto = {
+export type RoleDto = {
   id: number;
   name: string;
   hierarchy: number;
-  permissionsIds: roles[];
+  workspaceId: number;
+};
+
+export type createRoleDto = {
+  name: string;
+  hierarchy: number;
+  permissionsIds: number[];
 };
 
 //Response
@@ -124,7 +131,7 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     getWorkspaceRoleMembersCount: builder.query<
-      RoleDto[],
+      number,
       { workspaceId: number; roleId: number }
     >({
       query: (data) => ({
@@ -137,7 +144,7 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     getWorkspaceRoleNonMembers: builder.query<
-      RoleDto[],
+      ApplicationUser[],
       { workspaceId: number; roleId: number }
     >({
       query: (data) => ({
@@ -200,11 +207,11 @@ export const WorkspaceApi = api.injectEndpoints({
 
     createWorkspaceRole: builder.mutation<
       RoleDto,
-      { workspaceId: number; newRole: Omit<WorkspaceDto, "id"> }
+      { workspaceId: number; newRole: createRoleDto }
     >({
       query: (data) => ({
         url: `/api/Workspace/${data.workspaceId}/Roles`,
-        method: "GET",
+        method: "POST",
         body: JSON.stringify(data.newRole),
         headers: {
           "Content-Type": "application/json",
@@ -272,7 +279,7 @@ export const WorkspaceApi = api.injectEndpoints({
     >({
       query: (data) => ({
         url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
-        method: "GET",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
