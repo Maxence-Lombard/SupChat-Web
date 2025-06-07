@@ -134,6 +134,8 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: (result, _error, arg) =>
+        result ? [{ type: "Roles", id: arg }] : [],
     }),
 
     getWorkspaceRolesPermissions: builder.query<

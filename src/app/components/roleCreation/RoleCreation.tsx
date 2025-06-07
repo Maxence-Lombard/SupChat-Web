@@ -10,6 +10,9 @@ import {
 } from "../../api/workspaces/workspaces.api.ts";
 import { useLocation, useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { useDispatch, useSelector } from "react-redux";
+import { addRole, updateRole } from "../../store/slices/roleSlice.ts";
+import { RootState } from "../../store/store.ts";
 
 const optionsSections = [
   {
@@ -199,6 +202,7 @@ const optionsSections = [
 ];
 
 function RoleCreation() {
+  const dispatch = useDispatch();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const roleId = params.get("roleId");
@@ -240,6 +244,12 @@ function RoleCreation() {
   });
   const [inputErrorMessage, setInputErrorMessage] = useState<string>("");
 
+  const roleFromStore = useSelector((state: RootState) =>
+    state.roles.byWorkspaceId[Number(workspaceId)]?.find(
+      (role) => role.id === Number(roleId),
+    ),
+  );
+
   const { data: rolePermissionsIds } = useGetWorkspaceRolesPermissionsQuery(
     !roleId
       ? skipToken
@@ -252,24 +262,28 @@ function RoleCreation() {
   const [modifyRoleRequest] = useModifyWorkspaceRoleMutation();
 
   const handleToggleChange = (key: string, value: boolean) => {
-    setToggles((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    if (key === "administrator" && value) {
+      setToggles({
+        ...Object.fromEntries(Object.keys(toggles).map((k) => [k, false])),
+        administrator: true,
+      });
+    } else {
+      setToggles((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    }
   };
 
-  const permissionsIds: number[] = [];
-  optionsSections.forEach((section) => {
-    section.options.forEach((option) => {
-      if (toggles[option.key]) {
-        if (Array.isArray(option.permission)) {
-          permissionsIds.push(...option.permission);
-        } else {
-          permissionsIds.push(option.permission);
-        }
-      }
-    });
-  });
+  const permissionsIds: number[] = optionsSections.flatMap((section) =>
+    section.options.flatMap((option) =>
+      toggles[option.key]
+        ? Array.isArray(option.permission)
+          ? option.permission
+          : [option.permission]
+        : [],
+    ),
+  );
 
   const handleModifyRole = async () => {
     if (!roleId) {
@@ -289,6 +303,18 @@ function RoleCreation() {
         roleId: Number(roleId),
         modifiedRole,
       });
+      dispatch(
+        updateRole({
+          workspaceId: Number(workspaceId),
+          role: {
+            id: Number(roleId),
+            name,
+            hierarchy: 0,
+            workspaceId: Number(workspaceId),
+            permissionsIds,
+          },
+        }),
+      );
     } catch (error) {
       console.error("Failed to modify role:", error);
     }
@@ -310,7 +336,13 @@ function RoleCreation() {
       const createdRole = await createRoleRequest({
         workspaceId: Number(workspaceId),
         newRole,
-      });
+      }).unwrap();
+      dispatch(
+        addRole({
+          workspaceId: Number(workspaceId),
+          role: { ...createdRole, permissionsIds },
+        }),
+      );
     } catch (error) {
       console.error("Failed to create role:", error);
     }

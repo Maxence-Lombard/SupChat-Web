@@ -1,20 +1,53 @@
 import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.tsx";
-import { useGetWorkspaceRolesQuery } from "../../api/workspaces/workspaces.api.ts";
+import {
+  RoleDto,
+  useGetWorkspaceRolesQuery,
+} from "../../api/workspaces/workspaces.api.ts";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import AssignRolePopup from "../shared/popups/assignRolePopup/AssignRolePopup.tsx";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store.ts";
+import { Role, setRolesForWorkspace } from "../../store/slices/roleSlice.ts";
 
 function RoleListing() {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const { data: roles } = useGetWorkspaceRolesQuery(Number(workspaceId));
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [assignRoleVisible, setAssignRoleVisible] = useState(false);
   const [roleSelected, setRoleSelected] = useState<{
     id: number;
     name: string;
   }>({ id: 0, name: "" });
+
+  const rolesFromStore = useSelector(
+    (state: RootState) =>
+      state.roles.byWorkspaceId?.[Number(workspaceId)] ?? [],
+  );
+
+  function mapRoleDtoToRole(dto: RoleDto): Role {
+    return {
+      id: dto.id,
+      name: dto.name,
+      hierarchy: dto.hierarchy,
+      workspaceId: dto.workspaceId,
+    };
+  }
+
+  useEffect(() => {
+    if (roles && workspaceId && rolesFromStore.length === 0) {
+      const mappedRoles = roles.map(mapRoleDtoToRole);
+      dispatch(
+        setRolesForWorkspace({
+          workspaceId: Number(workspaceId),
+          roles: mappedRoles,
+        }),
+      );
+    }
+  }, [roles, workspaceId, dispatch, rolesFromStore.length]);
 
   return (
     <>
@@ -32,7 +65,7 @@ function RoleListing() {
               <p className="font-semibold"> Total of Roles - 3 </p>
             </div>
           </div>
-          {roles ? (
+          {rolesFromStore ? (
             <div className="h-full min-h-0 overflow-y-auto">
               <table className="min-w-full table-auto">
                 <thead className="sticky top-0 bg-[#F9FAFC] z-10">
@@ -46,7 +79,7 @@ function RoleListing() {
                   </tr>
                 </thead>
                 <tbody className="[&>tr]:h-16 [&>tr]:align-middle [&>tr]:border-t [&>tr]:border-[#f0f0f0]">
-                  {roles.map((role, index) => (
+                  {rolesFromStore.map((role, index) => (
                     <tr key={index} className="gap-y-6">
                       <td
                         className="text-left font-semibold max-w-[80px] truncate"
