@@ -5,6 +5,7 @@ export type Role = {
   name: string;
   hierarchy: number;
   workspaceId: number;
+  memberCount?: number;
   permissionsIds?: number[];
 };
 
@@ -42,6 +43,22 @@ const roleSlice = createSlice({
         }
       }
     },
+    setRoleMemberCount: (
+      state,
+      action: PayloadAction<{
+        workspaceId: number;
+        roleId: number;
+        memberCount: number;
+      }>,
+    ) => {
+      const roles = state.byWorkspaceId[action.payload.workspaceId];
+      if (roles) {
+        const role = roles.find((r) => r.id === action.payload.roleId);
+        if (role) {
+          role.memberCount = action.payload.memberCount;
+        }
+      }
+    },
     addRole: (
       state,
       action: PayloadAction<{ workspaceId: number; role: Role }>,
@@ -50,7 +67,10 @@ const roleSlice = createSlice({
       if (!state.byWorkspaceId[workspaceId]) {
         state.byWorkspaceId[workspaceId] = [];
       }
-      state.byWorkspaceId[workspaceId].push(role);
+      state.byWorkspaceId[workspaceId].push({
+        ...role,
+        memberCount: role.memberCount ?? 0,
+      });
     },
     updateRole: (
       state,
@@ -82,6 +102,7 @@ const roleSlice = createSlice({
 export const {
   setRolesForWorkspace,
   setRolePermissions,
+  setRoleMemberCount,
   addRole,
   updateRole,
   deleteRole,

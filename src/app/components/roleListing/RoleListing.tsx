@@ -10,6 +10,7 @@ import AssignRolePopup from "../shared/popups/assignRolePopup/AssignRolePopup.ts
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import { Role, setRolesForWorkspace } from "../../store/slices/roleSlice.ts";
+import RoleMemberCount from "../shared/roleMemberCount/RoleMemberCount.tsx";
 
 function RoleListing() {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -87,7 +88,12 @@ function RoleListing() {
                       >
                         {role.name}
                       </td>
-                      <td className="text-center">1</td>
+                      <td className="text-center">
+                        <RoleMemberCount
+                          workspaceId={Number(workspaceId)}
+                          roleId={role.id}
+                        />
+                      </td>
                       <td className="text-center">
                         <i
                           className="pi pi-user cursor-pointer text-gray-700"
