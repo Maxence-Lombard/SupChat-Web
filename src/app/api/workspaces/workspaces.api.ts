@@ -39,6 +39,12 @@ export type createRoleDto = {
   permissionsIds: number[];
 };
 
+export type rolePermissionsDto = {
+  id: number;
+  workspaceId: number;
+  permissionId: number[];
+};
+
 //Response
 export type GetWorkspaceResponse = {
   id: number;
@@ -130,12 +136,25 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    getWorkspaceRolesPermissions: builder.query<
+      rolePermissionsDto[],
+      { workspaceId: number; roleId: number }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/Permissions`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     getWorkspaceRoleMembersCount: builder.query<
       number,
       { workspaceId: number; roleId: number }
     >({
       query: (data) => ({
-        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/MembersCount`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +167,7 @@ export const WorkspaceApi = api.injectEndpoints({
       { workspaceId: number; roleId: number }
     >({
       query: (data) => ({
-        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/NonMembers`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -252,6 +271,20 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    modifyWorkspaceRole: builder.mutation<
+      RoleDto,
+      { workspaceId: number; roleId: number; modifiedRole: createRoleDto }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}`,
+        method: "PATCH",
+        body: JSON.stringify(data.modifiedRole),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     // DELETE
     leaveWorkspace: builder.mutation<GetWorkspaceResponse, WorkspaceDto>({
       query: (data) => ({
@@ -297,6 +330,7 @@ export const {
   useGetFirstChannelMutation,
   useGetChannelsByWorkspaceIdQuery,
   useGetWorkspaceRolesQuery,
+  useGetWorkspaceRolesPermissionsQuery,
   useGetWorkspaceRoleMembersCountQuery,
   useGetWorkspaceRoleNonMembersQuery,
   // POST
@@ -308,6 +342,7 @@ export const {
   // PATCH
   useModifyWorkspaceMutation,
   useModifyWorkspaceProfilePictureMutation,
+  useModifyWorkspaceRoleMutation,
   // DELETE
   useLeaveWorkspaceMutation,
   useDeleteWorkspaceMutation,

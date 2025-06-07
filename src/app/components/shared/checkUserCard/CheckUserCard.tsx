@@ -4,7 +4,7 @@ import { useState } from "react";
 interface CheckUserCardProps {
   user: {
     firstName: string;
-    image?: string;
+    imageId?: string;
   };
 }
 

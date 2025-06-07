@@ -1,26 +1,31 @@
 import CheckUserCard from "../../checkUserCard/CheckUserCard.tsx";
+import { useGetWorkspaceRoleNonMembersQuery } from "../../../../api/workspaces/workspaces.api.ts";
 
 interface AssignRolePopupProps {
   hide: () => void;
-  name: string;
-  workspaceMembers: { name: string; image: string | undefined }[];
+  roleName: string;
+  roleId: number;
 }
 
-function AssignRolePopup({
-  hide,
-  name,
-  workspaceMembers,
-}: AssignRolePopupProps) {
+function AssignRolePopup({ hide, roleName, roleId }: AssignRolePopupProps) {
+  const { data: workspaceMembers } = useGetWorkspaceRoleNonMembersQuery({
+    workspaceId: 2,
+    roleId: roleId,
+  });
+
   return (
     <div className="flex flex-col text-black px-8 py-6 border bg-white border-[#ECECEC] rounded-2xl">
       <div className="flex flex-col gap-4">
-        <p className="font-semibold text-xl"> Assign {name} role </p>
+        <p className="font-semibold text-xl"> Assign {roleName} role </p>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
-            {workspaceMembers.map((member, index) => (
+            {workspaceMembers?.map((member, index) => (
               <CheckUserCard
                 key={index}
-                user={{ firstName: member.name, image: member.image }}
+                user={{
+                  firstName: member.firstName,
+                  imageId: member.profilePictureId,
+                }}
               />
             ))}
           </div>

@@ -1,6 +1,6 @@
 import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.tsx";
 import { useGetWorkspaceRolesQuery } from "../../api/workspaces/workspaces.api.ts";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import AssignRolePopup from "../shared/popups/assignRolePopup/AssignRolePopup.tsx";
@@ -8,21 +8,13 @@ import AssignRolePopup from "../shared/popups/assignRolePopup/AssignRolePopup.ts
 function RoleListing() {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const { data: roles } = useGetWorkspaceRolesQuery(Number(workspaceId));
+  const navigate = useNavigate();
 
   const [assignRoleVisible, setAssignRoleVisible] = useState(false);
-  const [roleSelected, setRoleSelected] = useState<string>("role");
-  const [workspaceMembers, setWorkspaceMembers] = useState<
-    { name: string; image: string | undefined }[]
-  >([
-    { name: "John Doe", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-    { name: "Doe Jhon", image: undefined },
-  ]);
+  const [roleSelected, setRoleSelected] = useState<{
+    id: number;
+    name: string;
+  }>({ id: 0, name: "" });
 
   return (
     <>
@@ -68,7 +60,7 @@ function RoleListing() {
                           className="pi pi-user cursor-pointer text-gray-700"
                           onClick={() => {
                             setAssignRoleVisible(true);
-                            setRoleSelected(role.name);
+                            setRoleSelected({ id: role.id, name: role.name });
                           }}
                         />
                       </td>
@@ -76,7 +68,14 @@ function RoleListing() {
                         <i className="pi pi-eye cursor-pointer text-gray-700" />
                       </td>
                       <td className="text-center">
-                        <i className="pi pi-pencil cursor-pointer text-gray-700" />
+                        <i
+                          className="pi pi-pencil cursor-pointer text-gray-700"
+                          onClick={() =>
+                            navigate(
+                              `/workspace/settings/${workspaceId}/roleCreation?roleId=${role.id}&roleName=${role.name}`,
+                            )
+                          }
+                        />
                       </td>
                       <td className="text-center">
                         <i className="pi pi-trash cursor-pointer text-red-500" />
@@ -100,8 +99,8 @@ function RoleListing() {
         content={({ hide }) => (
           <AssignRolePopup
             hide={hide}
-            name={roleSelected}
-            workspaceMembers={workspaceMembers}
+            roleName={roleSelected.name}
+            roleId={roleSelected.id}
           />
         )}
       ></Dialog>

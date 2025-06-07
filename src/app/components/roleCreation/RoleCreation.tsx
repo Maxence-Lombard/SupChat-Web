@@ -1,12 +1,15 @@
 import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import OptionToggleCard from "../optionToggleCard/OptionToggleCard.tsx";
 import {
   createRoleDto,
   useCreateWorkspaceRoleMutation,
+  useGetWorkspaceRolesPermissionsQuery,
+  useModifyWorkspaceRoleMutation,
 } from "../../api/workspaces/workspaces.api.ts";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const optionsSections = [
   {
@@ -196,8 +199,13 @@ const optionsSections = [
 ];
 
 function RoleCreation() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const roleId = params.get("roleId");
+  const roleName = params.get("roleName");
+
   const { workspaceId } = useParams<{ workspaceId: string }>();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(roleName || "");
   const [toggles, setToggles] = useState<{ [key: string]: boolean }>({
     // Administrator permission
     administrator: false,
@@ -232,7 +240,16 @@ function RoleCreation() {
   });
   const [inputErrorMessage, setInputErrorMessage] = useState<string>("");
 
+  const { data: rolePermissionsIds } = useGetWorkspaceRolesPermissionsQuery(
+    !roleId
+      ? skipToken
+      : {
+          workspaceId: Number(workspaceId),
+          roleId: Number(roleId),
+        },
+  );
   const [createRoleRequest] = useCreateWorkspaceRoleMutation();
+  const [modifyRoleRequest] = useModifyWorkspaceRoleMutation();
 
   const handleToggleChange = (key: string, value: boolean) => {
     setToggles((prev) => ({
@@ -241,25 +258,48 @@ function RoleCreation() {
     }));
   };
 
+  const permissionsIds: number[] = [];
+  optionsSections.forEach((section) => {
+    section.options.forEach((option) => {
+      if (toggles[option.key]) {
+        if (Array.isArray(option.permission)) {
+          permissionsIds.push(...option.permission);
+        } else {
+          permissionsIds.push(option.permission);
+        }
+      }
+    });
+  });
+
+  const handleModifyRole = async () => {
+    if (!roleId) {
+      console.error("Role ID is required for modification.");
+      return;
+    }
+
+    const modifiedRole: createRoleDto = {
+      name: name,
+      hierarchy: 0,
+      permissionsIds: permissionsIds,
+    };
+
+    try {
+      await modifyRoleRequest({
+        workspaceId: Number(workspaceId),
+        roleId: Number(roleId),
+        modifiedRole,
+      });
+    } catch (error) {
+      console.error("Failed to modify role:", error);
+    }
+  };
+
   const handleCreateRole = async () => {
     if (!name.trim()) {
       setInputErrorMessage("You must provide a name for the role.");
       return;
     }
     setInputErrorMessage("");
-
-    const permissionsIds: number[] = [];
-    optionsSections.forEach((section) => {
-      section.options.forEach((option) => {
-        if (toggles[option.key]) {
-          if (Array.isArray(option.permission)) {
-            permissionsIds.push(...option.permission);
-          } else {
-            permissionsIds.push(option.permission);
-          }
-        }
-      });
-    });
 
     const newRole: createRoleDto = {
       name: name,
@@ -276,15 +316,45 @@ function RoleCreation() {
     }
   };
 
+  useEffect(() => {
+    if (!rolePermissionsIds) return;
+
+    const permissionIds = rolePermissionsIds.map((p) => p.permissionId);
+    const newToggles: { [key: string]: boolean } = { ...toggles };
+
+    optionsSections.forEach((section) => {
+      section.options.forEach((option) => {
+        if (Array.isArray(option.permission)) {
+          newToggles[option.key] = option.permission.some((perm) =>
+            permissionIds.includes(perm),
+          );
+        } else {
+          newToggles[option.key] = permissionIds.includes(option.permission);
+        }
+      });
+    });
+
+    setToggles(newToggles);
+  }, [rolePermissionsIds]);
+
   return (
     <WorkspaceParametersLayout
-      titleBanner={"Role creation"}
+      titleBanner={roleId ? "Role modification" : "Role creation"}
       descriptionBanner={
-        "Create a new role for users to define their permissions in the workspace"
+        roleId
+          ? "Modify an existing role to define the permissions of its users in the workspace."
+          : "Create a new role for users to define their permissions in the workspace"
       }
     >
       <div className="flex flex-col flex-1 gap-6">
-        <p className="font-semibold text-xl"> Role creation </p>
+        {roleId ? (
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-xl">Modify</p>
+            <p className="text-xl text-[var(--main-color-500)]">{roleName}</p>
+          </div>
+        ) : (
+          <p className={"font-semibold text-xl"}> Role creation </p>
+        )}
         <div className="flex justify-between">
           <div className="flex w-1/2 flex-col gap-1">
             <label className="flex" htmlFor="name">
@@ -304,10 +374,10 @@ function RoleCreation() {
 
           <button
             className="flex self-end items-center gap-2 px-4 py-2 rounded-lg text-white bg-[var(--main-color-500)]"
-            onClick={handleCreateRole}
+            onClick={roleId ? handleModifyRole : handleCreateRole}
           >
-            <i className="pi pi-plus" />
-            <p> Create new role </p>
+            <i className={roleId ? "pi pi-save" : "pi pi-plus"} />
+            <p> {roleId ? "Save changes" : "Create new role"} </p>
           </button>
         </div>
         <div className="flex flex-col gap-6 h-full min-h-0 overflow-y-auto">
