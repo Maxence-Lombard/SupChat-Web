@@ -1,6 +1,7 @@
 import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.tsx";
 import {
   RoleDto,
+  useDeleteWorkspaceRoleMutation,
   useGetWorkspaceRolesQuery,
 } from "../../api/workspaces/workspaces.api.ts";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,16 +10,23 @@ import { Dialog } from "primereact/dialog";
 import AssignRolePopup from "../shared/popups/assignRolePopup/AssignRolePopup.tsx";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
-import { Role, setRolesForWorkspace } from "../../store/slices/roleSlice.ts";
+import {
+  deleteRole,
+  Role,
+  setRolesForWorkspace,
+} from "../../store/slices/roleSlice.ts";
 import RoleMemberCount from "../shared/roleMemberCount/RoleMemberCount.tsx";
+import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
 
 function RoleListing() {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const { data: roles } = useGetWorkspaceRolesQuery(Number(workspaceId));
+  const [deleteRoleRequest] = useDeleteWorkspaceRoleMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [assignRoleVisible, setAssignRoleVisible] = useState(false);
+  const [deleteRoleVisible, setDeleteRoleVisible] = useState(false);
   const [roleSelected, setRoleSelected] = useState<{
     id: number;
     name: string;
@@ -117,7 +125,13 @@ function RoleListing() {
                         />
                       </td>
                       <td className="text-center">
-                        <i className="pi pi-trash cursor-pointer text-red-500" />
+                        <i
+                          className="pi pi-trash cursor-pointer text-red-500"
+                          onClick={() => {
+                            setDeleteRoleVisible(true);
+                            setRoleSelected({ id: role.id, name: role.name });
+                          }}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -140,6 +154,36 @@ function RoleListing() {
             hide={hide}
             roleName={roleSelected.name}
             roleId={roleSelected.id}
+          />
+        )}
+      ></Dialog>
+      {/* CONFIRM DELETE DIALOG */}
+      <Dialog
+        className="rounded-2xl"
+        visible={deleteRoleVisible}
+        modal
+        onHide={() => {
+          if (!deleteRoleVisible) return;
+          setDeleteRoleVisible(false);
+        }}
+        content={({ hide }) => (
+          <DeletePopup
+            itemToDelete={"role"}
+            deleteAction={async () => {
+              await deleteRoleRequest({
+                workspaceId: Number(workspaceId),
+                roleId: roleSelected.id,
+              });
+              setDeleteRoleVisible(false);
+              dispatch(
+                deleteRole({
+                  workspaceId: Number(workspaceId),
+                  roleId: roleSelected.id,
+                }),
+              );
+              hide();
+            }}
+            hide={hide}
           />
         )}
       ></Dialog>
