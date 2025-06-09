@@ -111,7 +111,6 @@ function MessageItem({ message, currentUserId }: MessageProps) {
 
   const handleReceiveReaction = (...args: unknown[]) => {
     const reaction = args[0] as Reaction;
-    console.log("Received reaction:", reaction);
     dispatch(addReaction(reaction));
   };
 

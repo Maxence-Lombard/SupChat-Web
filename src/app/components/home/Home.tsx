@@ -2,10 +2,21 @@ import ShortInfoUserCard from "../shared/short-info-user-card/ShortInfoUserCard.
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 import { useGetUserWithMessagesQuery } from "../../api/user/user.api.ts";
 import { status } from "../../Models/Enums.ts";
+import { useGetNotificationByUserQuery } from "../../api/notifications/notifications.api.ts";
+import { RootState } from "../../store/store.ts";
+import { useSelector } from "react-redux";
+import NotificationCard from "../shared/notificationCard/NotificationCard.tsx";
 
 function Home() {
-  //TODO: à supprimer lorsque liste conv dans le store
+  const currentUserId = useSelector(
+    (state: RootState) => state.users.currentUserId,
+  );
+
   const { data: users } = useGetUserWithMessagesQuery(undefined);
+  const { data: notifications } = useGetNotificationByUserQuery(
+    currentUserId!,
+    { skip: !currentUserId },
+  );
 
   return (
     <>
@@ -14,7 +25,7 @@ function Home() {
         <div className="flex flex-col gap-6 flex-1">
           <div className="flex flex-col gap-2">
             <div className="flex justify-center px-4 py-2 border rounded-lg border-[#ECECEC]">
-              <p>Conversations actives - 18</p>
+              <p> Users connected </p>
             </div>
           </div>
           <div className="flex flex-col gap-2 h-full overflow-y-auto">
@@ -22,6 +33,11 @@ function Home() {
               ?.filter((user) => user.status === status.online)
               .map((user) => <ShortInfoUserCard user={user} key={user.id} />)}
           </div>
+        </div>
+        <div className="flex flex-col gap-6 h-full overflow-y-auto">
+          {notifications?.map((notif, index) => (
+            <NotificationCard key={index} notif={notif} />
+          ))}
         </div>
       </div>
     </>
