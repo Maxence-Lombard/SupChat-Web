@@ -1,7 +1,7 @@
 import UserCard from "../userCard/UserCard.tsx";
 import { useEffect, useState } from "react";
 import { addUser } from "../../../store/slices/usersSlice.ts";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   useGetAllUsersInfosQuery,
   useGetUserWithMessagesQuery,
@@ -9,7 +9,6 @@ import {
 import { useDebounce } from "use-debounce";
 import { ApplicationUser } from "../../../Models/User.ts";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "../../../store/store.ts";
 
 function DiscussionsListing() {
   const dispatch = useDispatch();
@@ -18,9 +17,6 @@ function DiscussionsListing() {
   const [debouncedSearch] = useDebounce(search, 500);
   const [filteredUsers, setFilteredUsers] = useState<ApplicationUser[]>([]);
   const [openQuickSearch, setOpenQuickSearch] = useState<boolean>(false);
-  const currentUserId = useSelector(
-    (state: RootState) => state.users.currentUserId,
-  );
 
   const { data: allUsers } = useGetAllUsersInfosQuery({});
   const { data: users } = useGetUserWithMessagesQuery(undefined);
@@ -34,22 +30,16 @@ function DiscussionsListing() {
   }, [users]);
 
   useEffect(() => {
-    console.log(currentUserId);
-
-    if (!allUsers || !currentUserId) return;
-    console.log(currentUserId);
+    if (!allUsers) return;
     const usersWithMessagesIds = users?.map((u) => u.id) ?? [];
     const filtered = allUsers
-      .filter(
-        (user) =>
-          !usersWithMessagesIds.includes(user.id) && user.id !== currentUserId,
-      )
+      .filter((user) => !usersWithMessagesIds.includes(user.id))
       .filter((user) =>
         user.firstName.toLowerCase().includes(debouncedSearch.toLowerCase()),
       );
     setFilteredUsers(filtered);
     console.log("Filtered Users: ", filtered);
-  }, [allUsers, users, debouncedSearch, currentUserId]);
+  }, [allUsers, users, debouncedSearch]);
 
   const handleNavigation = (user: ApplicationUser) => {
     navigate(`/privateMessage/${user.id}`, {
