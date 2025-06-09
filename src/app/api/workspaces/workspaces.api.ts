@@ -240,6 +240,24 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    assignWorkspaceRoleGroup: builder.mutation<
+      boolean,
+      {
+        workspaceId: number;
+        roleId: number;
+        usersId: number[];
+      }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/Members`,
+        method: "POST",
+        body: JSON.stringify({ members: data.usersId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     // PATCH
     modifyWorkspace: builder.mutation<WorkspaceDto, Partial<WorkspaceDto>>({
       query: (data) => ({
@@ -341,6 +359,7 @@ export const {
   useAddMemberInWorkspaceMutation,
   useJoinWorkspaceMutation,
   useCreateWorkspaceRoleMutation,
+  useAssignWorkspaceRoleGroupMutation,
   // PATCH
   useModifyWorkspaceMutation,
   useModifyWorkspaceProfilePictureMutation,
