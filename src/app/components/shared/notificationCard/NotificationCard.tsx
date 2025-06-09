@@ -39,7 +39,7 @@ function NotificationCard({ notif }: NotificationCardProps) {
     }
   }, [notif.senderId, getUserInfos, user, dispatch]);
   const displayUser = user || fetchedUser;
-  const userImage = useProfilePicture(displayUser.profilePictureId);
+  const userImage = useProfilePicture(displayUser?.profilePictureId || "");
 
   return (
     <div className="flex p-2 gap-2 items-center bg-white rounded-lg border border-[#ECECEC]">
@@ -52,10 +52,9 @@ function NotificationCard({ notif }: NotificationCardProps) {
       />
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
-          <p> {user?.firstName} </p>-
+          <p> {user?.firstName} </p> -
           <p className="font-semibold text-[var(--main-color-500)]">
-            {" "}
-            {notifType}{" "}
+            {notifType}
           </p>
         </div>
         <p> {notifDetail || notif.content} </p>

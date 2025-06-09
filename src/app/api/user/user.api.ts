@@ -1,16 +1,21 @@
 import { api } from "../api";
-import { visibility } from "../../Models/Enums.ts";
 import { ApplicationUser, User } from "../../Models/User.ts";
-
-export type UserMpDto = {
-  id: number;
-  name: string;
-  visibility: visibility;
-  workspaceId: number;
-};
 
 export const MessagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getAllUsersInfos: builder.query<
+      ApplicationUser[],
+      { pageNumber?: number; pageSize?: number }
+    >({
+      query: (pagination) => ({
+        url: `/api/User?pageNumber=${pagination.pageNumber || 1}&pageSize=${pagination.pageSize || 10}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     getUserInfos: builder.query<User, undefined>({
       query: () => ({
         url: "/api/Account/Me",
@@ -83,6 +88,7 @@ export const MessagesApi = api.injectEndpoints({
 });
 
 export const {
+  useGetAllUsersInfosQuery,
   useGetUserInfosQuery,
   useGetUserInfosByIdMutation,
   useGetUserWithMessagesQuery,
