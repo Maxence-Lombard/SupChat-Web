@@ -52,6 +52,16 @@ export const MessagesApi = api.injectEndpoints({
       }),
     }),
 
+    getExportUserData: builder.query<Blob, undefined>({
+      query: () => ({
+        url: "/api/User/Export",
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     // PATCH
     updateUserInfos: builder.mutation<
       ApplicationUser,
