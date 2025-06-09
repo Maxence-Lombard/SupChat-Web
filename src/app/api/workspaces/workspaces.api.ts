@@ -5,6 +5,8 @@ import {
   GetChannelResponse,
 } from "../channels/channels.api.ts";
 import { ApplicationUser } from "../../Models/User.ts";
+import { Message } from "../messages/messages.api.ts";
+import { AttachmentDto } from "../attachments/attachments.api.ts";
 
 //DTO
 export type WorkspaceDto = {
@@ -170,6 +172,24 @@ export const WorkspaceApi = api.injectEndpoints({
     >({
       query: (data) => ({
         url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/NonMembers`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getWorkspaceUnifiedSearch: builder.query<
+      {
+        channelList: GetChannelResponse[];
+        userList: ApplicationUser[];
+        messageList: Message[];
+        attachmentList: AttachmentDto[];
+      },
+      { workspaceId: number; q: string; pageNumber?: number; pageSize?: number }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/UnifiedSearch?search=${data.q}&pageNumber=${data.pageNumber || 1}&pageSize=${data.pageSize || 10}`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -353,6 +373,7 @@ export const {
   useGetWorkspaceRolesPermissionsQuery,
   useGetWorkspaceRoleMembersCountQuery,
   useGetWorkspaceRoleNonMembersQuery,
+  useGetWorkspaceUnifiedSearchQuery,
   // POST
   useCreateWorkspaceMutation,
   useCreateChannelInWorkspaceMutation,

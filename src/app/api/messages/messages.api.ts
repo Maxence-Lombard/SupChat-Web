@@ -1,4 +1,5 @@
 import { api } from "../api";
+import { AttachmentDto } from "../attachments/attachments.api.ts";
 
 export type MessageForUserDto = {
   content: string;
@@ -20,6 +21,7 @@ export type Message = {
   channelId: number;
   receiverId: number;
   parentId: number;
+  messageAttachments: AttachmentDto[];
 };
 
 export type Reaction = {

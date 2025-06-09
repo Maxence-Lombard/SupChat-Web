@@ -39,14 +39,14 @@ function NotificationCard({ notif }: NotificationCardProps) {
     }
   }, [notif.senderId, getUserInfos, user, dispatch]);
   const displayUser = user || fetchedUser;
-  const userImage = useProfilePicture(displayUser.profilePictureId);
+  const userImage = useProfilePicture(displayUser?.profilePictureId || "");
 
   return (
     <div className="flex p-2 gap-2 items-center bg-white rounded-lg border border-[#ECECEC]">
       <ProfilePictureAvatar
         avatarType={"user"}
         isCurrentUser={false}
-        url={userImage || ""}
+        url={userImage}
         altText={user?.firstName?.charAt(0).toUpperCase()}
         size={"xlarge"}
       />
