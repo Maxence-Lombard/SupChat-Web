@@ -52,7 +52,7 @@ function NotificationCard({ notif }: NotificationCardProps) {
       />
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
-          <p> User </p>-
+          <p> {user?.firstName} </p>-
           <p className="font-semibold text-[var(--main-color-500)]">
             {" "}
             {notifType}{" "}
