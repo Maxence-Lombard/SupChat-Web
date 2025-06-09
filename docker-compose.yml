@@ -1,0 +1,12 @@
+﻿services:
+  supchat.web:
+    image: supchat.front.web
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    profiles:
+      - Dev
+      - Prod
