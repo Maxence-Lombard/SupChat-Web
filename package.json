@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "supchat-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -23,7 +23,8 @@
     "react-cookie": "^8.0.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.2.0"
+    "react-router-dom": "^7.2.0",
+    "use-debounce": "^10.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
