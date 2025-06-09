@@ -1,8 +1,8 @@
 import UserCard from "../userCard/UserCard.tsx";
 import { useEffect, useState } from "react";
-import { useGetUserWithMessagesQuery } from "../../../api/user/user.api.ts";
 import { addUser } from "../../../store/slices/usersSlice.ts";
 import { useDispatch } from "react-redux";
+import { useGetUserWithMessagesQuery } from "../../../api/user/user.api.ts";
 
 function DiscussionsListing() {
   const [search, setSearch] = useState<string>("");

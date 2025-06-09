@@ -86,6 +86,13 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("✅ User connected:", userData);
       });
 
+      connection.on(
+        SignalREventConstants.onNotificationReceived,
+        (notifData) => {
+          console.log("Notification received:", notifData);
+        },
+      );
+
       connection.on(SignalREventConstants.onUserDisconnected, (userData) => {
         console.log("✅ User user disconnected:", userData);
       });
