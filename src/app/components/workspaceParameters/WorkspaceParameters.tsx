@@ -1,6 +1,5 @@
-import { ErrorResponse, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  useDeleteWorkspaceMutation,
   useGetFirstChannelMutation,
   useGetWorkspaceByIdQuery,
   useModifyWorkspaceMutation,
@@ -15,24 +14,20 @@ import { InputText } from "primereact/inputtext";
 import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUploaderOnlySelect.tsx";
 import { attachmentType } from "../../Models/Enums.ts";
 import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
-import {
-  modifyWorkspaceData,
-  removeWorkspace,
-} from "../../store/slices/workspaceSlice.ts";
+import { modifyWorkspaceData } from "../../store/slices/workspaceSlice.ts";
 import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
+import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.tsx";
 
 function WorkspaceParameters() {
-  const { workspaceId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { workspaceId } = useParams<{ workspaceId: string }>();
   const { data: workspace } = useGetWorkspaceByIdQuery(Number(workspaceId));
   const [GetFirstChannel] = useGetFirstChannelMutation();
   const [uploadProfilePictureRequest] = useUploadFileMutation();
   const [modifyWorkspaceQuery] = useModifyWorkspaceMutation();
   const [modifyWorkspaceProfilePicture] =
     useModifyWorkspaceProfilePictureMutation();
-  const [deleteWorkspace] = useDeleteWorkspaceMutation();
 
   const profilePictureUrls = useSelector(
     (state: RootState) => state.profilePictures,
@@ -42,6 +37,7 @@ function WorkspaceParameters() {
       ? profilePictureUrls[workspace.profilePictureId]
       : "";
 
+  // ERROR MESSAGES
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined,
   );
@@ -54,6 +50,7 @@ function WorkspaceParameters() {
   const [descriptionErrorMessage, setDescriptionInputErrorMessage] = useState<
     string | undefined
   >(undefined);
+  // MODIFICATION STATES
   const [workspaceName, setWorkspaceName] = useState<string>("");
   const [workspaceDescription, setWorkspaceDescription] = useState<string>("");
   const [maxWorkspaceDescription] = useState<number>(500);
@@ -64,8 +61,8 @@ function WorkspaceParameters() {
 
   const resetWorkspaceInfos = () => {
     if (!workspace) return;
-    setWorkspaceName(workspace.name);
-    setWorkspaceDescription(workspace.description);
+    setWorkspaceName(workspace.name || "");
+    setWorkspaceDescription(workspace.description || "");
     setWorkspaceProfilePictureId(workspace.profilePictureId || "");
     setPreviewUrl(undefined);
     setSelectedFile(undefined);
@@ -156,22 +153,10 @@ function WorkspaceParameters() {
     }
   };
 
-  const handleDeleteWorkspace = async (workspaceId: number) => {
-    if (!workspaceId) return;
-    try {
-      deleteWorkspace(workspaceId).unwrap();
-      dispatch(removeWorkspace(workspaceId));
-      navigate("/");
-    } catch (e) {
-      const error = e as ErrorResponse;
-      setErrorMessage(error.data.detail);
-    }
-  };
-
   useEffect(() => {
     if (workspace) {
-      setWorkspaceName(workspace.name);
-      setWorkspaceDescription(workspace.description);
+      setWorkspaceName(workspace.name || "");
+      setWorkspaceDescription(workspace.description || "");
       setWorkspaceProfilePictureId(workspace.profilePictureId || "");
       setPreviewUrl(undefined);
     }
@@ -179,147 +164,113 @@ function WorkspaceParameters() {
 
   return (
     <>
-      <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
-        <div className="flex flex-col flex-1 gap-10">
-          {/* Banner */}
-          <div className="flex flex-col w-full p-6 rounded-2xl bg-[#6B8AFD]">
-            <h1 className="font-semibold text-white text-xl">
-              Workspace Parameters
-            </h1>
-            <p className="text-white/75">
-              Choose how users can find and view your workspace.
-            </p>
-          </div>
-          <div className="flex h-full bg-[#F9FAFC] rounded-3xl py-8 px-6 gap-4">
-            <div className="flex gap-2">
-              <div className="flex flex-col justify-between">
-                <div className="flex flex-col gap-2">
-                  <p className="w-max px-2 py-1 bg-[#6B8AFD]/10 text-[#6B8AFD] rounded-2xl cursor-pointer">
-                    Workspace
-                  </p>
-                  <p className="cursor-pointer px-2 "> Roles </p>
-                </div>
-                <div
-                  className="flex gap-2 items-center text-red-500 cursor-pointer"
-                  onClick={() => {
-                    handleDeleteWorkspace(Number(workspaceId));
-                  }}
-                >
-                  <p> Delete Workspace </p>
-                  <i className="pi pi-trash"></i>
-                </div>
-              </div>
-              {/* Separation line */}
-              <div className="w-px h-full bg-black rounded-full"></div>
-            </div>
-            <div className="flex flex-col flex-1 justify-between">
-              <div className="flex flex-col gap-8">
-                <div className="flex justify-between">
-                  <div className="flex flex-col gap-1">
-                    <p> Image </p>
-                    <p className="text-black/50">
-                      Use an image of at least 256 × 256 pixels for better
-                      quality.
-                    </p>
-                    {imageErrorMessage ? (
-                      <p className="text-xs text-red-500">
-                        {imageErrorMessage}
-                      </p>
-                    ) : null}
-                    <ImageUploaderOnlySelect
-                      onImageSelected={(file) => setSelectedFile(file)}
-                      imageUrl={previewUrl ?? workspaceProfilePicture}
-                      onPreviewUrlChange={(url) => {
-                        setPreviewUrl(url);
-                      }}
-                    />
-                  </div>
-                  {workspace ? (
-                    <WorkspaceCard
-                      workspaceId={workspace.id}
-                      workspaceName={workspaceName}
-                      workspaceDescription={workspaceDescription}
-                      visibility={workspace.visibility}
-                      profilePictureId={workspaceProfilePictureId}
-                      ownerId={workspace.ownerId}
-                      imagePreview={previewUrl}
-                      joinButtonState={false}
-                    />
-                  ) : null}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="flex" htmlFor="name">
-                    Name
-                  </label>
-                  {inputErrorMessage ? (
-                    <p className="text-xs text-red-500"> {inputErrorMessage}</p>
-                  ) : null}
-                  <InputText
-                    name="name"
-                    id="name"
-                    className="w-full border rounded border-black px-2 py-1"
-                    placeholder="Name"
-                    value={workspaceName}
-                    onChange={(e) => setWorkspaceName(e.target.value ?? "")}
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div className="flex gap-1 items-center">
-                    <label className="flex" htmlFor="workspaceDescription">
-                      Description
-                    </label>
-                    <p className="text-xs text-black/50">
-                      (
-                      {(workspaceDescription?.length ?? 0) +
-                        "/" +
-                        maxWorkspaceDescription}
-                      )
-                    </p>
-                  </div>
-                  {descriptionErrorMessage ? (
-                    <p className="text-xs text-red-500">
-                      {descriptionErrorMessage}
-                    </p>
-                  ) : null}
-                  <textarea
-                    name="workspaceDescription"
-                    id="workspaceDescription"
-                    className="textArea"
-                    placeholder="Description"
-                    value={workspaceDescription}
-                    onChange={(e) => setWorkspaceDescription(e.target.value)}
-                  />
-                </div>
-              </div>
-              {/* Buttons */}
-              <div className="flex flex-col gap-2">
-                {errorMessage ? (
-                  <p className="text-xs text-red-500"> {inputErrorMessage}</p>
+      <WorkspaceParametersLayout
+        titleBanner={"Workspace Parameters"}
+        descriptionBanner={"Choose how users can find and view your workspace"}
+      >
+        <div className="flex flex-col flex-1 justify-between">
+          <div className="flex flex-col gap-8">
+            <div className="flex justify-between">
+              <div className="flex flex-col gap-1">
+                <p> Image </p>
+                <p className="text-black/50">
+                  Use an image of at least 256 × 256 pixels for better quality.
+                </p>
+                {imageErrorMessage ? (
+                  <p className="text-xs text-red-500">{imageErrorMessage}</p>
                 ) : null}
-                <div className="flex self-end gap-4">
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
-                    onClick={resetWorkspaceInfos}
-                  >
-                    <i
-                      className="pi pi-times"
-                      style={{ color: "var(--primary-color)" }}
-                    ></i>
-                    <p className="text-[#687BEC]"> Cancel </p>
-                  </button>
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                    onClick={() => modifyWorkspace()}
-                  >
-                    <i className="pi pi-save text-white"></i>
-                    <p className="text-white"> Save </p>
-                  </button>
-                </div>
+                <ImageUploaderOnlySelect
+                  onImageSelected={(file) => setSelectedFile(file)}
+                  imageUrl={previewUrl ?? workspaceProfilePicture}
+                  onPreviewUrlChange={(url) => {
+                    setPreviewUrl(url);
+                  }}
+                />
               </div>
+              {workspace ? (
+                <WorkspaceCard
+                  workspaceId={workspace.id}
+                  workspaceName={workspaceName}
+                  workspaceDescription={workspaceDescription}
+                  visibility={workspace.visibility}
+                  profilePictureId={workspaceProfilePictureId}
+                  ownerId={workspace.ownerId}
+                  imagePreview={previewUrl}
+                  joinButtonState={false}
+                />
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="flex" htmlFor="name">
+                Name
+              </label>
+              {inputErrorMessage ? (
+                <p className="text-xs text-red-500"> {inputErrorMessage}</p>
+              ) : null}
+              <InputText
+                name="name"
+                id="name"
+                className="w-full border rounded border-black px-2 py-1"
+                placeholder="Name"
+                value={workspaceName}
+                onChange={(e) => setWorkspaceName(e.target.value ?? "")}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex gap-1 items-center">
+                <label className="flex" htmlFor="workspaceDescription">
+                  Description
+                </label>
+                <p className="text-xs text-black/50">
+                  (
+                  {(workspaceDescription?.length ?? 0) +
+                    "/" +
+                    maxWorkspaceDescription}
+                  )
+                </p>
+              </div>
+              {descriptionErrorMessage ? (
+                <p className="text-xs text-red-500">
+                  {descriptionErrorMessage}
+                </p>
+              ) : null}
+              <textarea
+                name="workspaceDescription"
+                id="workspaceDescription"
+                className="textArea"
+                placeholder="Description"
+                value={workspaceDescription}
+                onChange={(e) => setWorkspaceDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          {/* Buttons */}
+          <div className="flex flex-col gap-2">
+            {errorMessage ? (
+              <p className="text-xs text-red-500"> {inputErrorMessage}</p>
+            ) : null}
+            <div className="flex self-end gap-4">
+              <button
+                className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
+                onClick={resetWorkspaceInfos}
+              >
+                <i
+                  className="pi pi-times"
+                  style={{ color: "var(--main-color-500)" }}
+                ></i>
+                <p className="text-[#687BEC]"> Cancel </p>
+              </button>
+              <button
+                className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                onClick={() => modifyWorkspace()}
+              >
+                <i className="pi pi-save text-white"></i>
+                <p className="text-white"> Save </p>
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </WorkspaceParametersLayout>
     </>
   );
 }

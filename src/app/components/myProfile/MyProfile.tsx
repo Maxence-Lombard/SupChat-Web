@@ -14,6 +14,7 @@ import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts"
 import { ApplicationUser } from "../../Models/User.ts";
 import { updateUser } from "../../store/slices/usersSlice.ts";
 import { InputText } from "primereact/inputtext";
+import UserParametersLayout from "../../layouts/UserParametersLayout.tsx";
 
 function MyProfile() {
   const navigate = useNavigate();
@@ -44,11 +45,6 @@ function MyProfile() {
   const [imageErrorMessage, setImageErrorMessage] = useState<
     string | undefined
   >(undefined);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   const resetUserInfos = () => {
     if (!user) return;
@@ -124,124 +120,90 @@ function MyProfile() {
 
   return (
     <>
-      <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
-        <div className="flex flex-1 h-full bg-[#F9FAFC] rounded-3xl py-8 px-6 gap-4">
-          <div className="flex gap-2">
-            <div className="flex flex-col justify-between">
-              <div className="flex flex-col gap-2">
-                <p className="w-max px-2 py-1 bg-[#6B8AFD]/10 text-[#6B8AFD] rounded-2xl cursor-pointer">
-                  My Profile
-                </p>
-                <p className="cursor-pointer px-2 "> Notifications </p>
-                <p className="cursor-pointer px-2 "> Themes </p>
-                <p className="cursor-pointer px-2 "> Security </p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div
-                  onClick={handleLogout}
-                  className="flex gap-2 items-center cursor-pointer"
-                  style={{ color: "var(--primary-color)" }}
-                >
-                  <p> Log out </p>
-                  <i className="pi pi-sign-out" />
+      <UserParametersLayout>
+        <div className="flex flex-1 flex-col gap-10">
+          <p className="font-semibold"> My Profile </p>
+          <div className="flex flex-col flex-1 justify-between">
+            <div className="flex flex-col gap-8">
+              <div className="flex justify-between">
+                <div className="flex flex-col gap-1">
+                  <p> Change your profile picture </p>
+                  <p className="text-black/50">
+                    Use an image of at least 256 × 256 pixels for better
+                    quality.
+                  </p>
+                  {imageErrorMessage ? (
+                    <p className="text-xs text-red-500">{imageErrorMessage}</p>
+                  ) : null}
+                  <ImageUploaderOnlySelect
+                    onImageSelected={(file) => setSelectedFile(file)}
+                    imageUrl={previewUrl ?? userProfilePicture}
+                    onPreviewUrlChange={(url) => {
+                      setPreviewUrl(url);
+                    }}
+                  />
                 </div>
-                <div className="flex gap-2 items-center text-red-500 cursor-pointer">
-                  <p> Delete Account </p>
-                  <i className="pi pi-trash"></i>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex flex-1 flex-col gap-1">
+                  <label className="flex" htmlFor="firstname">
+                    First Name
+                  </label>
+                  {inputErrorMessage ? (
+                    <p className="text-xs text-red-500">{inputErrorMessage}</p>
+                  ) : null}
+                  <InputText
+                    name="firstname"
+                    id="firstname"
+                    className="w-full border rounded border-black px-2 py-1"
+                    placeholder="First Name"
+                    value={userFirstName}
+                    onChange={(e) => setUserFirstName(e.target.value ?? "")}
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
+                  <label className="flex" htmlFor="lastName">
+                    Last Name
+                  </label>
+                  <InputText
+                    name="lastName"
+                    id="lastName"
+                    className="w-full border rounded border-black px-2 py-1"
+                    placeholder="Last Name"
+                    value={userLastName}
+                    onChange={(e) => setUserLastName(e.target.value ?? "")}
+                  />
                 </div>
               </div>
             </div>
-            {/* Separation line */}
-            <div className="w-px h-full bg-black rounded-full"></div>
-          </div>
-          <div className="flex flex-1 flex-col gap-10">
-            <p className="font-semibold"> My Profile </p>
-            <div className="flex flex-col flex-1 justify-between">
-              <div className="flex flex-col gap-8">
-                <div className="flex justify-between">
-                  <div className="flex flex-col gap-1">
-                    <p> Change your profile picture </p>
-                    <p className="text-black/50">
-                      Use an image of at least 256 × 256 pixels for better
-                      quality.
-                    </p>
-                    {imageErrorMessage ? (
-                      <p className="text-xs text-red-500">
-                        {imageErrorMessage}
-                      </p>
-                    ) : null}
-                    <ImageUploaderOnlySelect
-                      onImageSelected={(file) => setSelectedFile(file)}
-                      imageUrl={previewUrl ?? userProfilePicture}
-                      onPreviewUrlChange={(url) => {
-                        setPreviewUrl(url);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex flex-1 flex-col gap-1">
-                    <label className="flex" htmlFor="firstname">
-                      First Name
-                    </label>
-                    {inputErrorMessage ? (
-                      <p className="text-xs text-red-500">
-                        {inputErrorMessage}
-                      </p>
-                    ) : null}
-                    <InputText
-                      name="firstname"
-                      id="firstname"
-                      className="w-full border rounded border-black px-2 py-1"
-                      placeholder="First Name"
-                      value={userFirstName}
-                      onChange={(e) => setUserFirstName(e.target.value ?? "")}
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-1">
-                    <label className="flex" htmlFor="lastName">
-                      Last Name
-                    </label>
-                    <InputText
-                      name="lastName"
-                      id="lastName"
-                      className="w-full border rounded border-black px-2 py-1"
-                      placeholder="Last Name"
-                      value={userLastName}
-                      onChange={(e) => setUserLastName(e.target.value ?? "")}
-                    />
-                  </div>
-                </div>
-              </div>
-              {/* Buttons */}
-              <div className="flex flex-col gap-2">
-                {/*{errorMessage ? (*/}
-                {/*  <p className="text-xs text-red-500"> {inputErrorMessage}</p>*/}
-                {/*) : null}*/}
-                <div className="flex self-end gap-4">
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
-                    onClick={resetUserInfos}
-                  >
-                    <i
-                      className="pi pi-times"
-                      style={{ color: "var(--primary-color)" }}
-                    ></i>
-                    <p className="text-[#687BEC]"> Cancel </p>
-                  </button>
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                    onClick={modifyUser}
-                  >
-                    <i className="pi pi-save text-white"></i>
-                    <p className="text-white"> Save </p>
-                  </button>
-                </div>
+            {/* Buttons */}
+            <div className="flex flex-col gap-2">
+              {/*{errorMessage ? (*/}
+              {/*  <p className="text-xs text-red-500"> {inputErrorMessage}</p>*/}
+              {/*) : null}*/}
+              <div className="flex self-end gap-4">
+                <button
+                  className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
+                  onClick={resetUserInfos}
+                >
+                  <i
+                    className="pi pi-times"
+                    style={{ color: "var(--main-color-500)" }}
+                  ></i>
+                  <p className="text-[#687BEC]"> Cancel </p>
+                </button>
+                <button
+                  className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                  onClick={modifyUser}
+                >
+                  <i className="pi pi-save text-white"></i>
+                  <p className="text-white"> Save </p>
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </UserParametersLayout>
     </>
   );
 }

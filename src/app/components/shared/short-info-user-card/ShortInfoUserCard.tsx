@@ -11,7 +11,7 @@ function ShortInfoUserCard({ user }: UserProps) {
   const userImage = useProfilePicture(user.profilePictureId);
 
   const handleNavigation = () => {
-    navigate(`/conversation/${user.id}`, {
+    navigate(`/privateMessage/${user.id}`, {
       state: {
         user: user,
       },
@@ -27,12 +27,12 @@ function ShortInfoUserCard({ user }: UserProps) {
               avatarType={"user"}
               url={userImage}
               size={"xlarge"}
-              altText={user?.firstName?.charAt(0).toUpperCase()}
+              altText={user?.username?.charAt(0).toUpperCase()}
             />
             <div className="status-indicator"></div>
           </div>
           <div className="flex flex-col gap-2">
-            <p className="font-semibold"> {user.firstName} </p>
+            <p className="font-semibold"> {user.username} </p>
             <p className="text-[#00A000]"> {user.status} </p>
           </div>
         </div>

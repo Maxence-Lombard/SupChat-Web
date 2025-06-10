@@ -34,6 +34,7 @@ export interface ApplicationUser {
   id: number;
   firstName: string;
   lastName: string;
+  username: string;
   image: string;
   status: status;
   statusLocalized: string;

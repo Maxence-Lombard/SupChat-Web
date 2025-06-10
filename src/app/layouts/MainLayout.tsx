@@ -29,6 +29,10 @@ function MainLayout() {
   };
 
   useEffect(() => {
+    dispatch({ type: "auth/checkAuth" });
+  }, [dispatch, location.pathname]);
+
+  useEffect(() => {
     handleUserInfos();
     if (isSuccess && workspaces) {
       dispatch(setWorkspaces(workspaces));

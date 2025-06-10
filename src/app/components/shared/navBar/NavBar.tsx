@@ -31,7 +31,7 @@ function NavBar() {
   );
   const username = useSelector(
     (state: RootState) =>
-      state.users.byId[state.users.currentUserId!]?.firstName,
+      state.users.byId[state.users.currentUserId!]?.username,
   );
 
   const userImage = useProfilePicture(userProfilePictureId);
@@ -175,6 +175,7 @@ function NavBar() {
         </div>
         <ProfilePictureAvatar
           avatarType={"user"}
+          isCurrentUser={true}
           url={userImage}
           altText={username?.charAt(0).toUpperCase()}
         />

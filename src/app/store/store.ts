@@ -10,6 +10,8 @@ import workspacesReducer from "./slices/workspaceSlice.ts";
 import channelsReducer from "./slices/channelSlice.ts";
 import messageReducer from "./slices/messageSlice.ts";
 import profilePictureReducer from "./slices/profilePictureSlice.ts";
+import reactionReducer from "./slices/reactionSlice.ts";
+import roleReducer from "./slices/roleSlice.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
 
 const appReducer = combineReducers({
@@ -19,6 +21,8 @@ const appReducer = combineReducers({
   channels: channelsReducer,
   messages: messageReducer,
   profilePictures: profilePictureReducer,
+  reactions: reactionReducer,
+  roles: roleReducer,
   [api.reducerPath]: api.reducer,
 });
 

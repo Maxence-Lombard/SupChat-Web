@@ -2,6 +2,7 @@ import { Avatar } from "primereact/avatar";
 
 interface ProfilePictureAvatarProps {
   avatarType: "user" | "workspace";
+  isCurrentUser?: boolean;
   url?: string;
   altText?: string;
   size?: "normal" | "large" | "xlarge";
@@ -10,6 +11,7 @@ interface ProfilePictureAvatarProps {
 
 function ProfilePictureAvatar({
   avatarType,
+  isCurrentUser,
   url,
   altText,
   size = "large",
@@ -26,8 +28,10 @@ function ProfilePictureAvatar({
               label={altText}
               size={size}
               style={{
-                backgroundColor: "var(--main-color-500)",
-                color: "#ffffff",
+                backgroundColor: isCurrentUser
+                  ? "var(--main-color-500)"
+                  : "#F3F3F3",
+                color: isCurrentUser ? "#ffffff" : "#000000",
                 borderRadius: "8px",
               }}
             />
