@@ -349,9 +349,32 @@ function RoleCreation() {
   };
 
   useEffect(() => {
+    if (roleFromStore && roleId) {
+      setName(roleFromStore.name || "");
+      if (roleFromStore.permissionsIds) {
+        const newToggles = { ...toggles };
+        optionsSections.forEach((section) => {
+          section.options.forEach((option) => {
+            if (Array.isArray(option.permission)) {
+              newToggles[option.key] = option.permission.some((perm) =>
+                roleFromStore.permissionsIds?.includes(perm),
+              );
+            } else {
+              newToggles[option.key] =
+                roleFromStore.permissionsIds?.includes(option.permission) ||
+                false;
+            }
+          });
+        });
+        setToggles(newToggles);
+      }
+    }
+  }, [roleFromStore, roleId]);
+
+  useEffect(() => {
     if (!rolePermissionsIds) return;
 
-    const permissionIds = rolePermissionsIds.map((p) => p.permissionId);
+    const permissionIds = rolePermissionsIds.flatMap((p) => p.permissionId);
     const newToggles: { [key: string]: boolean } = { ...toggles };
 
     optionsSections.forEach((section) => {

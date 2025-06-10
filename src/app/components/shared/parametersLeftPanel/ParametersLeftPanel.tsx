@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import DeletePopup from "../popups/deletePopup/DeletePopup.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -85,9 +85,9 @@ function ParametersLeftPanel({
             deleteAction={async () => {
               await deleteAction();
               setDeleteConfirmationVisible(false);
-              hide();
+              hide({} as React.SyntheticEvent);
             }}
-            hide={hide}
+            hide={() => hide({} as React.SyntheticEvent)}
           />
         )}
       ></Dialog>

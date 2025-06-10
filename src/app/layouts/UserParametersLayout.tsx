@@ -1,6 +1,5 @@
 import ParametersLeftPanel from "../components/shared/parametersLeftPanel/ParametersLeftPanel.tsx";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import React from "react";
 import { useAuth } from "../hooks/useAuth.tsx";
 
@@ -11,7 +10,6 @@ type ParametersLayoutProps = {
 };
 
 function WorkspaceParametersLayout({ children }: ParametersLayoutProps) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { logout } = useAuth();
 

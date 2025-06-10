@@ -5,7 +5,7 @@ import {
   useGetWorkspaceRolesQuery,
 } from "../../api/workspaces/workspaces.api.ts";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import AssignRolePopup from "../shared/popups/assignRolePopup/AssignRolePopup.tsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -151,7 +151,7 @@ function RoleListing() {
         }}
         content={({ hide }) => (
           <AssignRolePopup
-            hide={hide}
+            hide={() => hide({} as React.SyntheticEvent)}
             roleName={roleSelected.name}
             roleId={roleSelected.id}
           />
@@ -181,9 +181,9 @@ function RoleListing() {
                   roleId: roleSelected.id,
                 }),
               );
-              hide();
+              hide({} as React.SyntheticEvent);
             }}
-            hide={hide}
+            hide={() => hide({} as React.SyntheticEvent)}
           />
         )}
       ></Dialog>
