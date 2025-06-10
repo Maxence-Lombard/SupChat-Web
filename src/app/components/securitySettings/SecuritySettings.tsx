@@ -14,6 +14,7 @@ function SecuritySettings() {
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const [fetchUserData, setFetchUserData] = useState<boolean>(false);
 
   const [modifyUserPassword] = useUpdateUserPasswordMutation();
@@ -24,6 +25,8 @@ function SecuritySettings() {
   const userId = useSelector((state: RootState) => state.users.currentUserId);
 
   const handleChangePassword = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
     if (!userId || !oldPassword || !newPassword || !confirmNewPassword) {
       setErrorMessage("Please fill all the fields");
       return;
@@ -39,6 +42,10 @@ function SecuritySettings() {
         newPassword: newPassword,
         confirmNewPassword: confirmNewPassword,
       }).unwrap();
+      setSuccessMessage("Password successfully changed");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
     } catch (e) {
       const error = e as ErrorResponse;
       setErrorMessage(
@@ -75,7 +82,7 @@ function SecuritySettings() {
               <Password
                 name="oldPassword"
                 id="oldPassword"
-                placeholder="oldPassword"
+                placeholder="old password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
                 toggleMask
@@ -92,7 +99,7 @@ function SecuritySettings() {
               <Password
                 name="newPassword"
                 id="newPassword"
-                placeholder="newPassword"
+                placeholder="new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 toggleMask
@@ -109,7 +116,7 @@ function SecuritySettings() {
               <Password
                 name="confirmNewPassword"
                 id="confirmNewPassword"
-                placeholder="confirmNewPassword"
+                placeholder="confirm new password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 toggleMask
@@ -119,6 +126,9 @@ function SecuritySettings() {
             </div>
           </div>
           <div>
+            {successMessage ? (
+              <p className="text-xs text-green-600">{successMessage}</p>
+            ) : null}
             {errorMessage ? (
               <p className="text-xs text-red-500">{errorMessage}</p>
             ) : null}

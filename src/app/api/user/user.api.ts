@@ -104,7 +104,7 @@ export const MessagesApi = api.injectEndpoints({
       query: (data) => {
         const { userId, ...body } = data;
         return {
-          url: `/api/User/${userId}`,
+          url: `/api/User/${userId}/Password`,
           method: "PATCH",
           body: JSON.stringify(body),
           headers: {

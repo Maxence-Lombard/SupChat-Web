@@ -23,9 +23,9 @@ function Register() {
   const [formStatus, setFormStatus] = useState<
     "submitted" | "pending" | "error" | undefined
   >(undefined);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(
-    undefined,
-  );
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
+
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
 
@@ -53,6 +53,9 @@ function Register() {
       const response = await register(body);
       if (response.data != null) {
         setFormStatus("submitted");
+        setSuccessMessage(
+          "Registration successful, please check you mail to confirm your account",
+        );
       } else {
         if (response.error && "status" in response.error) {
           setFormStatus("error");
@@ -165,6 +168,9 @@ function Register() {
                   >
                     {errorMessage}
                   </p>
+                  {successMessage ? (
+                    <p className="text-xs text-green-600">{successMessage}</p>
+                  ) : null}
                   <Button
                     label="Continue"
                     type="submit"
