@@ -10,12 +10,14 @@ interface ParametersLeftPanelProps {
   }[];
   deleteAction: () => Promise<void>;
   itemToDelete: string;
+  logoutAction?: () => void;
 }
 
 function ParametersLeftPanel({
   navigationItems,
   deleteAction,
   itemToDelete,
+  logoutAction,
 }: ParametersLeftPanelProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,12 +47,24 @@ function ParametersLeftPanel({
               );
             })}
           </div>
-          <div
-            className="flex flex-nowrap gap-2 items-center text-red-500 cursor-pointer"
-            onClick={() => setDeleteConfirmationVisible(true)}
-          >
-            <p className="whitespace-nowrap"> Delete {itemToDelete} </p>
-            <i className="pi pi-trash"></i>
+          <div className="flex flex-col gap-2">
+            {logoutAction ? (
+              <div
+                onClick={() => logoutAction()}
+                className="flex gap-2 items-center cursor-pointer"
+                style={{ color: "var(--main-color-500)" }}
+              >
+                <p> Log out </p>
+                <i className="pi pi-sign-out" />
+              </div>
+            ) : null}
+            <div
+              className="flex flex-nowrap gap-2 items-center text-red-500 cursor-pointer"
+              onClick={() => setDeleteConfirmationVisible(true)}
+            >
+              <p className="whitespace-nowrap"> Delete {itemToDelete} </p>
+              <i className="pi pi-trash"></i>
+            </div>
           </div>
         </div>
         {/* Separation line */}

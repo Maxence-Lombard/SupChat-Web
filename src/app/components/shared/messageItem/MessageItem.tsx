@@ -254,7 +254,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
             avatarType={"user"}
             isCurrentUser={true}
             url={userImage}
-            altText={user?.firstName?.charAt(0).toUpperCase()}
+            altText={user?.username?.charAt(0).toUpperCase()}
           />
         </div>
         <div className="relative">
@@ -295,7 +295,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           avatarType={"user"}
           isCurrentUser={false}
           url={userImage}
-          altText={user?.firstName?.charAt(0).toUpperCase()}
+          altText={user?.username?.charAt(0).toUpperCase()}
         />
         <div className="flex flex-col gap-1">
           <p className="text-black/50">

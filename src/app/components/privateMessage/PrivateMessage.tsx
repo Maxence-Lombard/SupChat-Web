@@ -22,10 +22,10 @@ function PrivateMessage() {
               <ProfilePictureAvatar
                 avatarType={"user"}
                 url={userImage}
-                altText={user.firstName.charAt(0).toUpperCase()}
+                altText={user.username.charAt(0).toUpperCase()}
               />
               <div>
-                <p className="font-semibold"> {user.firstName} </p>
+                <p className="font-semibold"> {user.username} </p>
                 <p className="text-[#00A000] text-xs"> {user.status} </p>
               </div>
             </div>

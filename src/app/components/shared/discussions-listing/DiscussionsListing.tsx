@@ -35,7 +35,7 @@ function DiscussionsListing() {
     const filtered = allUsers
       .filter((user) => !usersWithMessagesIds.includes(user.id))
       .filter((user) =>
-        user.firstName.toLowerCase().includes(debouncedSearch.toLowerCase()),
+        user.username.toLowerCase().includes(debouncedSearch.toLowerCase()),
       );
     setFilteredUsers(filtered);
     console.log("Filtered Users: ", filtered);

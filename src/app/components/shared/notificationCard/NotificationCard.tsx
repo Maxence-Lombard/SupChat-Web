@@ -47,12 +47,12 @@ function NotificationCard({ notif }: NotificationCardProps) {
         avatarType={"user"}
         isCurrentUser={false}
         url={userImage}
-        altText={user?.firstName?.charAt(0).toUpperCase()}
+        altText={user?.username?.charAt(0).toUpperCase()}
         size={"xlarge"}
       />
       <div className="flex flex-col gap-2">
         <div className="flex gap-2">
-          <p> {user?.firstName} </p> -
+          <p> {user?.username} </p> -
           <p className="font-semibold text-[var(--main-color-500)]">
             {notifType}
           </p>

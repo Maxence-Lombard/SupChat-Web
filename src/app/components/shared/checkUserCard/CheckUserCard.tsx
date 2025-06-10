@@ -1,7 +1,7 @@
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 
 interface CheckUserCardProps {
-  user: { id: number; firstName: string; imageId?: string };
+  user: { id: number; username: string; imageId?: string };
   checked: boolean;
   onChange: () => void;
 }
@@ -19,9 +19,9 @@ function CheckUserCard({ user, checked, onChange }: CheckUserCardProps) {
           avatarType={"user"}
           url={""}
           size={"xlarge"}
-          altText={user?.firstName?.charAt(0).toUpperCase()}
+          altText={user?.username?.charAt(0).toUpperCase()}
         />
-        <p className="font-semibold"> {user.firstName} </p>
+        <p className="font-semibold"> {user.username} </p>
       </div>
       <label className="custom-checkbox-wrapper">
         <input

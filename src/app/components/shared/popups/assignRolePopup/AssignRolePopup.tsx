@@ -60,7 +60,7 @@ function AssignRolePopup({ hide, roleName, roleId }: AssignRolePopupProps) {
                 key={index}
                 user={{
                   id: member.id,
-                  firstName: member.firstName,
+                  username: member.username,
                   imageId: member.profilePictureId,
                 }}
                 checked={usersId.includes(member.id)}

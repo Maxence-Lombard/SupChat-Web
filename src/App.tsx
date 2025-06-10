@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import { getUnencodedCookie } from "./helpers/cookieHelper.ts";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "./app/store/slices/authSlice.ts";
+import SecuritySettings from "./app/components/securitySettings/SecuritySettings.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -61,7 +62,6 @@ function App() {
                 element={<Workspace />}
               />
               <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
-              {/* TODO: REPLACE WORKSPACE SETTINGS ROUTES BY A LAYOUT */}
               <Route
                 path="/workspace/settings/:workspaceId"
                 element={<WorkspaceParameters />}
@@ -76,6 +76,7 @@ function App() {
               />
               {/* User settings */}
               <Route path="/settings/myprofile" element={<MyProfile />} />
+              <Route path="/settings/security" element={<SecuritySettings />} />
             </Route>
 
             <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
