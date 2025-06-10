@@ -4,7 +4,7 @@ import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import { AvatarGroup } from "primereact/avatargroup";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar } from "primereact/avatar";
 import {
   useGetChannelsByWorkspaceIdQuery,
@@ -371,7 +371,7 @@ function Workspace() {
         }}
         content={({ hide }) => (
           <ChannelActionPopup
-            hide={hide}
+              hide={() => hide({} as React.SyntheticEvent)}
             workspaceId={Number(workspaceId)}
             channelId={currentChannelId}
             onChannelActionDone={() => {
@@ -392,7 +392,7 @@ function Workspace() {
         }}
         content={({ hide }) => (
           <ChannelActionPopup
-            hide={hide}
+              hide={() => hide({} as React.SyntheticEvent)}
             workspaceId={Number(workspaceId)}
             onChannelActionDone={() => {
               setCreateChannelVisibleVisible(false);
@@ -417,9 +417,9 @@ function Workspace() {
               await deleteChannelRequest(Number(currentChannelId));
               setDeleteConfirmationVisible(false);
               dispatch(deleteChannel(currentChannelId));
-              hide();
+              hide({} as React.SyntheticEvent);
             }}
-            hide={hide}
+            hide={() => hide({} as React.SyntheticEvent)}
           />
         )}
       ></Dialog>

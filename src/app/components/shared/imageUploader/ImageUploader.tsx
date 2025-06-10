@@ -1,16 +1,15 @@
 import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 
 interface ImageUploaderProps {
   onImageSelected?: (file: File) => void;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [, setSelectedFile] = useState<File | null>(null);
 
   const handleFile = (file: File) => {
     setSelectedFile(file);

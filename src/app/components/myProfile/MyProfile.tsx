@@ -2,8 +2,6 @@ import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUplo
 import { useEffect, useState } from "react";
 import { RootState } from "../../store/store.ts";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth.tsx";
 import { attachmentType } from "../../Models/Enums.ts";
 import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
 import {
@@ -17,9 +15,7 @@ import { InputText } from "primereact/inputtext";
 import UserParametersLayout from "../../layouts/UserParametersLayout.tsx";
 
 function MyProfile() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { logout } = useAuth();
 
   const user = useSelector(
     (state: RootState) => state.users.byId[state.users.currentUserId!],

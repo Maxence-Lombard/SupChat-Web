@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../store/slices/authSlice.ts";
 import { useConfirmEmailMutation } from "../../api/auth/auth.api.ts";
@@ -9,11 +9,10 @@ import { cookieConstants } from "../../constants/cookieConstants.ts";
 function ConfirmEmail() {
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const code = searchParams.get("code");
   const userId = searchParams.get("userId");
   const [confirmEmail] = useConfirmEmailMutation();
-  const [cookies, setCookie] = useCookies([
+  const [, setCookie] = useCookies([
     cookieConstants.accessToken,
     cookieConstants.refreshToken,
   ]);

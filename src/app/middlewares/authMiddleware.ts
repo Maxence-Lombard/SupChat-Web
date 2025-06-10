@@ -8,8 +8,9 @@ import { cookieConstants } from "../constants/cookieConstants.ts";
 import { AuthApi, LoginResponse } from "../api/auth/auth.api.ts";
 
 const authMiddleware: Middleware =
-  (storeAPI) => (next) => async (action: UnknownAction) => {
-    if (action.type === "auth/checkAuth") {
+  (storeAPI) => (next) => async (action) => {
+    const typedAction = action as UnknownAction;
+    if (typedAction.type === "auth/checkAuth") {
       const token = getUnencodedCookie(cookieConstants.accessToken);
       const refreshToken = getRawCookie(cookieConstants.refreshToken);
       if (refreshToken) {
