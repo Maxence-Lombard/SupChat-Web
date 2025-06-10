@@ -121,7 +121,7 @@ export const {
   useGetUserInfosQuery,
   useGetUserInfosByIdMutation,
   useGetUserWithMessagesQuery,
-  useLazyGetExportUserDataQuery,
+  useGetExportUserDataQuery,
   useUpdateUserInfosMutation,
   useUpdateUserProfilePictureMutation,
   useUpdateUserPasswordMutation,

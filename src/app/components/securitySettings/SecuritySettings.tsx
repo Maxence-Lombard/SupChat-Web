@@ -5,7 +5,7 @@ import { ErrorResponse } from "../../Models/Error.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import {
-  useLazyGetExportUserDataQuery,
+  useGetExportUserDataQuery,
   useUpdateUserPasswordMutation,
 } from "../../api/user/user.api.ts";
 
@@ -14,10 +14,12 @@ function SecuritySettings() {
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [fetchUserData, setFetchUserData] = useState<boolean>(false);
 
   const [modifyUserPassword] = useUpdateUserPasswordMutation();
-  const [triggerExportUserData, { data: userData, isFetching }] =
-    useLazyGetExportUserDataQuery();
+  const { data: userData, isFetching } = useGetExportUserDataQuery(undefined, {
+    skip: !fetchUserData,
+  });
 
   const userId = useSelector((state: RootState) => state.users.currentUserId);
 
@@ -55,6 +57,7 @@ function SecuritySettings() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+      setFetchUserData(false);
     }
   }, [userData]);
 
@@ -77,6 +80,7 @@ function SecuritySettings() {
                 onChange={(e) => setOldPassword(e.target.value)}
                 toggleMask
                 className="max-w-lg"
+                feedback={false}
               />
             </div>
           </div>
@@ -93,6 +97,7 @@ function SecuritySettings() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 toggleMask
                 className="max-w-lg"
+                feedback={false}
               />
             </div>
           </div>
@@ -109,6 +114,7 @@ function SecuritySettings() {
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 toggleMask
                 className="max-w-lg"
+                feedback={false}
               />
             </div>
           </div>
@@ -116,7 +122,10 @@ function SecuritySettings() {
             {errorMessage ? (
               <p className="text-xs text-red-500">{errorMessage}</p>
             ) : null}
-            <button className="all-[unset] w-full max-w-lg text-white rounded-lg bg-[var(--main-color-500)] p-2">
+            <button
+              className="all-[unset] w-full max-w-lg text-white rounded-lg bg-[var(--main-color-500)] p-2"
+              onClick={handleChangePassword}
+            >
               Change password
             </button>
           </div>
@@ -125,12 +134,8 @@ function SecuritySettings() {
           <p className="font-semibold"> RGPD rights </p>
           <button
             className="all-[unset] flex w-fit text-white rounded-lg bg-[var(--main-color-500)] p-2"
-            onClick={async () => {
-              try {
-                await triggerExportUserData(undefined).unwrap();
-              } catch (e) {
-                console.log("Error fetching user data for export:", e);
-              }
+            onClick={() => {
+              setFetchUserData(true);
             }}
             disabled={isFetching}
           >
