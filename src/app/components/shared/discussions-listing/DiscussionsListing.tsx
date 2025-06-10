@@ -63,7 +63,7 @@ function DiscussionsListing() {
               value={search}
               onChange={(e) => setSearch(e.target.value ?? "")}
               onFocus={() => setOpenQuickSearch(true)}
-              onBlur={() => setOpenQuickSearch(false)}
+              // onBlur={() => setOpenQuickSearch(false)}
             />
           </div>
           {debouncedSearch.trim() !== "" &&

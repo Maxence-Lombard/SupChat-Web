@@ -93,9 +93,9 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       );
 
-      connection.on(SignalREventConstants.onUserDisconnected, (userData) => {
-        console.log("✅ User user disconnected:", userData);
-      });
+      // connection.on(SignalREventConstants.onUserDisconnected, (userData) => {
+      //   console.log("✅ User user disconnected:", userData);
+      // });
 
       connection.onclose((error) => {
         console.error("SignalR connection closed:", error?.message);

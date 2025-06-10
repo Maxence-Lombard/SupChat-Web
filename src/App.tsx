@@ -1,5 +1,4 @@
 import "primeicons/primeicons.css";
-import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./app/components/auth/Login/Login.tsx";
@@ -14,20 +13,26 @@ import AuthLayout from "./app/layouts/AuthLayout.tsx";
 import MainLayout from "./app/layouts/MainLayout.tsx";
 import MyProfile from "./app/components/myProfile/MyProfile.tsx";
 import { SignalRProvider } from "./app/context/SignalRContext.tsx";
-import { selectAccessToken } from "./app/store/slices/authSlice.ts";
 import TokenExpiryChecker from "./app/middlewares/TokenExpiryChecker.ts";
 import AuthRedirect from "./app/middlewares/AuthRedirect.ts";
 import PrivateMessage from "./app/components/privateMessage/PrivateMessage.tsx";
 import RoleListing from "./app/components/roleListing/RoleListing.tsx";
 import RoleCreation from "./app/components/roleCreation/RoleCreation.tsx";
+import { cookieConstants } from "./app/constants/cookieConstants.ts";
+import { useEffect } from "react";
+import { getUnencodedCookie } from "./helpers/cookieHelper.ts";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "./app/store/slices/authSlice.ts";
 
 function App() {
-  const token = useSelector(selectAccessToken);
+  const dispatch = useDispatch();
+  const token = getUnencodedCookie(cookieConstants.accessToken);
 
-  const users = ["user1", "user2", "user3", "user4", "user5"];
-  users.map((user) => {
-    return user;
-  });
+  useEffect(() => {
+    if (token) {
+      dispatch(loginSuccess());
+    }
+  }, [token, dispatch]);
 
   return (
     <>

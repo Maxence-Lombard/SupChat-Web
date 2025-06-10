@@ -25,10 +25,15 @@ function ConfirmEmail() {
       console.log("Error confirming email:", response.error);
       return;
     }
-    setCookie(cookieConstants.accessToken, response.data.accessToken);
-    setCookie(cookieConstants.refreshToken, response.data.refreshToken);
+    setCookie(cookieConstants.accessToken, response.data.accessToken, {
+      path: "/",
+    });
+    setCookie(cookieConstants.refreshToken, response.data.refreshToken, {
+      path: "/",
+    });
     dispatch(loginSuccess());
-    navigate("/");
+    // navigate("/");
+    window.location.replace("/");
   };
 
   useEffect(() => {

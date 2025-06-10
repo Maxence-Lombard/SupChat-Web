@@ -39,9 +39,11 @@ function UserCard({ user, imageSize }: UserCardProps) {
           ></div>
         </div>
         <div className="flex flex-1 flex-col gap-2 w-0">
-          <p className="font-semibold truncate w-full">{user.username}</p>
+          <p className="font-semibold truncate w-full text-left">
+            {user.username}
+          </p>
           <p
-            className={`${user.status === "Online" ? "text-[#00A000]" : "text-black"}`}
+            className={`text-left ${user.status === "Online" ? "text-[#00A000]" : "text-black"}`}
           >
             {user.status}
           </p>
