@@ -144,7 +144,7 @@ function Login() {
                       </label>
                       <div className="flex flex-col gap-1">
                         <Password
-                          name="email"
+                          name="password"
                           id="password"
                           placeholder="Password"
                           value={password}
@@ -153,27 +153,8 @@ function Login() {
                           feedback={false}
                           tabIndex={1}
                         />
-                        <p className="text-[#6B8AFD] text-sm cursor-pointer self-end">
-                          Forgot password ?
-                        </p>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <label className="custom-checkbox-wrapper">
-                      <input
-                        type="checkbox"
-                        className="custom-checkbox"
-                        checked={checked}
-                        onChange={(e) => setChecked(e.target.checked)}
-                      />
-                      <span className="check-icon">
-                        <i className="pi pi-check text-white" />
-                      </span>
-                    </label>
-                    <label id="remember" htmlFor="remember">
-                      Remember me
-                    </label>
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">

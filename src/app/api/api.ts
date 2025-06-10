@@ -5,6 +5,13 @@ import { selectAccessToken } from "../store/slices/authSlice.ts";
 const baseQuery = fetchBaseQuery({
   baseUrl: `http://localhost:5263`,
   mode: "cors",
+  responseHandler: (response) => {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/zip")) {
+      return response.blob();
+    }
+    return response.json();
+  },
   prepareHeaders: async (headers, { getState }) => {
     const state = getState() as RootState;
 

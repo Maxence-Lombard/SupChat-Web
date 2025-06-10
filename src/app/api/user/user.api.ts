@@ -52,13 +52,10 @@ export const MessagesApi = api.injectEndpoints({
       }),
     }),
 
-    getExportUserData: builder.query<Blob, undefined>({
+    getExportUserData: builder.query<Blob, void>({
       query: () => ({
         url: "/api/User/Export",
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
       }),
     }),
 
@@ -94,6 +91,28 @@ export const MessagesApi = api.injectEndpoints({
         },
       }),
     }),
+
+    updateUserPassword: builder.mutation<
+      ApplicationUser,
+      {
+        userId: number;
+        currentPassword: string;
+        newPassword: string;
+        confirmNewPassword: string;
+      }
+    >({
+      query: (data) => {
+        const { userId, ...body } = data;
+        return {
+          url: `/api/User/${userId}`,
+          method: "PATCH",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -102,6 +121,8 @@ export const {
   useGetUserInfosQuery,
   useGetUserInfosByIdMutation,
   useGetUserWithMessagesQuery,
+  useLazyGetExportUserDataQuery,
   useUpdateUserInfosMutation,
   useUpdateUserProfilePictureMutation,
+  useUpdateUserPasswordMutation,
 } = MessagesApi;

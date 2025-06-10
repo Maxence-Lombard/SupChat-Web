@@ -118,7 +118,7 @@ function MyProfile() {
     <>
       <UserParametersLayout>
         <div className="flex flex-1 flex-col gap-10">
-          <p className="font-semibold"> My Profile </p>
+          <p className="font-semibold text-xl"> My Profile </p>
           <div className="flex flex-col flex-1 justify-between">
             <div className="flex flex-col gap-8">
               <div className="flex justify-between">

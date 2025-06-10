@@ -46,6 +46,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Route>
+            {/*<Route element={<PrivateRoute />}>*/}
             <Route
               element={
                 token ? (
@@ -78,6 +79,7 @@ function App() {
               <Route path="/settings/myprofile" element={<MyProfile />} />
               <Route path="/settings/security" element={<SecuritySettings />} />
             </Route>
+            {/*</Route>*/}
 
             <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
             <Route path="/login/callback" element={<Callback />} />
