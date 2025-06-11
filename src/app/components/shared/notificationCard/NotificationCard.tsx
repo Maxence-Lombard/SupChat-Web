@@ -1,5 +1,8 @@
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
-import { Notification } from "../../../api/notifications/notifications.api.ts";
+import {
+  Notification,
+  useReadByNotificationIdMutation,
+} from "../../../api/notifications/notifications.api.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/store.ts";
 import { useGetUserInfosByIdMutation } from "../../../api/user/user.api.ts";
@@ -7,6 +10,7 @@ import { useEffect, useState } from "react";
 import { addUser } from "../../../store/slices/usersSlice.ts";
 import { ApplicationUser } from "../../../Models/User.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
+import { useNavigate } from "react-router-dom";
 
 interface NotificationCardProps {
   notif: Notification;
@@ -14,6 +18,7 @@ interface NotificationCardProps {
 
 function NotificationCard({ notif }: NotificationCardProps) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const match = notif.content.match(/^You have a new ([^:]+?)(?::\s*(.*))?$/);
   const notifType = match ? match[1].trim() : "";
   const notifDetail = match && match[2] ? match[2].trim() : "";
@@ -22,10 +27,22 @@ function NotificationCard({ notif }: NotificationCardProps) {
     (state: RootState) => state.users.byId[notif.senderId],
   );
 
+  const [readNotification] = useReadByNotificationIdMutation();
   const [getUserInfos] = useGetUserInfosByIdMutation();
   const [fetchedUser, setFetchedUser] = useState<ApplicationUser | undefined>(
     undefined,
   );
+
+  const handleReadNotification = async () => {
+    try {
+      await readNotification(notif.id).unwrap();
+      if (notif.senderId) {
+        navigate(`/privateMessage/${notif.senderId}`);
+      }
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
 
   useEffect(() => {
     if (!user && notif.senderId) {
@@ -42,7 +59,10 @@ function NotificationCard({ notif }: NotificationCardProps) {
   const userImage = useProfilePicture(displayUser?.profilePictureId || "");
 
   return (
-    <div className="flex p-2 gap-2 items-center bg-white rounded-lg border border-[#ECECEC]">
+    <div
+      className="flex p-2 gap-2 items-center bg-white rounded-lg border border-[#ECECEC] cursor-pointer"
+      onClick={handleReadNotification}
+    >
       <ProfilePictureAvatar
         key={user?.id}
         avatarType={"user"}

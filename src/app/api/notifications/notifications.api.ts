@@ -23,6 +23,7 @@ export const NotificationsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["Notifications"],
     }),
     getNotificationById: builder.query<Notification[], number>({
       query: (notificationId) => ({
@@ -32,6 +33,7 @@ export const NotificationsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["Notifications"],
     }),
     getNotificationByUser: builder.query<Notification[], number>({
       query: (userId) => ({
@@ -41,10 +43,11 @@ export const NotificationsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["Notifications"],
     }),
 
     // PATCH
-    readByNotificationId: builder.query<boolean, number>({
+    readByNotificationId: builder.mutation<boolean, number>({
       query: (notificationId) => ({
         url: `/api/Notification/${notificationId}/Read`,
         method: "PATCH",
@@ -52,9 +55,10 @@ export const NotificationsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["Notifications"],
     }),
 
-    readAllNotification: builder.query<boolean, number[]>({
+    readAllNotification: builder.mutation<boolean, number[]>({
       query: (notificationsId) => ({
         url: `/api/Notification/ReadAll`,
         method: "PATCH",
@@ -63,6 +67,7 @@ export const NotificationsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["Notifications"],
     }),
 
     // DELETE
@@ -74,6 +79,7 @@ export const NotificationsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["Notifications"],
     }),
   }),
 });
@@ -82,7 +88,7 @@ export const {
   useGetNotificationsQuery,
   useGetNotificationByIdQuery,
   useGetNotificationByUserQuery,
-  useReadByNotificationIdQuery,
-  useReadAllNotificationQuery,
+  useReadByNotificationIdMutation,
+  useReadAllNotificationMutation,
   useDeleteNotificationMutation,
 } = NotificationsApi;

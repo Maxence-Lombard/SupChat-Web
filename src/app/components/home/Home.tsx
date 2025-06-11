@@ -2,7 +2,10 @@ import ShortInfoUserCard from "../shared/short-info-user-card/ShortInfoUserCard.
 import DiscussionsListing from "../shared/discussions-listing/DiscussionsListing.tsx";
 import { useGetUserWithMessagesQuery } from "../../api/user/user.api.ts";
 import { status } from "../../Models/Enums.ts";
-import { useGetNotificationByUserQuery } from "../../api/notifications/notifications.api.ts";
+import {
+  useGetNotificationByUserQuery,
+  useReadAllNotificationMutation,
+} from "../../api/notifications/notifications.api.ts";
 import { RootState } from "../../store/store.ts";
 import { useSelector } from "react-redux";
 import NotificationCard from "../shared/notificationCard/NotificationCard.tsx";
@@ -17,6 +20,7 @@ function Home() {
     currentUserId!,
     { skip: !currentUserId },
   );
+  const [readAllNotifications] = useReadAllNotificationMutation();
 
   return (
     <>
@@ -34,11 +38,23 @@ function Home() {
               .map((user) => <ShortInfoUserCard user={user} key={user.id} />)}
           </div>
         </div>
-        <div className="flex flex-col gap-6 h-full overflow-y-auto">
-          {notifications?.map((notif, index) => (
-            <NotificationCard key={index} notif={notif} />
-          ))}
-        </div>
+        {notifications && notifications.length > 0 ? (
+          <div className="flex flex-col gap-4 h-full overflow-y-auto">
+            <p
+              className="text-[var(--main-color-500)] cursor-pointer"
+              onClick={() =>
+                readAllNotifications(
+                  notifications?.map((notif) => notif.id) || [],
+                )
+              }
+            >
+              Clear all
+            </p>
+            {notifications?.map((notif, index) => (
+              <NotificationCard key={index} notif={notif} />
+            ))}
+          </div>
+        ) : null}
       </div>
     </>
   );
