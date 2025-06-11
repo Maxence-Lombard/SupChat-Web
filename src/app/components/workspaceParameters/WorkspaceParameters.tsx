@@ -15,7 +15,7 @@ import ImageUploaderOnlySelect from "../shared/ImageUploaderOnlySelect/ImageUplo
 import { attachmentType } from "../../Models/Enums.ts";
 import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
 import { modifyWorkspaceData } from "../../store/slices/workspaceSlice.ts";
-import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
+import { addAttachment } from "../../store/slices/attachmentSlice.ts";
 import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.tsx";
 
 function WorkspaceParameters() {
@@ -30,7 +30,7 @@ function WorkspaceParameters() {
     useModifyWorkspaceProfilePictureMutation();
 
   const profilePictureUrls = useSelector(
-    (state: RootState) => state.profilePictures,
+    (state: RootState) => state.attachments,
   );
   const workspaceProfilePicture =
     workspace && profilePictureUrls[workspace.profilePictureId]
@@ -126,7 +126,7 @@ function WorkspaceParameters() {
           setWorkspaceProfilePictureId(profilePicture.id);
           const blobUrl = URL.createObjectURL(selectedFile);
           dispatch(
-            addProfilePicture({
+            addAttachment({
               id: profilePicture.id,
               url: blobUrl,
             }),

@@ -9,7 +9,7 @@ import userReducer from "./slices/usersSlice.ts";
 import workspacesReducer from "./slices/workspaceSlice.ts";
 import channelsReducer from "./slices/channelSlice.ts";
 import messageReducer from "./slices/messageSlice.ts";
-import profilePictureReducer from "./slices/profilePictureSlice.ts";
+import attachmentsReducer from "./slices/attachmentSlice.ts";
 import reactionReducer from "./slices/reactionSlice.ts";
 import roleReducer from "./slices/roleSlice.ts";
 import authMiddleware from "../middlewares/authMiddleware.ts";
@@ -20,7 +20,7 @@ const appReducer = combineReducers({
   workspaces: workspacesReducer,
   channels: channelsReducer,
   messages: messageReducer,
-  profilePictures: profilePictureReducer,
+  attachments: attachmentsReducer,
   reactions: reactionReducer,
   roles: roleReducer,
   [api.reducerPath]: api.reducer,

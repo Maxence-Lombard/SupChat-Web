@@ -5,12 +5,14 @@ export type MessageForUserDto = {
   content: string;
   receiverId: number;
   parentId?: number;
+  attachments?: string[];
 };
 
 export type MessageInChannelDto = {
   content: string;
   channelId: number;
   parentId?: number;
+  attachments?: string[];
 };
 
 export type Message = {
@@ -21,7 +23,14 @@ export type Message = {
   channelId: number;
   receiverId: number;
   parentId: number;
-  messageAttachments: AttachmentDto[];
+  messageAttachments: MessageAttachments[];
+};
+
+export type MessageAttachments = {
+  attachment: AttachmentDto;
+  attachmentId: string;
+  id: number;
+  messageId: number;
 };
 
 export type Reaction = {

@@ -56,7 +56,7 @@ function Workspace() {
     (channel) => channel.workspaceId === Number(workspaceId),
   );
   const profilePictureUrls = useSelector(
-    (state: RootState) => state.profilePictures,
+    (state: RootState) => state.attachments,
   );
 
   const skipChannels = workspaceChannels.length > 0;
@@ -371,7 +371,7 @@ function Workspace() {
         }}
         content={({ hide }) => (
           <ChannelActionPopup
-              hide={() => hide({} as React.SyntheticEvent)}
+            hide={() => hide({} as React.SyntheticEvent)}
             workspaceId={Number(workspaceId)}
             channelId={currentChannelId}
             onChannelActionDone={() => {
@@ -392,7 +392,7 @@ function Workspace() {
         }}
         content={({ hide }) => (
           <ChannelActionPopup
-              hide={() => hide({} as React.SyntheticEvent)}
+            hide={() => hide({} as React.SyntheticEvent)}
             workspaceId={Number(workspaceId)}
             onChannelActionDone={() => {
               setCreateChannelVisibleVisible(false);

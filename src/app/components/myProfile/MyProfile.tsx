@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { RootState } from "../../store/store.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { attachmentType } from "../../Models/Enums.ts";
-import { addProfilePicture } from "../../store/slices/profilePictureSlice.ts";
+import { addAttachment } from "../../store/slices/attachmentSlice.ts";
 import {
   useUpdateUserInfosMutation,
   useUpdateUserProfilePictureMutation,
@@ -21,7 +21,7 @@ function MyProfile() {
     (state: RootState) => state.users.byId[state.users.currentUserId!],
   );
   const profilePictureUrls = useSelector(
-    (state: RootState) => state.profilePictures,
+    (state: RootState) => state.attachments,
   );
   const userProfilePicture = profilePictureUrls[user?.profilePictureId ?? ""];
 
@@ -81,7 +81,7 @@ function MyProfile() {
           }).unwrap();
           const blobUrl = URL.createObjectURL(selectedFile);
           dispatch(
-            addProfilePicture({
+            addAttachment({
               id: profilePicture.id,
               url: blobUrl,
             }),

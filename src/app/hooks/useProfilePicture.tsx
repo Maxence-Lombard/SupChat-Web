@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useDownloadFileMutation } from "../api/attachments/attachments.api.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
-import { addProfilePicture } from "../store/slices/profilePictureSlice.ts";
+import { addAttachment } from "../store/slices/attachmentSlice.ts";
 
 const useProfilePicture = (profilePictureId: string | undefined) => {
   const dispatch = useDispatch();
   const [userImage, setUserImage] = useState<string | undefined>(undefined);
   const [GetProfilePicture] = useDownloadFileMutation();
   const profilePictureUrls = useSelector(
-    (state: RootState) => state.profilePictures,
+    (state: RootState) => state.attachments,
   );
 
   const setUserProfilePicture = async () => {
@@ -20,7 +20,7 @@ const useProfilePicture = (profilePictureId: string | undefined) => {
     }
     const blob = await GetProfilePicture(profilePictureId).unwrap();
     const url = URL.createObjectURL(blob);
-    dispatch(addProfilePicture({ id: profilePictureId, url }));
+    dispatch(addAttachment({ id: profilePictureId, url }));
     setUserImage(url);
   };
 

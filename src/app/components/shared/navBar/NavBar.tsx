@@ -7,7 +7,7 @@ import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspace
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
 import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
 import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
-import { setProfilePicture } from "../../../store/slices/profilePictureSlice.ts";
+import { setAttachment } from "../../../store/slices/attachmentSlice.ts";
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
@@ -23,7 +23,7 @@ function NavBar() {
 
   const workspaces = useSelector((state: RootState) => state.workspaces.list);
   const profilePictureUrls = useSelector(
-    (state: RootState) => state.profilePictures,
+    (state: RootState) => state.attachments,
   );
   const userProfilePictureId = useSelector(
     (state: RootState) =>
@@ -83,7 +83,7 @@ function NavBar() {
           const blob = await GetProfilePicture(workspacePPId).unwrap();
           const url = URL.createObjectURL(blob);
           images[workspace.id] = url;
-          dispatch(setProfilePicture({ id: workspacePPId, url }));
+          dispatch(setAttachment({ id: workspacePPId, url }));
           setWorkspaceImages(images);
         } catch (error) {
           return error;

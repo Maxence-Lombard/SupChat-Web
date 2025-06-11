@@ -28,6 +28,7 @@ import {
 import ReactionsDisplay from "../reactionsDisplay/ReactionsDisplay.tsx";
 import { useSignalR } from "../../../context/SignalRContext.tsx";
 import { SignalREventConstants } from "../../../constants/signalRConstants.ts";
+import { AttachmentRenderer } from "../attachmentRenderer/AttachmentRenderer.tsx";
 
 type MessageProps = {
   message: Message;
@@ -248,6 +249,9 @@ function MessageItem({ message, currentUserId }: MessageProps) {
                 </div>
               </>
             )}
+            {message.messageAttachments.length > 0 ? (
+              <AttachmentRenderer attachments={message.messageAttachments} />
+            ) : null}
           </div>
           <ProfilePictureAvatar
             avatarType={"user"}

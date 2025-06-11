@@ -1,22 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface ProfilePictureSliceState {
+interface attachmentSliceState {
   [key: string]: string;
 }
 
-const initialState: ProfilePictureSliceState = {};
+const initialState: attachmentSliceState = {};
 
-const profilePictureSlice = createSlice({
-  name: "profilePicture",
+const attachmentSlice = createSlice({
+  name: "attachment",
   initialState,
   reducers: {
-    setProfilePicture: (
+    setAttachment: (
       state,
       action: PayloadAction<{ id: string; url: string }>,
     ) => {
       state[action.payload.id] = action.payload.url;
     },
-    addProfilePicture: (
+    addAttachment: (
       state,
       action: PayloadAction<{ id: string; url: string }>,
     ) => {
@@ -27,6 +27,5 @@ const profilePictureSlice = createSlice({
   },
 });
 
-export const { setProfilePicture, addProfilePicture } =
-  profilePictureSlice.actions;
-export default profilePictureSlice.reducer;
+export const { setAttachment, addAttachment } = attachmentSlice.actions;
+export default attachmentSlice.reducer;
