@@ -1,7 +1,7 @@
 import { Message } from "../../api/messages/messages.api.ts";
 import { useParams } from "react-router-dom";
 import { useSignalR } from "../../context/SignalRContext.tsx";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   addMessage,
@@ -11,6 +11,9 @@ import {
 import MessageItem from "../shared/messageItem/MessageItem.tsx";
 import { SignalREventConstants } from "../../constants/signalRConstants.ts";
 import { useConversationMessages } from "../../hooks/useConversationMessage.ts";
+import { Emoji } from "../../Models/Emoji.ts";
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
 
 function Conversation() {
   const { id, channelId } = useParams();
@@ -23,6 +26,8 @@ function Conversation() {
     useSignalR();
   const dispatch = useDispatch();
 
+  const [pickerIsEnabled, setPickerIsEnabled] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
   const [messageInput, setMessageInput] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
   const previousMessagesLength = useRef(0);
@@ -74,6 +79,10 @@ function Conversation() {
       scrollElement.scrollHeight - scrollElement.scrollTop ===
       scrollElement.clientHeight;
     setIsAtBottom(isAtBottomNow);
+  };
+
+  const handleAddEmoji = (emoji: Emoji) => {
+    setMessageInput((prev) => prev + emoji.native);
   };
 
   // SCROLLING EFFECTS
@@ -131,6 +140,27 @@ function Conversation() {
     }
   }, []);
 
+  // PICKER EFFECT
+  useEffect(() => {
+    if (!pickerIsEnabled) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPickerIsEnabled(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [pickerIsEnabled]);
+
+  useEffect(() => {
+    if (!pickerIsEnabled) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setPickerIsEnabled(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [pickerIsEnabled]);
+
   return (
     <>
       <div
@@ -138,41 +168,7 @@ function Conversation() {
         ref={scrollableRef}
         onScroll={handleScroll}
       >
-        {/*<div className="flex flex-col gap-1 w-full">*/}
-        {/*  <p className="font-semibold"> November 15 2024 </p>*/}
-        {/*  <hr className="flex-1 border border-black" />*/}
-        {/*</div>*/}
         <div className="flex flex-col items-start gap-4">
-          {/*<div className="flex items-end gap-3">*/}
-          {/*  <img src={userIcon} alt="userIcon" />*/}
-          {/*  <div className="flex flex-col gap-1 items-end">*/}
-          {/*    <p className="text-black/50"> 15h32 </p>*/}
-          {/*    <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">*/}
-          {/*      <p className="text-black">*/}
-          {/*        {" "}*/}
-          {/*        Lorem ipsum dolor sit amet, consectetur adipiscing elit,*/}
-          {/*        sed do eiusmod tempor incididunt ut labore et dolore magna*/}
-          {/*        aliqua. Ut enim ad minim veniam, quis{" "}*/}
-          {/*      </p>*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-          {/*<div className="flex justify-end items-end w-full gap-3">*/}
-          {/*  <div className="flex flex-col gap-1 items-end">*/}
-          {/*    <p className="text-black/50"> 15h32 </p>*/}
-          {/*    <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">*/}
-          {/*      <p className="text-white"> Sure </p>*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*  <img src={user2} alt="user" />*/}
-          {/*</div>*/}
-          <div className="flex flex-col gap-1 w-full">
-            <div className="flex justify-between w-full">
-              <p className="font-semibold text-[#6B8AFD]"> Today </p>
-              <p className="font-semibold text-[#6B8AFD]"> NEW </p>
-            </div>
-            <hr className="flex-1 border border-[#6B8AFD]" />
-          </div>
           {messages.map((message) => (
             <MessageItem
               key={message.id}
@@ -196,44 +192,54 @@ function Conversation() {
       {/* Message input */}
       <div className="flex flex-col mt-1 gap-2 w-full">
         <hr className="flex-1 border border-[#EBEBEB]" />
-        <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
-          <textarea
-            ref={textAreaRef}
-            name="messageInput"
-            id="messageInput"
-            className="messageTextArea"
-            placeholder="Message..."
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-          />
-          <div className="flex justify-between w-full items-center">
-            <div className="flex gap-4">
-              <i
-                className="pi pi-plus-circle text-xl cursor-pointer"
-                style={{ color: "var(--main-color-500)" }}
-              />
-              <i
-                className="pi pi-face-smile text-xl cursor-pointer"
-                style={{ color: "var(--main-color-500)" }}
-              />
-              <i
-                className="pi pi-at text-xl cursor-pointer"
-                style={{ color: "var(--main-color-500)" }}
+        <div className="relative">
+          {pickerIsEnabled ? (
+            <div
+              ref={pickerRef}
+              className="absolute right-0 bottom-full mb-2 z-10"
+            >
+              <Picker
+                data={data}
+                onEmojiSelect={(emoji: Emoji) => handleAddEmoji(emoji)}
               />
             </div>
-            <button
-              className="flex gap-2 px-2 py-1 items-center bg-[var(--main-color-500)] rounded-lg"
-              onClick={() => sendMessage()}
-            >
-              <i className="pi pi-send text-white" />
-              <p className="text-white">Send</p>
-            </button>
+          ) : null}
+          <div className="flex flex-col gap-4 p-2 justify-end bg-[#F3F3F3] rounded-2xl">
+            <textarea
+              ref={textAreaRef}
+              name="messageInput"
+              id="messageInput"
+              className="messageTextArea"
+              placeholder="Message..."
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+            />
+            <div className="flex justify-between w-full items-center">
+              <div className="flex gap-4">
+                <i
+                  className="pi pi-plus-circle text-xl cursor-pointer"
+                  style={{ color: "var(--main-color-500)" }}
+                />
+                <i
+                  onClick={() => setPickerIsEnabled(true)}
+                  className="pi pi-face-smile text-xl cursor-pointer"
+                  style={{ color: "var(--main-color-500)" }}
+                />
+              </div>
+              <button
+                className="flex gap-2 px-2 py-1 items-center bg-[var(--main-color-500)] rounded-lg"
+                onClick={() => sendMessage()}
+              >
+                <i className="pi pi-send text-white" />
+                <p className="text-white">Send</p>
+              </button>
+            </div>
           </div>
         </div>
       </div>

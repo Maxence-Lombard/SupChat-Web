@@ -4,6 +4,7 @@ import Conversation from "../conversation/Conversation.tsx";
 import { useLocation } from "react-router-dom";
 import { ApplicationUser } from "../../Models/User.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
+import { status } from "../../Models/Enums.ts";
 
 function PrivateMessage() {
   const location = useLocation();
@@ -26,7 +27,11 @@ function PrivateMessage() {
               />
               <div>
                 <p className="font-semibold"> {user.username} </p>
-                <p className="text-[#00A000] text-xs"> {user.status} </p>
+                <p
+                  className={`text-xs ${user.status === status.online ? "text-[#00A000]" : "text-black"}`}
+                >
+                  {user.status}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-6">
