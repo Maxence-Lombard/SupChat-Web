@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   AttachmentDto,
   useDownloadFileMutation,
@@ -11,6 +11,7 @@ export function useFileUrls(attachments: AttachmentDto[]) {
   const dispatch = useDispatch();
   const fileUrls = useSelector((state: RootState) => state.attachments);
   const [downloadFile] = useDownloadFileMutation();
+  const prevAttachmentIds = useRef<string[]>([]);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -26,8 +27,14 @@ export function useFileUrls(attachments: AttachmentDto[]) {
       }
     };
 
-    if (attachments.length > 0) fetchAll();
-  }, [attachments, fileUrls]);
+    const currentIds = attachments.map((a) => a.id).sort();
+    if (
+      JSON.stringify(prevAttachmentIds.current) !== JSON.stringify(currentIds)
+    ) {
+      prevAttachmentIds.current = currentIds;
+      fetchAll();
+    }
+  }, [attachments, dispatch, downloadFile, fileUrls]);
 
   return fileUrls;
 }

@@ -58,7 +58,7 @@ function Conversation() {
   };
 
   const sendMessage = async () => {
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim() && attachedFiles.length === 0) return;
 
     setIsSending(true);
     try {
@@ -75,14 +75,14 @@ function Conversation() {
 
       if (channelId) {
         await sendChannelMessage({
-          content: messageInput,
+          content: messageInput || "",
           channelId: Number(channelId),
           parentId: undefined,
           attachments: attachmentIds,
         });
       } else {
         await sendUserMessage({
-          content: messageInput,
+          content: messageInput || "",
           receiverId: Number(id),
           parentId: undefined,
           attachments: attachmentIds,
@@ -277,7 +277,7 @@ function Conversation() {
               onChange={(e) => handleFilesSelected(e.target.files)}
             />
             {attachedFiles.length > 0 && (
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 mb-2 flex-wrap">
                 {attachedFiles.map(({ file, url }, index) => {
                   const isImage = file.type.startsWith("image/");
                   const isText =
