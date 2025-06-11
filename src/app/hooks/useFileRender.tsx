@@ -19,7 +19,6 @@ export function useFileUrls(attachments: AttachmentDto[]) {
       for (const file of missingFiles) {
         try {
           const blob = await downloadFile(file.id).unwrap();
-          console.log("Downloaded file", blob);
           const blobUrl = URL.createObjectURL(blob);
           dispatch(addAttachment({ id: file.id, url: blobUrl }));
         } catch (error) {
