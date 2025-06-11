@@ -1,6 +1,9 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useJoinWorkspaceMutation } from "../../../api/workspaces/workspaces.api.ts";
+import {
+  useGetWorkspaceMembersCountQuery,
+  useJoinWorkspaceMutation,
+} from "../../../api/workspaces/workspaces.api.ts";
 import { addWorkspace } from "../../../store/slices/workspaceSlice.ts";
 import { visibility } from "../../../Models/Enums.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
@@ -20,6 +23,9 @@ interface Workspace {
 function WorkspaceCard(workspace: Workspace) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { data: membersCount } = useGetWorkspaceMembersCountQuery(
+    workspace.workspaceId,
+  );
   const [AddMemberInWorkspace] = useJoinWorkspaceMutation();
 
   const profilePicture = useProfilePicture(workspace.profilePictureId);
@@ -56,23 +62,29 @@ function WorkspaceCard(workspace: Workspace) {
 
   return (
     <div className="flex flex-col gap-4 bg-white border border-[#ECECEC] rounded-2xl p-4 w-80 h-60">
-      <div className="flex items-center gap-4">
-        <ProfilePictureAvatar
-          key={workspace.workspaceId}
-          avatarType={"workspace"}
-          url={workspace.imagePreview || profilePicture}
-          size={"xlarge"}
-          altText={workspace.workspaceName.charAt(0).toUpperCase()}
-        />
-
-        <div className="flex flex-col">
-          <p className="font-semibold"> {workspace.workspaceName} </p>
-          <p className="text-[#A0A0A0]"> 5 members </p>
+      <div className="flex w-full items-center gap-4">
+        <div className="min-w-14">
+          <ProfilePictureAvatar
+            key={workspace.workspaceId}
+            avatarType={"workspace"}
+            url={workspace.imagePreview || profilePicture}
+            size={"xlarge"}
+            altText={workspace.workspaceName.charAt(0).toUpperCase()}
+          />
+        </div>
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <p className="font-semibold truncate" title={workspace.workspaceName}>
+            {workspace.workspaceName}
+          </p>
+          <p className="text-[#A0A0A0]"> {membersCount} members </p>
           {/* TODO: change with the get membersByWorkspace route */}
         </div>
       </div>
       <div className="flex h-full">
-        <p className="w-full break-words overflow-hidden text-ellipsis line-clamp-3">
+        <p
+          className="w-full break-words overflow-hidden text-ellipsis line-clamp-3"
+          title={workspace.workspaceDescription}
+        >
           {workspace.workspaceDescription}
         </p>
       </div>

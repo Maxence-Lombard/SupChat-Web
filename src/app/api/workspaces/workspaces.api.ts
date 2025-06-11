@@ -128,6 +128,16 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    getWorkspaceMembersCount: builder.query<number, number>({
+      query: (workspaceId) => ({
+        url: `/api/Workspace/${workspaceId}/MembersCount`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     getWorkspaceRoles: builder.query<RoleDto[], number>({
       query: (Id) => ({
         url: `/api/Workspace/${Id}/Roles`,
@@ -369,6 +379,7 @@ export const {
   useGetWorkspacesAvailableQuery,
   useGetFirstChannelMutation,
   useGetChannelsByWorkspaceIdQuery,
+  useGetWorkspaceMembersCountQuery,
   useGetWorkspaceRolesQuery,
   useGetWorkspaceRolesPermissionsQuery,
   useGetWorkspaceRoleMembersCountQuery,
