@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import { useAuth } from "../hooks/useAuth.tsx";
 
-// TODO: à modifier pour user settings
-
 type ParametersLayoutProps = {
   children: React.ReactNode;
 };
 
-function WorkspaceParametersLayout({ children }: ParametersLayoutProps) {
+function UserParametersLayout({ children }: ParametersLayoutProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -59,4 +57,4 @@ function WorkspaceParametersLayout({ children }: ParametersLayoutProps) {
   );
 }
 
-export default WorkspaceParametersLayout;
+export default UserParametersLayout;

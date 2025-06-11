@@ -119,7 +119,14 @@ function RoleListing() {
                         />
                       </td>
                       <td className="text-center">
-                        <i className="pi pi-eye cursor-pointer text-gray-700" />
+                        <i
+                          className="pi pi-eye cursor-pointer text-gray-700"
+                          onClick={() =>
+                            navigate(
+                              `/workspace/settings/${workspaceId}/roleMembersListing/${role.id}`,
+                            )
+                          }
+                        />
                       </td>
                       <td className="text-center">
                         <i

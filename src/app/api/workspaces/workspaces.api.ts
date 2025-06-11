@@ -163,6 +163,22 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    getWorkspaceRoleMembers: builder.query<
+      ApplicationUser[],
+      {
+        workspaceId: number;
+        roleId: number;
+      }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/Members`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     getWorkspaceRoleMembersCount: builder.query<
       number,
       { workspaceId: number; roleId: number }
@@ -382,6 +398,7 @@ export const {
   useGetWorkspaceMembersCountQuery,
   useGetWorkspaceRolesQuery,
   useGetWorkspaceRolesPermissionsQuery,
+  useGetWorkspaceRoleMembersQuery,
   useGetWorkspaceRoleMembersCountQuery,
   useGetWorkspaceRoleNonMembersQuery,
   useGetWorkspaceUnifiedSearchQuery,

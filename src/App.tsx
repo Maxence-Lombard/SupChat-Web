@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "./app/store/slices/authSlice.ts";
 import SecuritySettings from "./app/components/securitySettings/SecuritySettings.tsx";
 import { RootState } from "./app/store/store.ts";
+import RoleMembersListing from "./app/components/roleMembersListing/RoleMembersListing.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -76,6 +77,10 @@ function App() {
               <Route
                 path="/workspace/settings/:workspaceId/roleCreation"
                 element={<RoleCreation />}
+              />
+              <Route
+                path="/workspace/settings/:workspaceId/roleMembersListing/:roleId"
+                element={<RoleMembersListing />}
               />
               {/* User settings */}
               <Route path="/settings/myprofile" element={<MyProfile />} />
