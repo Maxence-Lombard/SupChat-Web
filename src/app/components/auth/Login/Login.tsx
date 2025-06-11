@@ -14,7 +14,6 @@ import { useAuth } from "../../../hooks/useAuth.tsx";
 import { loginSuccess } from "../../../store/slices/authSlice.ts";
 import { useGetUserInfosQuery } from "../../../api/user/user.api.ts";
 import { addUser, setCurrentUserId } from "../../../store/slices/usersSlice.ts";
-import { ErrorResponse } from "../../../Models/Error.ts";
 
 enum Providers {
   GOOGLE = "google",
@@ -27,7 +26,6 @@ function Login() {
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [checked, setChecked] = useState<boolean>(false);
   const [formStatus, setFormStatus] = useState<
     "submitted" | "pending" | "error" | undefined
   >(undefined);
@@ -61,6 +59,7 @@ function Login() {
       password: password,
       grant_type: "password",
     };
+    setErrorMessage("");
 
     try {
       const response = await login(body);
@@ -78,10 +77,9 @@ function Login() {
         setErrorMessage("Invalid email or password");
       }
     } catch (e) {
-      const error = e as ErrorResponse;
       setFormStatus("error");
-      setErrorMessage(error.data.detail);
-      return error;
+      setErrorMessage("Invalid email or password");
+      return e;
     }
   };
 
@@ -158,11 +156,9 @@ function Login() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p
-                    className={`flex m-0 min-h-6 text-red-500 ${formStatus === "error" ? "visible" : "invisible"}`}
-                  >
-                    {errorMessage}
-                  </p>
+                  {errorMessage ? (
+                    <p className="text-xs text-red-500">{errorMessage}</p>
+                  ) : null}
                   <Button
                     label="Continue"
                     type="submit"

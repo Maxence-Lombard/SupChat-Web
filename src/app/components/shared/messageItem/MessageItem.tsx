@@ -238,7 +238,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
                       />
                     </div>
                     <p className="text-black/50 text-right w-full">
-                      {formatDate(message.sendDate, "HH'h'mm")}
+                      {formatDate(message.sendDate, "HH:mm")}
                     </p>
                   </div>
                   <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
@@ -298,10 +298,18 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           altText={user?.username?.charAt(0).toUpperCase()}
         />
         <div className="flex flex-col gap-1">
-          <p className="text-black/50">
-            {formatDate(message.sendDate, "HH'h'mm")}
-          </p>
-          <div className="flex bg-[#EBEBEB] rounded-lg px-2 max-w-xl">
+          <div className="flex gap-4 items-center">
+            <p className="text-black/50">
+              {formatDate(message.sendDate, "HH:mm")}
+            </p>
+            <div className="hidden group-hover:flex gap-2">
+              <i
+                className="pi pi-reply text-black/50 cursor-pointer text-sm"
+                onClick={() => console.log("reply to message")}
+              />
+            </div>
+          </div>
+          <div className="flex bg-[#EBEBEB] w-fit rounded-lg px-2 max-w-xl">
             <p className="text-black w-full whitespace-pre-line break-words">
               {message.content}
             </p>
