@@ -223,6 +223,7 @@ function Conversation() {
             <div className="flex justify-between w-full items-center">
               <div className="flex gap-4">
                 <i
+                  onClick={() => console.log("Add file clicked")}
                   className="pi pi-plus-circle text-xl cursor-pointer"
                   style={{ color: "var(--main-color-500)" }}
                 />

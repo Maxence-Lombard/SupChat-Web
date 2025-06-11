@@ -1,13 +1,14 @@
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
+import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 
 interface CheckUserCardProps {
-  user: { id: number; username: string; imageId?: string };
+  user: { id: number; username: string; profilePictureId?: string };
   checked: boolean;
   onChange: () => void;
 }
 
 function CheckUserCard({ user, checked, onChange }: CheckUserCardProps) {
-  //TODO: recup url de l'image via store, sinon get puis ajouter dans le store
+  const userImage = useProfilePicture(user.profilePictureId);
 
   return (
     <div
@@ -17,7 +18,7 @@ function CheckUserCard({ user, checked, onChange }: CheckUserCardProps) {
       <div className="flex items-center gap-3 w-[400px]">
         <ProfilePictureAvatar
           avatarType={"user"}
-          url={""}
+          url={userImage}
           size={"xlarge"}
           altText={user?.username?.charAt(0).toUpperCase()}
         />
