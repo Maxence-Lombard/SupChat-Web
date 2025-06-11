@@ -10,6 +10,7 @@ import {
   useGetWorkspaceByIdQuery,
   useGetWorkspaceMembersCountQuery,
   useGetWorkspaceUnifiedSearchQuery,
+  useLeaveWorkspaceMutation,
 } from "../../api/workspaces/workspaces.api.ts";
 import { Dialog } from "primereact/dialog";
 import ChannelActionPopup from "../shared/popups/channelActionPopup/ChannelActionPopup.tsx";
@@ -26,6 +27,7 @@ import DeletePopup from "../shared/popups/deletePopup/DeletePopup.tsx";
 import Conversation from "../conversation/Conversation.tsx";
 import { useDebounce } from "use-debounce";
 import UserCard from "../shared/userCard/UserCard.tsx";
+import { removeWorkspace } from "../../store/slices/workspaceSlice.ts";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -37,6 +39,8 @@ function Workspace() {
   const [debouncedSearch] = useDebounce(search, 500);
   const [openQuickSearch, setOpenQuickSearch] = useState<boolean>(false);
 
+  const [workspaceActionsVisible, setWorkspaceActionsVisible] =
+    useState<boolean>(false);
   const [createChannelVisible, setCreateChannelVisibleVisible] =
     useState<boolean>(false);
   const [modifyChannelVisible, setModifyChannelVisible] =
@@ -78,11 +82,19 @@ function Workspace() {
     { workspaceId: Number(workspaceId), q: debouncedSearch },
     { skip: debouncedSearch.trim() === "" },
   );
+  const [leaveWorkspaceRequest] = useLeaveWorkspaceMutation();
   const [deleteChannelRequest] = useDeleteChannelMutation();
 
   const workspaceProfilePicture = useProfilePicture(
     workspace?.profilePictureId ?? "",
   );
+
+  const handleLeaveWorkspace = () => {
+    if (!workspaceId) return;
+    leaveWorkspaceRequest(Number(workspaceId)).unwrap();
+    dispatch(removeWorkspace(Number(workspaceId)));
+    navigate("/");
+  };
 
   useEffect(() => {
     if (isSuccess && channels) {
@@ -353,12 +365,27 @@ function Workspace() {
                   style={{ color: "var(--main-color-500)" }}
                 />
                 <i
+                  onClick={() =>
+                    setWorkspaceActionsVisible(!workspaceActionsVisible)
+                  }
                   className="pi pi-ellipsis-v text-xl cursor-pointer"
                   style={{ color: "var(--main-color-500)" }}
+                  onBlur={() => setWorkspaceActionsVisible(false)}
                 />
               </div>
             </div>
           </div>
+          {workspaceActionsVisible ? (
+            <div className="fixed top-24 right-10 z-50 bg-white shadow-lg flex flex-col gap-2 p-2 border border-[#ECECEC] rounded-lg w-fit">
+              <div
+                className="flex items-center gap-2 text-red-500 cursor-pointer"
+                onClick={handleLeaveWorkspace}
+              >
+                <p> Leave workspace </p>
+                <i className="pi pi-sign-out" />
+              </div>
+            </div>
+          ) : null}
           {/* CHANNEL CONVERSATION */}
           <Conversation />
         </div>
