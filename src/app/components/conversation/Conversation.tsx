@@ -50,20 +50,16 @@ function Conversation() {
 
   const handleReceiveMessage = (...args: unknown[]) => {
     const message = args[0] as Message;
-    console.log("Received message:", message);
     dispatch(addMessage(message));
   };
 
   const handleMessageUpdated = (...args: unknown[]) => {
     const message = args[0] as Message;
-    console.log("Received updated message:", message);
-    console.log("Message updated:", message);
     dispatch(modifyMessage(message));
   };
 
   const handleMessageDeleted = (...args: unknown[]) => {
     const messageId = args[0] as number;
-    console.log("Deleted message:", messageId);
     dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
   };
 

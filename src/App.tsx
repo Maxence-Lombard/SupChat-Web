@@ -21,13 +21,15 @@ import RoleCreation from "./app/components/roleCreation/RoleCreation.tsx";
 import { cookieConstants } from "./app/constants/cookieConstants.ts";
 import { useEffect } from "react";
 import { getUnencodedCookie } from "./helpers/cookieHelper.ts";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "./app/store/slices/authSlice.ts";
 import SecuritySettings from "./app/components/securitySettings/SecuritySettings.tsx";
+import { RootState } from "./app/store/store.ts";
 
 function App() {
   const dispatch = useDispatch();
   const token = getUnencodedCookie(cookieConstants.accessToken);
+  const usertoken = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
     if (token) {
@@ -49,7 +51,7 @@ function App() {
             {/*<Route element={<PrivateRoute />}>*/}
             <Route
               element={
-                token ? (
+                token && usertoken ? (
                   <SignalRProvider>
                     <MainLayout />
                   </SignalRProvider>

@@ -3,7 +3,7 @@ import { Message } from "../../api/messages/messages.api.ts";
 import { RootState } from "../store.ts";
 
 interface MessageState {
-  privateMessages: Record<number, Message[]>;
+  privateMessages: Record<string, Message[]>;
   channelMessages: Record<number, Message[]>;
 }
 
@@ -23,14 +23,14 @@ const messageSlice = createSlice({
         const key = [message.senderId, message.receiverId]
           .sort((a, b) => a - b)
           .join("_");
-        if (!state.privateMessages[Number(key)]) {
-          state.privateMessages[Number(key)] = [];
+        if (!state.privateMessages[key]) {
+          state.privateMessages[key] = [];
         }
-        const exists = state.privateMessages[Number(key)].some(
+        const exists = state.privateMessages[key].some(
           (m) => m.id === message.id,
         );
         if (!exists) {
-          state.privateMessages[Number(key)].unshift(message);
+          state.privateMessages[key].unshift(message);
         }
       } else if (message.channelId > 0) {
         const channelId = message.channelId;
@@ -53,12 +53,12 @@ const messageSlice = createSlice({
         const key = [message.senderId, message.receiverId]
           .sort((a, b) => a - b)
           .join("_");
-        if (state.privateMessages[Number(key)]) {
-          const index = state.privateMessages[Number(key)].findIndex(
+        if (state.privateMessages[key]) {
+          const index = state.privateMessages[key].findIndex(
             (m) => m.id === message.id,
           );
           if (index !== -1) {
-            state.privateMessages[Number(key)][index] = message;
+            state.privateMessages[key][index] = message;
           }
         }
       } else if (message.channelId > 0) {
@@ -89,15 +89,20 @@ const messageSlice = createSlice({
         ].filter((message) => message.id !== messageId);
       } else {
         Object.keys(state.privateMessages).forEach((key) => {
-          state.privateMessages[Number(key)] = state.privateMessages[
-            Number(key)
-          ].filter((message) => message.id !== messageId);
+          state.privateMessages[key] = state.privateMessages[key].filter(
+            (message) => message.id !== messageId,
+          );
         });
       }
     },
     clearMessages: (state) => {
       state.privateMessages = {};
       state.channelMessages = {};
+    },
+
+    clearConversationMessages: (state, action: PayloadAction<string>) => {
+      const conversationKey = action.payload;
+      delete state.privateMessages[conversationKey];
     },
   },
 });
@@ -109,7 +114,7 @@ export const selectSortedMessagesByConversationKey = (
   conversationKey: string,
 ) =>
   createSelector([selectPrivateMessages], (privateMessages) => {
-    const messages = privateMessages[Number(conversationKey)] || [];
+    const messages = privateMessages[conversationKey] || [];
     return [...messages].sort((a, b) => a.id - b.id);
   });
 
@@ -122,7 +127,12 @@ export const selectSortedChannelMessages = (channelId: number) =>
     return [...messages].sort((a, b) => (a?.id ?? 0) - (b?.id ?? 0));
   });
 
-export const { addMessage, modifyMessage, removeMessage, clearMessages } =
-  messageSlice.actions;
+export const {
+  addMessage,
+  modifyMessage,
+  removeMessage,
+  clearMessages,
+  clearConversationMessages,
+} = messageSlice.actions;
 
 export default messageSlice.reducer;

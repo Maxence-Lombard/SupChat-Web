@@ -116,7 +116,6 @@ function MessageItem({ message, currentUserId }: MessageProps) {
 
   const handleReceiveDeletedReaction = (...args: unknown[]) => {
     const reactionId = args[0] as number;
-    console.log("Deleted reaction:", reactionId);
     dispatch(removeReaction(reactionId));
     dispatch(removeReaction(reactionId));
   };

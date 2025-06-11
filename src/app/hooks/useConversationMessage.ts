@@ -5,11 +5,12 @@ import {
 } from "../api/messages/messages.api";
 import {
   addMessage,
+  clearConversationMessages,
   selectSortedChannelMessages,
   selectSortedMessagesByConversationKey,
 } from "../store/slices/messageSlice";
 import { RootState } from "../store/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useConversationMessages({
   id,
@@ -20,8 +21,11 @@ export function useConversationMessages({
 }) {
   const dispatch = useDispatch();
 
+  const prevIdRef = useRef<string>();
+  const prevChannelIdRef = useRef<string>();
   const pageSize = 20;
   const [pageNumber, setPageNumber] = useState(1);
+  const [shouldLoadMessages, setShouldLoadMessages] = useState(false);
 
   const userId = useSelector((state: RootState) => state.users.currentUserId);
 
@@ -64,11 +68,43 @@ export function useConversationMessages({
   };
 
   useEffect(() => {
-    if (messages.length === 0 && (id || channelId)) {
-      console.log("inital load");
+    const conversationChanged =
+      (id && prevIdRef.current && prevIdRef.current !== id) ||
+      (channelId &&
+        prevChannelIdRef.current &&
+        prevChannelIdRef.current !== channelId) ||
+      (!prevIdRef.current && !prevChannelIdRef.current && (id || channelId));
+
+    if (conversationChanged) {
+      if (prevIdRef.current && id && prevIdRef.current !== id) {
+        const oldConversationKey = [userId, prevIdRef.current]
+          .filter(Boolean)
+          .sort()
+          .join("_");
+        dispatch(clearConversationMessages(oldConversationKey));
+      }
+
+      setPageNumber(1);
+      setHasMoreMessages(true);
+      setShouldLoadMessages(true);
+    }
+
+    prevIdRef.current = id;
+    prevChannelIdRef.current = channelId;
+  }, [id, channelId, userId, dispatch]);
+
+  useEffect(() => {
+    if (shouldLoadMessages && (id || channelId)) {
+      loadMessages(1);
+      setShouldLoadMessages(false);
+    }
+  }, [shouldLoadMessages, id, channelId]);
+
+  useEffect(() => {
+    if (messages.length === 0 && (id || channelId) && !shouldLoadMessages) {
       loadMessages(1);
     }
-  }, [channelId, id]);
+  }, [channelId, id, messages.length, shouldLoadMessages]);
 
   useEffect(() => {
     setHasMoreMessages(
@@ -85,7 +121,6 @@ export function useConversationMessages({
     if (!hasMoreMessages) return;
     const nextPage = pageNumber + 1;
     setPageNumber(nextPage);
-    console.log("lazy load");
     await loadMessages(nextPage);
   };
 
