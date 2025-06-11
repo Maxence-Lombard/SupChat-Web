@@ -13,6 +13,7 @@ import { ApplicationUser } from "../../Models/User.ts";
 import { updateUser } from "../../store/slices/usersSlice.ts";
 import { InputText } from "primereact/inputtext";
 import UserParametersLayout from "../../layouts/UserParametersLayout.tsx";
+import { ErrorResponse } from "../../Models/Error.ts";
 
 function MyProfile() {
   const dispatch = useDispatch();
@@ -31,11 +32,17 @@ function MyProfile() {
 
   // USER INPUTS
   const [userFirstName, setUserFirstName] = useState<string>("");
-  const [userLastName, setUserLastName] = useState<string>("");
+  const [userUserName, setUserUserName] = useState<string>("");
   // ERROR MESSAGES
   const [inputErrorMessage, setInputErrorMessage] = useState<
     string | undefined
   >(undefined);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [successMessage, setSuccessMessage] = useState<string | undefined>(
+    undefined,
+  );
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [imageErrorMessage, setImageErrorMessage] = useState<
@@ -45,7 +52,7 @@ function MyProfile() {
   const resetUserInfos = () => {
     if (!user) return;
     setUserFirstName(user.firstName || "");
-    setUserLastName(user.lastName || "");
+    setUserUserName(user.username || "");
     setPreviewUrl(undefined);
     setSelectedFile(undefined);
 
@@ -86,6 +93,7 @@ function MyProfile() {
               url: blobUrl,
             }),
           );
+          setSuccessMessage("Profile picture updated successfully!");
         } else {
           setImageErrorMessage("The image must be a PNG, JPG, JPEG, or WEBP.");
           return;
@@ -94,14 +102,17 @@ function MyProfile() {
       const modifiedUser: Partial<ApplicationUser> = {
         id: user?.id || 0,
         firstName: userFirstName,
-        lastName: userLastName,
+        username: userUserName,
       };
 
       const newUserInfos = await modifyUserinfos(modifiedUser).unwrap();
 
       dispatch(updateUser(newUserInfos));
+      setSuccessMessage("Profile information's updated successfully.");
       resetUserInfos();
-    } catch (error) {
+    } catch (e) {
+      const error = e as ErrorResponse;
+      setErrorMessage(error.data.detail);
       return error;
     }
   };
@@ -109,7 +120,7 @@ function MyProfile() {
   useEffect(() => {
     if (user) {
       setUserFirstName(user.firstName || "");
-      setUserLastName(user.lastName || "");
+      setUserUserName(user.username || "");
       setPreviewUrl(undefined);
     }
   }, [user]);
@@ -142,6 +153,19 @@ function MyProfile() {
               </div>
               <div className="flex gap-2">
                 <div className="flex flex-1 flex-col gap-1">
+                  <label className="flex" htmlFor="username">
+                    Username
+                  </label>
+                  <InputText
+                    name="username"
+                    id="username"
+                    className="w-full border rounded border-black px-2 py-1"
+                    placeholder="Username"
+                    value={userUserName}
+                    onChange={(e) => setUserUserName(e.target.value ?? "")}
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
                   <label className="flex" htmlFor="firstname">
                     First Name
                   </label>
@@ -157,27 +181,22 @@ function MyProfile() {
                     onChange={(e) => setUserFirstName(e.target.value ?? "")}
                   />
                 </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <label className="flex" htmlFor="lastName">
-                    Last Name
-                  </label>
-                  <InputText
-                    name="lastName"
-                    id="lastName"
-                    className="w-full border rounded border-black px-2 py-1"
-                    placeholder="Last Name"
-                    value={userLastName}
-                    onChange={(e) => setUserLastName(e.target.value ?? "")}
-                  />
-                </div>
               </div>
             </div>
             {/* Buttons */}
             <div className="flex flex-col gap-2">
-              {/*{errorMessage ? (*/}
-              {/*  <p className="text-xs text-red-500"> {inputErrorMessage}</p>*/}
-              {/*) : null}*/}
-              <div className="flex self-end gap-4">
+              <div className="flex items-center self-end gap-4">
+                {errorMessage ? (
+                  <p className="text-xs text-left text-red-500">
+                    {" "}
+                    {errorMessage}
+                  </p>
+                ) : null}
+                {successMessage ? (
+                  <p className="text-xs text-left text-green-600">
+                    {successMessage}
+                  </p>
+                ) : null}
                 <button
                   className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
                   onClick={resetUserInfos}

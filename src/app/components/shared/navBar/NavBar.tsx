@@ -174,11 +174,10 @@ function NavBar() {
           </div>
         </div>
         <ProfilePictureAvatar
-          key={userProfilePictureId}
           avatarType={"user"}
           isCurrentUser={true}
           url={userImage}
-          altText={username?.charAt(0).toUpperCase()}
+          altText={username?.charAt(0).toUpperCase() || "?"}
         />
       </div>
     </>
