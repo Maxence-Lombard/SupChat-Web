@@ -1,5 +1,4 @@
 // ASSETS
-import user from "../../../assets/placeholder/user4.svg";
 import channelMainColor from "../../../assets/icons/main-color/channel.svg";
 import channelIcon from "../../../assets/icons/channel.svg";
 import { AvatarGroup } from "primereact/avatargroup";
@@ -9,6 +8,7 @@ import { Avatar } from "primereact/avatar";
 import {
   useGetChannelsByWorkspaceIdQuery,
   useGetWorkspaceByIdQuery,
+  useGetWorkspaceMembersCountQuery,
   useGetWorkspaceUnifiedSearchQuery,
 } from "../../api/workspaces/workspaces.api.ts";
 import { Dialog } from "primereact/dialog";
@@ -63,6 +63,9 @@ function Workspace() {
   const skipFetchChannelInfo = fetchChannelInfo;
 
   const { data: workspace } = useGetWorkspaceByIdQuery(Number(workspaceId));
+  const { data: membersCount } = useGetWorkspaceMembersCountQuery(
+    Number(workspaceId),
+  );
   const { data: channels, isSuccess } = useGetChannelsByWorkspaceIdQuery(
     Number(workspaceId),
     { skip: skipChannels },
@@ -319,30 +322,28 @@ function Workspace() {
             <div className="flex items-center gap-2 h-full py-1">
               <div className="flex items-center gap-2">
                 <AvatarGroup>
-                  <Avatar
-                    image={user}
-                    size="large"
-                    shape="square"
-                    className="rounded-lg"
-                  />
-                  <Avatar
-                    image={user}
-                    size="large"
-                    shape="square"
-                    className="rounded-lg"
-                  />
-                  <Avatar
-                    image={user}
-                    size="large"
-                    shape="square"
-                    className="rounded-lg"
-                  />
-                  <Avatar
-                    label="+2"
-                    shape="square"
-                    size="large"
-                    className="bg-[#6B8AFD] text-white rounded-lg"
-                  />
+                  {!membersCount
+                    ? null
+                    : membersCount > 0
+                      ? Array.from({ length: membersCount }).map((_, index) => (
+                          <ProfilePictureAvatar
+                            key={index}
+                            avatarType={"user"}
+                            url={profilePictureUrls[index]}
+                            altText={`U${index + 1}`}
+                            size="large"
+                          />
+                        ))
+                      : null}
+                  {/* workspaceUsers.length > 5 */}
+                  {true ? (
+                    <Avatar
+                      label={`+X`}
+                      shape="square"
+                      size="large"
+                      className="bg-[#6B8AFD] text-white rounded-lg"
+                    />
+                  ) : null}
                 </AvatarGroup>
               </div>
               <div className="w-[1px] h-full rounded-lg bg-[#ECECEC]"></div>
