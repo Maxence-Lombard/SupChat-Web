@@ -21,6 +21,7 @@ function PrivateMessage() {
           <div className="flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2">
             <div className="flex items-center gap-2">
               <ProfilePictureAvatar
+                key={user.id}
                 avatarType={"user"}
                 url={userImage}
                 altText={user.username.charAt(0).toUpperCase()}

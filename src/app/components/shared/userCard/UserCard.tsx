@@ -29,6 +29,7 @@ function UserCard({ user, imageSize }: UserCardProps) {
       >
         <div className="relative">
           <ProfilePictureAvatar
+            key={user.id}
             avatarType={"user"}
             url={userImage}
             size={imageSize || "xlarge"}

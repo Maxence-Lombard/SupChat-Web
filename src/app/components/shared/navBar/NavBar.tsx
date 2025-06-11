@@ -121,7 +121,7 @@ function NavBar() {
               <ProfilePictureAvatar
                 key={workspace.id}
                 avatarType={"workspace"}
-                url={workspaceImages[workspace.id]}
+                url={workspaceImages[workspace.id] || ""}
                 action={() => navigateToWorkspace(workspace.id)}
                 altText={workspace.name.charAt(0).toUpperCase()}
               />
@@ -174,6 +174,7 @@ function NavBar() {
           </div>
         </div>
         <ProfilePictureAvatar
+          key={userProfilePictureId}
           avatarType={"user"}
           isCurrentUser={true}
           url={userImage}

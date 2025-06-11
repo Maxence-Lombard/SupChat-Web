@@ -204,6 +204,7 @@ function Workspace() {
           <div className="flex flex-col p-2 gap-6 h-full overflow-y-auto bg-[#EBEBEB]/50 rounded-lg">
             <div className="flex gap-3">
               <ProfilePictureAvatar
+                key={workspace?.id}
                 avatarType={"workspace"}
                 url={workspaceProfilePicture}
                 altText={workspace?.name.charAt(0).toUpperCase() || "?"}
@@ -299,8 +300,9 @@ function Workspace() {
           <div className="flex mb-8 w-full items-center justify-between border border-[#ECECEC] rounded-2xl px-4 py-2">
             <div className="flex items-center gap-2">
               <ProfilePictureAvatar
+                key={workspaceId}
                 avatarType={"workspace"}
-                url={workspaceProfilePicture}
+                url={workspaceProfilePicture || ""}
                 altText={workspace?.name.charAt(0).toUpperCase() || "?"}
               />
               <div>

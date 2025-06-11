@@ -44,6 +44,7 @@ function NotificationCard({ notif }: NotificationCardProps) {
   return (
     <div className="flex p-2 gap-2 items-center bg-white rounded-lg border border-[#ECECEC]">
       <ProfilePictureAvatar
+        key={user.id}
         avatarType={"user"}
         isCurrentUser={false}
         url={userImage}

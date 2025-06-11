@@ -58,6 +58,7 @@ function WorkspaceCard(workspace: Workspace) {
     <div className="flex flex-col gap-4 bg-white border border-[#ECECEC] rounded-2xl p-4 w-80 h-60">
       <div className="flex items-center gap-4">
         <ProfilePictureAvatar
+          key={workspace.workspaceId}
           avatarType={"workspace"}
           url={workspace.imagePreview || profilePicture}
           size={"xlarge"}

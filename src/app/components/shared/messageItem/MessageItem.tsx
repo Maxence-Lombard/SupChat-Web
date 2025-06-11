@@ -273,6 +273,7 @@ function MessageItem({ message, currentUserId, onReply }: MessageProps) {
             ) : null}
           </div>
           <ProfilePictureAvatar
+            key={message.senderId}
             avatarType={"user"}
             isCurrentUser={true}
             url={userImage}
@@ -314,6 +315,7 @@ function MessageItem({ message, currentUserId, onReply }: MessageProps) {
     <div className="flex flex-col gap-2 w-full group">
       <div className="flex items-end w-full gap-3" key={message.id}>
         <ProfilePictureAvatar
+          key={message.senderId}
           avatarType={"user"}
           isCurrentUser={false}
           url={userImage}

@@ -17,6 +17,7 @@ function CheckUserCard({ user, checked, onChange }: CheckUserCardProps) {
     >
       <div className="flex items-center gap-3 w-[400px]">
         <ProfilePictureAvatar
+          key={user.id}
           avatarType={"user"}
           url={userImage}
           size={"xlarge"}

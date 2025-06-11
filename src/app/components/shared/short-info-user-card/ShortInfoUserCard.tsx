@@ -24,6 +24,7 @@ function ShortInfoUserCard({ user }: UserProps) {
         <div className="flex gap-3">
           <div className="relative w-16 h-16">
             <ProfilePictureAvatar
+              key={user.id}
               avatarType={"user"}
               url={userImage}
               size={"xlarge"}

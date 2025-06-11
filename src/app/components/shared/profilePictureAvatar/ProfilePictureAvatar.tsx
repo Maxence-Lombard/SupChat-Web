@@ -1,4 +1,5 @@
 import { Avatar } from "primereact/avatar";
+import { useEffect } from "react";
 
 interface ProfilePictureAvatarProps {
   avatarType: "user" | "workspace";
@@ -17,6 +18,10 @@ function ProfilePictureAvatar({
   size = "large",
   action = () => {},
 }: ProfilePictureAvatarProps) {
+  useEffect(() => {
+    console.log("url", url);
+  }, [url]);
+
   return (
     <>
       {

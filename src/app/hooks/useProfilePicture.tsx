@@ -25,7 +25,9 @@ const useProfilePicture = (profilePictureId: string | undefined) => {
   };
 
   useEffect(() => {
-    if (profilePictureId) {
+    if (!profilePictureId) {
+      setUserImage(undefined);
+    } else {
       setUserProfilePicture();
     }
   }, [profilePictureId]);
