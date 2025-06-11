@@ -30,7 +30,8 @@ function RoleListing() {
   const [roleSelected, setRoleSelected] = useState<{
     id: number;
     name: string;
-  }>({ id: 0, name: "" });
+    memberCount: number;
+  }>({ id: 0, name: "", memberCount: 0 });
 
   const rolesFromStore = useSelector(
     (state: RootState) =>
@@ -71,7 +72,9 @@ function RoleListing() {
           <p className="font-semibold text-xl"> Roles listing </p>
           <div className="flex flex-1 w-full gap-6">
             <div className="flex justify-center flex-1 py-2 border border-[#ECECEC] rounded-lg bg-white">
-              <p className="font-semibold"> Total of Roles - 3 </p>
+              <p className="font-semibold">
+                Total of Roles - {rolesFromStore.length}
+              </p>
             </div>
           </div>
           {rolesFromStore ? (
@@ -107,7 +110,11 @@ function RoleListing() {
                           className="pi pi-user cursor-pointer text-gray-700"
                           onClick={() => {
                             setAssignRoleVisible(true);
-                            setRoleSelected({ id: role.id, name: role.name });
+                            setRoleSelected({
+                              id: role.id,
+                              name: role.name,
+                              memberCount: role.memberCount || 0,
+                            });
                           }}
                         />
                       </td>
@@ -129,7 +136,11 @@ function RoleListing() {
                           className="pi pi-trash cursor-pointer text-red-500"
                           onClick={() => {
                             setDeleteRoleVisible(true);
-                            setRoleSelected({ id: role.id, name: role.name });
+                            setRoleSelected({
+                              id: role.id,
+                              name: role.name,
+                              memberCount: role.memberCount || 0,
+                            });
                           }}
                         />
                       </td>
@@ -154,6 +165,7 @@ function RoleListing() {
             hide={() => hide({} as React.SyntheticEvent)}
             roleName={roleSelected.name}
             roleId={roleSelected.id}
+            roleMemberCount={roleSelected.memberCount}
           />
         )}
       ></Dialog>

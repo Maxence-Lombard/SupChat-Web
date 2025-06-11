@@ -5,15 +5,24 @@ import {
 } from "../../../../api/workspaces/workspaces.api.ts";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setRoleMemberCount } from "../../../../store/slices/roleSlice.ts";
 
 interface AssignRolePopupProps {
   hide: () => void;
   roleName: string;
   roleId: number;
+  roleMemberCount: number;
 }
 
-function AssignRolePopup({ hide, roleName, roleId }: AssignRolePopupProps) {
+function AssignRolePopup({
+  hide,
+  roleName,
+  roleId,
+  roleMemberCount,
+}: AssignRolePopupProps) {
   const { workspaceId } = useParams<{ workspaceId: string }>();
+  const dispatch = useDispatch();
   const { data: workspaceMembers } = useGetWorkspaceRoleNonMembersQuery({
     workspaceId: Number(workspaceId),
     roleId: roleId,
@@ -36,6 +45,13 @@ function AssignRolePopup({ hide, roleName, roleId }: AssignRolePopupProps) {
       usersId: usersId,
     })
       .then(() => {
+        dispatch(
+          setRoleMemberCount({
+            workspaceId: Number(workspaceId),
+            roleId: roleId,
+            memberCount: roleMemberCount + usersId.length,
+          }),
+        );
         hide();
       })
       .catch((error) => {
