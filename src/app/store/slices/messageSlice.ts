@@ -5,11 +5,13 @@ import { RootState } from "../store.ts";
 interface MessageState {
   privateMessages: Record<string, Message[]>;
   channelMessages: Record<number, Message[]>;
+  byId: Record<number, Message>;
 }
 
 const initialState: MessageState = {
   privateMessages: {},
   channelMessages: {},
+  byId: {},
 };
 
 const messageSlice = createSlice({
@@ -19,6 +21,7 @@ const messageSlice = createSlice({
     addMessage: (state, action: PayloadAction<Message>) => {
       const message = action.payload;
 
+      state.byId[message.id] = message;
       if (message.receiverId > 0 && message.senderId > 0) {
         const key = [message.senderId, message.receiverId]
           .sort((a, b) => a - b)
@@ -46,9 +49,43 @@ const messageSlice = createSlice({
       }
     },
 
+    addMessages: (state, action: PayloadAction<Message[]>) => {
+      action.payload.forEach((message) => {
+        // Ajouter au byId
+        state.byId[message.id] = message;
+
+        if (message.receiverId > 0 && message.senderId > 0) {
+          const key = [message.senderId, message.receiverId]
+            .sort((a, b) => a - b)
+            .join("_");
+          if (!state.privateMessages[key]) {
+            state.privateMessages[key] = [];
+          }
+          const exists = state.privateMessages[key].some(
+            (m) => m.id === message.id,
+          );
+          if (!exists) {
+            state.privateMessages[key].push(message);
+          }
+        } else if (message.channelId > 0) {
+          const channelId = message.channelId;
+          if (!state.channelMessages[message.channelId]) {
+            state.channelMessages[message.channelId] = [];
+          }
+          const exists = state.channelMessages[channelId].some(
+            (m) => m.id === message.id,
+          );
+          if (!exists) {
+            state.channelMessages[channelId].push(message);
+          }
+        }
+      });
+    },
+
     modifyMessage: (state, action: PayloadAction<Message>) => {
       const message = action.payload;
 
+      state.byId[message.id] = message;
       if (message.receiverId > 0 && message.senderId > 0) {
         const key = [message.senderId, message.receiverId]
           .sort((a, b) => a - b)
@@ -83,6 +120,7 @@ const messageSlice = createSlice({
     ) => {
       const { messageId, channelId } = action.payload;
 
+      delete state.byId[messageId];
       if (channelId && channelId > 0) {
         state.channelMessages[channelId] = state.channelMessages[
           channelId
@@ -98,10 +136,16 @@ const messageSlice = createSlice({
     clearMessages: (state) => {
       state.privateMessages = {};
       state.channelMessages = {};
+      state.byId = {};
     },
 
     clearConversationMessages: (state, action: PayloadAction<string>) => {
       const conversationKey = action.payload;
+      if (state.privateMessages[conversationKey]) {
+        state.privateMessages[conversationKey].forEach((msg) => {
+          delete state.byId[msg.id];
+        });
+      }
       delete state.privateMessages[conversationKey];
     },
   },
@@ -121,6 +165,13 @@ export const selectSortedMessagesByConversationKey = (
 export const selectChannelMessages = (state: RootState) =>
   state.messages.channelMessages;
 
+export const selectMessageById = (
+  state: RootState,
+  messageId: number,
+): Message | undefined => {
+  return state.messages.byId[messageId];
+};
+
 export const selectSortedChannelMessages = (channelId: number) =>
   createSelector([selectChannelMessages], (channelMessages) => {
     const messages = channelMessages[channelId] || [];
@@ -129,6 +180,7 @@ export const selectSortedChannelMessages = (channelId: number) =>
 
 export const {
   addMessage,
+  addMessages,
   modifyMessage,
   removeMessage,
   clearMessages,

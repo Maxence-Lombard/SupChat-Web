@@ -44,7 +44,6 @@ export function AttachmentRenderer({
                   rel="noopener noreferrer"
                 >
                   {attachment.name}
-                  --------{attachment.type}
                 </a>
               </div>
             )}

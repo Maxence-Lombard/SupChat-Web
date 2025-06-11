@@ -37,6 +37,7 @@ function Conversation() {
   const [attachedFiles, setAttachedFiles] = useState<
     { file: File; url: string }[]
   >([]);
+  const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   // REFERENCES
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -77,14 +78,14 @@ function Conversation() {
         await sendChannelMessage({
           content: messageInput || "",
           channelId: Number(channelId),
-          parentId: undefined,
+          parentId: replyToMessage?.id,
           attachments: attachmentIds,
         });
       } else {
         await sendUserMessage({
           content: messageInput || "",
           receiverId: Number(id),
-          parentId: undefined,
+          parentId: replyToMessage?.id,
           attachments: attachmentIds,
         });
       }
@@ -92,6 +93,7 @@ function Conversation() {
       setMessageInput("");
       attachedFiles.forEach(({ url }) => URL.revokeObjectURL(url));
       setAttachedFiles([]);
+      setReplyToMessage(null);
     } catch (error) {
       console.error("Failed to send message:", error);
     } finally {
@@ -231,6 +233,7 @@ function Conversation() {
               key={message.id}
               message={message}
               currentUserId={userId!}
+              onReply={(msg) => setReplyToMessage(msg)}
             />
           ))}
         </div>
@@ -269,6 +272,19 @@ function Conversation() {
             }}
             onDragOver={(e) => e.preventDefault()}
           >
+            {replyToMessage ? (
+              <div className="bg-gray-100 border-l-4 border-blue-400 p-2 mb-2 relative">
+                <p className="text-sm text-gray-800 italic">
+                  Reply to : {replyToMessage.content}
+                </p>
+                <button
+                  onClick={() => setReplyToMessage(null)}
+                  className="absolute top-1 right-2 text-gray-500 text-xs"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : null}
             <input
               type="file"
               multiple

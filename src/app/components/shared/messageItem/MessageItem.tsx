@@ -15,6 +15,7 @@ import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.t
 import {
   modifyMessage,
   removeMessage,
+  selectMessageById,
 } from "../../../store/slices/messageSlice.ts";
 import { InputText } from "primereact/inputtext";
 import data from "@emoji-mart/data";
@@ -33,9 +34,10 @@ import { AttachmentRenderer } from "../attachmentRenderer/AttachmentRenderer.tsx
 type MessageProps = {
   message: Message;
   currentUserId: number;
+  onReply: (message: Message) => void;
 };
 
-function MessageItem({ message, currentUserId }: MessageProps) {
+function MessageItem({ message, currentUserId, onReply }: MessageProps) {
   const dispatch = useDispatch();
   const pickerRef = useRef<HTMLDivElement>(null);
   const {
@@ -50,11 +52,15 @@ function MessageItem({ message, currentUserId }: MessageProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedMessage, setEditedMessage] = useState<Message>(message);
   const [pickerIsEnabled, setPickerIsEnabled] = useState<boolean>(false);
+  const [parentMessage, setParentMessage] = useState<Message | undefined>();
 
   const storeUser = useSelector(
     (state: RootState) => state.users.byId[message.senderId],
   );
   const reactions = useSelector(selectReactionsByMessageId(message.id));
+  const parentMessageFromStore = useSelector((state: RootState) =>
+    message.parentId ? selectMessageById(state, message.parentId) : undefined,
+  );
 
   const [user, setUser] = useState<Partial<ApplicationUser> | undefined>(
     storeUser,
@@ -190,6 +196,12 @@ function MessageItem({ message, currentUserId }: MessageProps) {
     }
   }, [pickerIsEnabled]);
 
+  useEffect(() => {
+    if (message.parentId && !parentMessage && parentMessageFromStore) {
+      setParentMessage(parentMessageFromStore);
+    }
+  }, [parentMessageFromStore, message.parentId, parentMessage]);
+
   const userImage = useProfilePicture(profilePictureId);
 
   if (message.senderId === currentUserId) {
@@ -200,6 +212,13 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           key={message.id}
         >
           <div className="flex flex-col gap-1 items-end">
+            {parentMessage ? (
+              <div className="border-l-4 border-gray-400 pl-2 text-sm text-gray-600 mb-1">
+                <p className="line-clamp-2 italic">
+                  Reply to : {parentMessage.content}
+                </p>
+              </div>
+            ) : null}
             {isEditing ? (
               <>
                 <InputText
@@ -301,6 +320,13 @@ function MessageItem({ message, currentUserId }: MessageProps) {
           altText={user?.username?.charAt(0).toUpperCase()}
         />
         <div className="flex flex-col gap-1">
+          {parentMessage ? (
+            <div className="border-l-4 border-gray-400 pl-2 text-sm text-gray-600 mb-1">
+              <p className="line-clamp-2 italic">
+                Reply to : {parentMessage.content}
+              </p>
+            </div>
+          ) : null}
           <div className="flex gap-4 items-center">
             <p className="text-black/50">
               {formatDate(message.sendDate, "HH:mm")}
@@ -308,7 +334,7 @@ function MessageItem({ message, currentUserId }: MessageProps) {
             <div className="hidden group-hover:flex gap-2">
               <i
                 className="pi pi-reply text-black/50 cursor-pointer text-sm"
-                onClick={() => console.log("reply to message")}
+                onClick={() => onReply(message)}
               />
             </div>
           </div>
@@ -317,6 +343,9 @@ function MessageItem({ message, currentUserId }: MessageProps) {
               {message.content}
             </p>
           </div>
+          {message.messageAttachments.length > 0 ? (
+            <AttachmentRenderer attachments={message.messageAttachments} />
+          ) : null}
         </div>
       </div>
       <div className="relative">

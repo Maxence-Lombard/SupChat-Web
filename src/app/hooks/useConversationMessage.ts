@@ -4,13 +4,13 @@ import {
   useLazyGetMessagesByUserIdQuery,
 } from "../api/messages/messages.api";
 import {
-  addMessage,
+  addMessages,
   clearConversationMessages,
   selectSortedChannelMessages,
   selectSortedMessagesByConversationKey,
 } from "../store/slices/messageSlice";
 import { RootState } from "../store/store";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function useConversationMessages({
   id,
@@ -32,10 +32,16 @@ export function useConversationMessages({
   const [triggerLazyUserMessages] = useLazyGetMessagesByUserIdQuery();
   const [triggerLazyChannelMessages] = useLazyGetMessagesByChannelIdQuery();
 
-  const channelMessages = useSelector(
-    channelId ? selectSortedChannelMessages(Number(channelId)) : () => [],
+  const conversationKey = useMemo(
+    () => [userId, id].filter(Boolean).sort().join("_"),
+    [userId, id],
   );
-  const conversationKey = [userId, id].filter(Boolean).sort().join("_");
+  const emptyArray = useMemo(() => [], []);
+  const channelMessages = useSelector(
+    channelId
+      ? selectSortedChannelMessages(Number(channelId))
+      : () => emptyArray,
+  );
   const privateMessages = useSelector(
     selectSortedMessagesByConversationKey(conversationKey),
   );
@@ -55,11 +61,9 @@ export function useConversationMessages({
       const params = channelId
         ? { Id: Number(channelId), pageNumber, pageSize }
         : { Id: Number(id), pageNumber, pageSize };
-      const res = await fetchMessages(params).unwrap();
-      for (const message of res) {
-        dispatch(addMessage(message));
-      }
-      if (res.length < pageSize) {
+      const messages = await fetchMessages(params).unwrap();
+      dispatch(addMessages(messages));
+      if (messages.length < pageSize) {
         setHasMoreMessages(false);
       }
     } catch (error) {

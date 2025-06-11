@@ -15,9 +15,7 @@ function TokenExpiryChecker() {
     const payload = JSON.parse(atob(token.split(".")[1]));
     const exp = payload.exp * 1000;
     const now = Date.now();
-    // const delay = exp - now + 1000;
-    console.log("Token expiry time:", exp - now + 1000);
-    const delay = 11000;
+    const delay = exp - now + 1000;
 
     if (delay > 0) {
       const timeout = setTimeout(() => {
