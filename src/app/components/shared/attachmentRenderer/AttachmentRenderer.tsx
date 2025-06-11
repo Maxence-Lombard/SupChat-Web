@@ -16,7 +16,7 @@ export function AttachmentRenderer({
       {attachments.map((file) => {
         const { attachment } = file;
         const blobUrl = fileUrls[attachment.id];
-        const isImage = attachment.type === "Image";
+        const isImage = attachment.typeLocalized === "Image";
         if (!blobUrl) {
           return (
             <p key={file.id} className="text-sm italic text-gray-400">
@@ -44,6 +44,7 @@ export function AttachmentRenderer({
                   rel="noopener noreferrer"
                 >
                   {attachment.name}
+                  --------{attachment.type}
                 </a>
               </div>
             )}
