@@ -29,26 +29,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
 
   const login = async (credentials: LoginDto) => {
-    const response = await loginRequest(credentials);
+    const response = await loginRequest(credentials).unwrap();
 
     Object.keys(cookies).forEach((cookieName) => {
       setCookie(cookieName, "", { path: "/", maxAge: -1 });
     });
-    if (response.data?.accessToken) {
+    if (response.accessToken) {
       const tokenExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 mins
       const refreshTokenExpires = new Date(
         Date.now() + 7 * 24 * 60 * 60 * 1000,
       ); // 7 jours
-      setCookie(cookieConstants.accessToken, response.data.accessToken, {
+      setCookie(cookieConstants.accessToken, response.accessToken, {
         path: "/",
         expires: tokenExpires,
       });
-      setCookie(cookieConstants.refreshToken, response.data.refreshToken, {
+      setCookie(cookieConstants.refreshToken, response.refreshToken, {
         path: "/",
         expires: refreshTokenExpires,
       });
       dispatch({ type: "auth/loginSuccess" });
-      return response.data;
+      return response;
     } else {
       throw new Error("Invalid login response");
     }

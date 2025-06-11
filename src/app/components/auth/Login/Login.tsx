@@ -14,6 +14,7 @@ import { useAuth } from "../../../hooks/useAuth.tsx";
 import { loginSuccess } from "../../../store/slices/authSlice.ts";
 import { useGetUserInfosQuery } from "../../../api/user/user.api.ts";
 import { addUser, setCurrentUserId } from "../../../store/slices/usersSlice.ts";
+import { ErrorResponse } from "../../../Models/Error.ts";
 
 enum Providers {
   GOOGLE = "google",
@@ -54,7 +55,7 @@ function Login() {
       return;
     }
     setFormStatus("pending");
-    const body: LoginDto = {
+    const credentials: LoginDto = {
       email: email,
       password: password,
       grant_type: "password",
@@ -62,7 +63,7 @@ function Login() {
     setErrorMessage("");
 
     try {
-      const response = await login(body);
+      const response = await login(credentials);
       if (response.accessToken) {
         setFormStatus("submitted");
         dispatch(loginSuccess());
@@ -77,8 +78,9 @@ function Login() {
         setErrorMessage("Invalid email or password");
       }
     } catch (e) {
+      const error = e as ErrorResponse;
       setFormStatus("error");
-      setErrorMessage("Invalid email or password");
+      setErrorMessage(error.data.detail || "Invalid email or password");
       return e;
     }
   };

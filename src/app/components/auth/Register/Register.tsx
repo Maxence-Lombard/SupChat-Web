@@ -12,7 +12,6 @@ import {
   RegisterDto,
   useRegisterMutation,
 } from "../../../api/auth/auth.api.ts";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { ErrorResponse } from "../../../Models/Error.ts";
 
 function Register() {
@@ -20,9 +19,6 @@ function Register() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [formStatus, setFormStatus] = useState<
-    "submitted" | "pending" | "error" | undefined
-  >(undefined);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
 
@@ -32,17 +28,14 @@ function Register() {
   const handleRegister = async (event?: React.FormEvent) => {
     if (event) event.preventDefault();
     if (!email || !username || !password) {
-      setFormStatus("error");
       setErrorMessage("Please fill all the fields");
       return;
     }
     if (password !== confirmPassword) {
-      setFormStatus("error");
       setErrorMessage("Passwords do not match");
       return;
     }
     setErrorMessage("");
-    setFormStatus("pending");
     const body: RegisterDto = {
       email: email,
       userName: username,
@@ -50,26 +43,14 @@ function Register() {
     };
 
     try {
-      const response = await register(body);
-      if (response.data != null) {
-        setFormStatus("submitted");
+      const response = await register(body).unwrap();
+      if (response != null) {
         setSuccessMessage(
           "Registration successful, please check you mail to confirm your account",
         );
-      } else {
-        if (response.error && "status" in response.error) {
-          setFormStatus("error");
-          const fetchError = response.error as FetchBaseQueryError;
-          const status = fetchError.status;
-
-          if (status === 409) {
-            setErrorMessage("Email already used");
-          }
-        }
       }
     } catch (e) {
       const error = e as ErrorResponse;
-      setFormStatus("error");
       setErrorMessage(error.data.detail);
     }
   };
@@ -163,11 +144,9 @@ function Register() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <p
-                    className={`flex m-0 min-h-6 text-red-500 ${formStatus === "error" ? "visible" : "invisible"}`}
-                  >
-                    {errorMessage}
-                  </p>
+                  {errorMessage ? (
+                    <p className="text-xs text-red-500">{errorMessage}</p>
+                  ) : null}
                   {successMessage ? (
                     <p className="text-xs text-green-600">{successMessage}</p>
                   ) : null}
