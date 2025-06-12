@@ -12,18 +12,9 @@ const baseQuery = fetchBaseQuery({
     }
     return response.json();
   },
-  prepareHeaders: async (headers, { getState }) => {
+  prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
-
-    let token = selectAccessToken(state);
-    const maxRetries = 5;
-    let retries = 0;
-
-    while (!token && retries < maxRetries) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      token = (getState() as RootState).auth.accessToken;
-      retries++;
-    }
+    const token = selectAccessToken(state);
 
     headers.set("Authorization", `Bearer ${token}`);
     return headers;

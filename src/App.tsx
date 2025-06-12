@@ -30,7 +30,7 @@ import RoleMembersListing from "./app/components/roleMembersListing/RoleMembersL
 function App() {
   const dispatch = useDispatch();
   const token = getUnencodedCookie(cookieConstants.accessToken);
-  const usertoken = useSelector((state: RootState) => state.auth.accessToken);
+  const userToken = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
     if (token) {
@@ -41,59 +41,57 @@ function App() {
   return (
     <>
       <div className="App h-full">
-        <BrowserRouter>
-          <TokenExpiryChecker />
-          <AuthRedirect />
-          <Routes>
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Route>
-            {/*<Route element={<PrivateRoute />}>*/}
-            <Route
-              element={
-                token && usertoken ? (
-                  <SignalRProvider>
-                    <MainLayout />
-                  </SignalRProvider>
-                ) : null
-              }
-            >
-              <Route path="/" element={<Home />} />
-              <Route path="/privateMessage/:id" element={<PrivateMessage />} />
-              <Route
-                path="/workspace/:workspaceId/channel/:channelId"
-                element={<Workspace />}
-              />
-              <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
-              <Route
-                path="/workspace/settings/:workspaceId"
-                element={<WorkspaceParameters />}
-              />
-              <Route
-                path="/workspace/settings/:workspaceId/roleListing"
-                element={<RoleListing />}
-              />
-              <Route
-                path="/workspace/settings/:workspaceId/roleCreation"
-                element={<RoleCreation />}
-              />
-              <Route
-                path="/workspace/settings/:workspaceId/roleMembersListing/:roleId"
-                element={<RoleMembersListing />}
-              />
-              {/* User settings */}
-              <Route path="/settings/myprofile" element={<MyProfile />} />
-              <Route path="/settings/security" element={<SecuritySettings />} />
-            </Route>
-            {/*</Route>*/}
+        <SignalRProvider>
+          <BrowserRouter>
+            <TokenExpiryChecker />
+            <AuthRedirect />
+            <Routes>
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Route>
+              <Route element={token && userToken ? <MainLayout /> : null}>
+                <Route path="/" element={<Home />} />
+                <Route
+                  path="/privateMessage/:id"
+                  element={<PrivateMessage />}
+                />
+                <Route
+                  path="/workspace/:workspaceId/channel/:channelId"
+                  element={<Workspace />}
+                />
+                <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
+                <Route
+                  path="/workspace/settings/:workspaceId"
+                  element={<WorkspaceParameters />}
+                />
+                <Route
+                  path="/workspace/settings/:workspaceId/roleListing"
+                  element={<RoleListing />}
+                />
+                <Route
+                  path="/workspace/settings/:workspaceId/roleCreation"
+                  element={<RoleCreation />}
+                />
+                <Route
+                  path="/workspace/settings/:workspaceId/roleMembersListing/:roleId"
+                  element={<RoleMembersListing />}
+                />
+                {/* User settings */}
+                <Route path="/settings/myprofile" element={<MyProfile />} />
+                <Route
+                  path="/settings/security"
+                  element={<SecuritySettings />}
+                />
+              </Route>
 
-            <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
-            <Route path="/login/callback" element={<Callback />} />
+              <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
+              <Route path="/login/callback" element={<Callback />} />
 
-            <Route path="*" element={<h1>404</h1>} />
-          </Routes>
-        </BrowserRouter>
+              <Route path="*" element={<h1>404</h1>} />
+            </Routes>
+          </BrowserRouter>
+        </SignalRProvider>
       </div>
     </>
   );

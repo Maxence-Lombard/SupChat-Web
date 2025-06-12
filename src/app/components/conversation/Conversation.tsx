@@ -24,8 +24,15 @@ function Conversation() {
     channelId,
   });
 
-  const { on, off, sendUserMessage, joinChannel, sendChannelMessage } =
-    useSignalR();
+  const {
+    on,
+    off,
+    sendUserMessage,
+    joinChannel,
+    sendChannelMessage,
+    isConnected,
+    isConnecting,
+  } = useSignalR();
   const dispatch = useDispatch();
 
   const [pickerIsEnabled, setPickerIsEnabled] = useState(false);
@@ -39,10 +46,25 @@ function Conversation() {
   >([]);
   const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   // REFERENCES
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
+  const handlersRef = useRef({
+    handleReceiveMessage: (...args: unknown[]) => {
+      const message = args[0] as Message;
+      dispatch(addMessage(message));
+    },
+    handleMessageUpdated: (...args: unknown[]) => {
+      const message = args[0] as Message;
+      dispatch(modifyMessage(message));
+    },
+    handleMessageDeleted: (...args: unknown[]) => {
+      const messageId = args[0] as number;
+      dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
+    },
+  });
 
   const [uploadFileRequest] = useUploadFileMutation();
 
@@ -60,6 +82,11 @@ function Conversation() {
 
   const sendMessage = async () => {
     if (!messageInput.trim() && attachedFiles.length === 0) return;
+    if (!isConnected) {
+      console.warn(
+        "SignalR is not connected. Message will be sent when connection is restored.",
+      );
+    }
 
     setIsSending(true);
     try {
@@ -99,21 +126,6 @@ function Conversation() {
     } finally {
       setIsSending(false);
     }
-  };
-
-  const handleReceiveMessage = (...args: unknown[]) => {
-    const message = args[0] as Message;
-    dispatch(addMessage(message));
-  };
-
-  const handleMessageUpdated = (...args: unknown[]) => {
-    const message = args[0] as Message;
-    dispatch(modifyMessage(message));
-  };
-
-  const handleMessageDeleted = (...args: unknown[]) => {
-    const messageId = args[0] as number;
-    dispatch(removeMessage({ messageId: messageId, channelId: undefined }));
   };
 
   const handleFilesSelected = (files: FileList | null) => {
@@ -176,19 +188,41 @@ function Conversation() {
 
   // SIGNALR EVENT EFFECT
   useEffect(() => {
+    if (!isConnected) return;
+
     if (channelId) {
       joinChannel(Number(channelId));
     }
-    on(SignalREventConstants.onMessageReceived, handleReceiveMessage);
-    on(SignalREventConstants.onMessageUpdated, handleMessageUpdated);
-    on(SignalREventConstants.onMessageDeleted, handleMessageDeleted);
+    const handlersRefCurrent = handlersRef.current;
+
+    on(
+      SignalREventConstants.onMessageReceived,
+      handlersRefCurrent.handleReceiveMessage,
+    );
+    on(
+      SignalREventConstants.onMessageUpdated,
+      handlersRefCurrent.handleMessageUpdated,
+    );
+    on(
+      SignalREventConstants.onMessageDeleted,
+      handlersRefCurrent.handleMessageDeleted,
+    );
 
     return () => {
-      off(SignalREventConstants.onMessageReceived, handleReceiveMessage);
-      off(SignalREventConstants.onMessageUpdated, handleMessageUpdated);
-      off(SignalREventConstants.onMessageDeleted, handleMessageDeleted);
+      off(
+        SignalREventConstants.onMessageReceived,
+        handlersRefCurrent.handleReceiveMessage,
+      );
+      off(
+        SignalREventConstants.onMessageUpdated,
+        handlersRefCurrent.handleMessageUpdated,
+      );
+      off(
+        SignalREventConstants.onMessageDeleted,
+        handlersRefCurrent.handleMessageDeleted,
+      );
     };
-  }, [channelId, on, off, sendUserMessage, joinChannel]);
+  }, [channelId, isConnected, on, off, joinChannel]);
 
   // TEXTAREA RESIZE EFFECT
   useEffect(() => {
@@ -197,7 +231,7 @@ function Conversation() {
       textAreaRef.current.style.height =
         textAreaRef.current.scrollHeight + "px";
     }
-  }, []);
+  }, [messageInput]);
 
   // PICKER EFFECT
   useEffect(() => {
@@ -219,6 +253,17 @@ function Conversation() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [pickerIsEnabled]);
+
+  if (isConnecting) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+          <p> Connexion ...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -249,6 +294,13 @@ function Conversation() {
         ) : null}
         <div ref={messagesEndRef} className="h-0" />
       </div>
+      {!isConnected && !isConnecting && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-2">
+          <p className="text-sm">
+            ⚠️ Connexion to SignalR closed. Reconnection ...
+          </p>
+        </div>
+      )}
       {/* Message input */}
       <div className="flex flex-col mt-1 gap-2 w-full">
         <hr className="flex-1 border border-[#EBEBEB]" />

@@ -29,6 +29,7 @@ import { SignalREventConstants } from "../constants/signalRConstants.ts";
 interface SignalRContextType {
   // CONNECTION
   isConnected: boolean;
+  isConnecting: boolean;
   joinChannel: (channelId: number) => Promise<void>;
   // MESSAGE
   sendUserMessage: (data: MessageForUserDto) => Promise<void>;
@@ -59,7 +60,10 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   const token = useSelector(selectAccessToken);
   const connectionRef = useRef<HubConnection | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [currentChannel, setCurrentChannel] = useState<number | null>(null);
+
+  const actionQueueRef = useRef<(() => Promise<void>)[]>([]);
 
   // Message
   const [sendMessageForUser] = useMessagesForUserMutation();
@@ -69,6 +73,27 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   // Reaction
   const [addReactionRequest] = useCreateMessageReactionsMutation();
   const [deleteReactionRequest] = useDeleteMessageReactionsMutation();
+
+  const executeWhenConnected = async (action: () => Promise<void>) => {
+    if (isConnected && connectionRef.current) {
+      await action();
+    } else {
+      actionQueueRef.current.push(action);
+    }
+  };
+
+  const processActionQueue = async () => {
+    while (actionQueueRef.current.length > 0) {
+      const action = actionQueueRef.current.shift();
+      if (action) {
+        try {
+          await action();
+        } catch (err) {
+          console.error("Error executing queued action:", err);
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -93,20 +118,37 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       );
 
-      // connection.on(SignalREventConstants.onUserDisconnected, (userData) => {
-      //   console.log("✅ User user disconnected:", userData);
-      // });
+      connection.on(SignalREventConstants.onUserDisconnected, (userData) => {
+        console.log("✅ User user disconnected:", userData);
+      });
 
       connection.onclose((error) => {
         console.error("SignalR connection closed:", error?.message);
         setIsConnected(false);
+        setIsConnecting(false);
+      });
+
+      connection.onreconnecting((error) => {
+        console.log("SignalR reconnecting:", error?.message);
+        setIsConnected(false);
+        setIsConnecting(true);
+      });
+
+      connection.onreconnected((connectionId) => {
+        console.log("SignalR reconnected:", connectionId);
+        setIsConnected(true);
+        setIsConnecting(false);
+        processActionQueue();
       });
 
       try {
         await connection.start();
         console.log("SignalR connected");
         setIsConnected(true);
+        setIsConnecting(false);
+        await processActionQueue();
       } catch (err) {
+        setIsConnecting(false);
         console.error("Failed to connect to SignalR:", err);
       }
 
@@ -119,6 +161,8 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
       connectionRef.current?.stop();
       connectionRef.current = null;
       setIsConnected(false);
+      setIsConnecting(false);
+      actionQueueRef.current = [];
     };
   }, [token]);
 
@@ -215,7 +259,13 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const on = (event: string, callback: (...args: unknown[]) => void) => {
-    connectionRef.current?.on(event, callback);
+    if (connectionRef.current) {
+      connectionRef.current.on(event, callback);
+    } else {
+      executeWhenConnected(async () => {
+        connectionRef.current?.on(event, callback);
+      });
+    }
   };
 
   const off = (event: string, callback?: (...args: unknown[]) => void) => {
@@ -230,6 +280,7 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
     <SignalRContext.Provider
       value={{
         isConnected,
+        isConnecting,
         joinChannel,
         sendUserMessage,
         sendChannelMessage,
