@@ -2,9 +2,11 @@ import WorkspaceParametersLayout from "../../layouts/WorkspaceParametersLayout.t
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store.ts";
-import { useGetWorkspaceRoleMembersQuery } from "../../api/workspaces/workspaces.api.ts";
-import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
-import { status } from "../../Models/Enums.ts";
+import {
+  useGetWorkspaceRoleMembersQuery,
+  useUnassignWorkspaceRoleMutation,
+} from "../../api/workspaces/workspaces.api.ts";
+import RoleMemberListItem from "../shared/roleMemberListItem/RoleMemberListItem.tsx";
 
 function RoleMembersListing() {
   const { workspaceId, roleId } = useParams<{
@@ -22,6 +24,9 @@ function RoleMembersListing() {
     workspaceId: Number(workspaceId),
     roleId: Number(roleId),
   });
+  const [unassignRoleFromUser] = useUnassignWorkspaceRoleMutation();
+
+  if (!workspaceId || !roleId) return null;
 
   return (
     <>
@@ -38,32 +43,15 @@ function RoleMembersListing() {
             </p>
             <p className="font-semibold text-xl">members listing</p>
           </div>
-          {!users || users?.length === 0
-            ? null
-            : users.map((user) => (
-                <div key={user.id} className="flex items-center gap-4">
-                  <div
-                    key={user.id}
-                    className="flex gap-2 p-2 border border-[#ECECEC] rounded-lg items-center w-1/2"
-                  >
-                    <ProfilePictureAvatar
-                      key={user.id}
-                      avatarType={"user"}
-                      url={user?.profilePictureId || ""}
-                      altText={user.username.charAt(0).toUpperCase()}
-                    />
-                    <div className="flex flex-col gap-1">
-                      <p className="text-lg">{user.username}</p>
-                      <p
-                        className={`${user.status === status.online ? "text-green-600" : "text-black"}`}
-                      >
-                        {user.status}
-                      </p>
-                    </div>
-                  </div>
-                  <i className="pi pi-trash text-red-500 text-xl cursor-pointer" />
-                </div>
-              ))}
+          {users?.map((user) => (
+            <RoleMemberListItem
+              key={user.id}
+              user={user}
+              workspaceId={workspaceId}
+              roleId={roleId}
+              unassignRoleFromUser={unassignRoleFromUser}
+            />
+          ))}
         </div>
       </WorkspaceParametersLayout>
     </>

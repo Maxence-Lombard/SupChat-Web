@@ -177,6 +177,13 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "WorkspaceRoleMembers",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+      ],
     }),
 
     getWorkspaceRoleMembersCount: builder.query<
@@ -190,6 +197,13 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "WorkspaceRoleMembersCount",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+      ],
     }),
 
     getWorkspaceRoleNonMembers: builder.query<
@@ -203,6 +217,13 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "WorkspaceRoleMembers",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+      ],
     }),
 
     getWorkspaceUnifiedSearch: builder.query<
@@ -302,6 +323,18 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: (_result, _error, arg) => [
+        {
+          type: "WorkspaceRoleMembers",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+        {
+          type: "WorkspaceRoleMembersCount",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+      ],
     }),
 
     // PATCH
@@ -372,6 +405,35 @@ export const WorkspaceApi = api.injectEndpoints({
       }),
     }),
 
+    unassignWorkspaceRole: builder.mutation<
+      ApplicationUser[],
+      {
+        workspaceId: number;
+        roleId: number;
+        userId: number;
+      }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/Roles/${data.roleId}/Members/${data.userId}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      invalidatesTags: (_result, _error, arg) => [
+        {
+          type: "WorkspaceRoleMembers",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+        {
+          type: "WorkspaceRoleMembersCount",
+          workspaceId: arg.workspaceId,
+          roleId: arg.roleId,
+        },
+      ],
+    }),
+
     deleteWorkspaceRole: builder.mutation<
       RoleDto,
       { workspaceId: number; roleId: number }
@@ -416,5 +478,6 @@ export const {
   // DELETE
   useLeaveWorkspaceMutation,
   useDeleteWorkspaceMutation,
+  useUnassignWorkspaceRoleMutation,
   useDeleteWorkspaceRoleMutation,
 } = WorkspaceApi;

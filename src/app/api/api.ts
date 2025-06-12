@@ -33,6 +33,8 @@ export const api = createApi({
     "Users",
     "Roles",
     "Notifications",
+    "WorkspaceRoleMembers",
+    "WorkspaceRoleMembersCount",
   ],
 
   endpoints: () => ({}),
