@@ -47,6 +47,16 @@ export const ChannelsApi = api.injectEndpoints({
       }),
     }),
 
+    getChannelMembersCount: builder.query<number, number>({
+      query: (Id) => ({
+        url: `/api/Channel/${Id}/CountMembers`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     getChannelMembers: builder.query<
       ApplicationUser[],
       { channelId: number; pageNumber: number; pageSize: number }
@@ -113,6 +123,7 @@ export const ChannelsApi = api.injectEndpoints({
 export const {
   useGetChannelsQuery,
   useGetChannelByIdQuery,
+  useGetChannelMembersCountQuery,
   useGetChannelMembersQuery,
   useGetChannelNotMembersQuery,
   useAddMembersInChannelMutation,

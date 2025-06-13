@@ -8,7 +8,6 @@ import { Avatar } from "primereact/avatar";
 import {
   useGetChannelsByWorkspaceIdQuery,
   useGetWorkspaceByIdQuery,
-  useGetWorkspaceMembersCountQuery,
   useGetWorkspaceUnifiedSearchQuery,
   useLeaveWorkspaceMutation,
 } from "../../api/workspaces/workspaces.api.ts";
@@ -20,6 +19,8 @@ import { RootState } from "../../store/store.ts";
 import {
   useDeleteChannelMutation,
   useGetChannelByIdQuery,
+  useGetChannelMembersCountQuery,
+  useGetChannelMembersQuery,
 } from "../../api/channels/channels.api.ts";
 import useProfilePicture from "../../hooks/useProfilePicture.tsx";
 import ProfilePictureAvatar from "../shared/profilePictureAvatar/ProfilePictureAvatar.tsx";
@@ -31,6 +32,7 @@ import { removeWorkspace } from "../../store/slices/workspaceSlice.ts";
 import InvitationPopup from "../shared/popups/invitationPopup/InvitationPopup.tsx";
 import AddChannelMember from "../shared/popups/addChannelMember/AddChannelMember.tsx";
 import { visibility } from "../../Models/Enums.ts";
+import ChannelMemberAvatar from "../shared/channelMemberAvatar/ChannelMemberAvatar.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -75,8 +77,13 @@ function Workspace() {
   const skipFetchChannelInfo = fetchChannelInfo;
 
   const { data: workspace } = useGetWorkspaceByIdQuery(Number(workspaceId));
-  const { data: membersCount } = useGetWorkspaceMembersCountQuery(
-    Number(workspaceId),
+  const { data: channelMembers } = useGetChannelMembersQuery({
+    channelId: currentChannelId,
+    pageNumber: 1,
+    pageSize: 5,
+  });
+  const { data: membersCount } = useGetChannelMembersCountQuery(
+    Number(currentChannelId),
   );
   const { data: channels, isSuccess } = useGetChannelsByWorkspaceIdQuery(
     Number(workspaceId),
@@ -372,32 +379,31 @@ function Workspace() {
                   {workspace?.name} - {channelInfo?.name}
                 </p>
                 <div className="flex items-center gap-2">
-                  <p className="text-black/50 text-xs"> 5 members </p>
-                  <div className="w-1 h-1 bg-[#D9D9D9] rounded-full"></div>
-                  <p className="text-[#00A000] text-xs"> 2 online </p>
+                  <p className="text-black/50 text-xs">
+                    {" "}
+                    {membersCount} members{" "}
+                  </p>
+                  {/*<div className="w-1 h-1 bg-[#D9D9D9] rounded-full"></div>*/}
+                  {/*<p className="text-[#00A000] text-xs"> 2 online </p>*/}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2 h-full py-1">
               <div className="flex items-center gap-2">
                 <AvatarGroup>
-                  {!membersCount
+                  {!membersCount ||
+                  !channelMembers ||
+                  channelMembers.length === 0
                     ? null
                     : membersCount > 0
-                      ? Array.from({ length: membersCount }).map((_, index) => (
-                          <ProfilePictureAvatar
-                            key={index}
-                            avatarType={"user"}
-                            url={profilePictureUrls[index]}
-                            altText={`U${index + 1}`}
-                            size="large"
-                          />
+                      ? channelMembers.map((member, index) => (
+                          <ChannelMemberAvatar key={index} member={member} />
                         ))
                       : null}
-                  {/* workspaceUsers.length > 5 */}
-                  {true ? (
+                  {!membersCount || !channelMembers ? null : membersCount >
+                    5 ? (
                     <Avatar
-                      label={`+X`}
+                      label={`+${membersCount - channelMembers.length}`}
                       shape="square"
                       size="large"
                       className="bg-[#6B8AFD] text-white rounded-lg"
