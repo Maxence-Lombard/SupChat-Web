@@ -6,7 +6,7 @@ import {
 } from "../channels/channels.api.ts";
 import { ApplicationUser } from "../../Models/User.ts";
 import { Message } from "../messages/messages.api.ts";
-import { AttachmentDto } from "../attachments/attachments.api.ts";
+import { AttachmentDto } from "../attachments/attachments.api.ts"; //DTO
 
 //DTO
 export type WorkspaceDto = {
@@ -51,7 +51,6 @@ export type rolePermissionsDto = {
 export type GetWorkspaceResponse = {
   id: number;
   name: string;
-  image: string;
   visibility: visibility;
   visibilityLocalized: string;
   ownerId: number;
@@ -343,7 +342,7 @@ export const WorkspaceApi = api.injectEndpoints({
         url: `/api/Workspace/${workspaceId}/invitations/generate`,
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain",
         },
       }),
     }),
@@ -362,7 +361,7 @@ export const WorkspaceApi = api.injectEndpoints({
     }),
 
     acceptWorkspaceInvitation: builder.mutation<
-      WorkspaceDto,
+      GetWorkspaceResponse,
       { workspaceId: number; token: string }
     >({
       query: (data) => ({

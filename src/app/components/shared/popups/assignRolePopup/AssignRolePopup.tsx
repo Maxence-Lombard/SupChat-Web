@@ -72,7 +72,7 @@ function AssignRolePopup({
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
             {!workspaceMembers || workspaceMembers.length === 0 ? (
-              <p className="text-gray-500">
+              <p className="text-black/50">
                 No members available to assign this role.
               </p>
             ) : (

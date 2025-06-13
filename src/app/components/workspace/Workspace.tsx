@@ -28,6 +28,7 @@ import Conversation from "../conversation/Conversation.tsx";
 import { useDebounce } from "use-debounce";
 import UserCard from "../shared/userCard/UserCard.tsx";
 import { removeWorkspace } from "../../store/slices/workspaceSlice.ts";
+import InvitationPopup from "../shared/popups/invitationPopup/InvitationPopup.tsx";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ function Workspace() {
 
   const { workspaceId } = useParams();
   const { channelId } = useParams();
+
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch] = useDebounce(search, 500);
   const [openQuickSearch, setOpenQuickSearch] = useState<boolean>(false);
@@ -46,6 +48,8 @@ function Workspace() {
   const [modifyChannelVisible, setModifyChannelVisible] =
     useState<boolean>(false);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] =
+    useState<boolean>(false);
+  const [sendInvitationVisible, setSendInvitationVisible] =
     useState<boolean>(false);
   const [currentChannelId, setCurrentChannelId] = useState<number>(
     Number(channelId),
@@ -377,12 +381,21 @@ function Workspace() {
           </div>
           {workspaceActionsVisible ? (
             <div className="fixed top-24 right-10 z-50 bg-white shadow-lg flex flex-col gap-2 p-2 border border-[#ECECEC] rounded-lg w-fit">
-              <div
-                className="flex items-center gap-2 text-red-500 cursor-pointer"
-                onClick={handleLeaveWorkspace}
-              >
-                <p> Leave workspace </p>
-                <i className="pi pi-sign-out" />
+              <div className="flex flex-col gap-2">
+                <div
+                  className="flex items-center gap-2 text-[var(--main-color-500)] cursor-pointer"
+                  onClick={() => setSendInvitationVisible(true)}
+                >
+                  <p> Add new members </p>
+                  <i className="pi pi-plus" />
+                </div>
+                <div
+                  className="flex items-center gap-2 text-red-500 cursor-pointer"
+                  onClick={handleLeaveWorkspace}
+                >
+                  <p> Leave workspace </p>
+                  <i className="pi pi-sign-out" />
+                </div>
               </div>
             </div>
           ) : null}
@@ -449,6 +462,22 @@ function Workspace() {
               dispatch(deleteChannel(currentChannelId));
               hide({} as React.SyntheticEvent);
             }}
+            hide={() => hide({} as React.SyntheticEvent)}
+          />
+        )}
+      ></Dialog>
+      {/* SEND INVITATIONS POPUP */}
+      <Dialog
+        className="rounded-2xl"
+        visible={sendInvitationVisible}
+        modal
+        onHide={() => {
+          if (!sendInvitationVisible) return;
+          setSendInvitationVisible(false);
+        }}
+        content={({ hide }) => (
+          <InvitationPopup
+            workspaceId={Number(workspaceId)}
             hide={() => hide({} as React.SyntheticEvent)}
           />
         )}

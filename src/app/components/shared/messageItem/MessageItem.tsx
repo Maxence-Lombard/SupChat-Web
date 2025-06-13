@@ -158,6 +158,26 @@ function MessageItem({ message, currentUserId, onReply }: MessageProps) {
     }
   };
 
+  function linkify(text: string, isCurrentUser: boolean) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, i) =>
+      urlRegex.test(part) ? (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${isCurrentUser ? "text-white" : "text-[var(--main-color-500)]"} underline break-all`}
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      ),
+    );
+  }
+
   useEffect(() => {
     if (!storeUser) {
       getUserInfos(message.senderId)
@@ -262,7 +282,7 @@ function MessageItem({ message, currentUserId, onReply }: MessageProps) {
                   </div>
                   <div className="flex bg-[#687BEC] rounded-lg px-2 max-w-xl">
                     <p className="text-white w-full whitespace-pre-line break-words">
-                      {editedMessage.content}
+                      {linkify(editedMessage.content, true)}
                     </p>
                   </div>
                 </div>
@@ -342,7 +362,7 @@ function MessageItem({ message, currentUserId, onReply }: MessageProps) {
           </div>
           <div className="flex bg-[#EBEBEB] w-fit rounded-lg px-2 max-w-xl">
             <p className="text-black w-full whitespace-pre-line break-words">
-              {message.content}
+              {linkify(message.content, false)}
             </p>
           </div>
           {message.messageAttachments.length > 0 ? (

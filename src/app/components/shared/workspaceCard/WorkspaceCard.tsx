@@ -48,7 +48,6 @@ function WorkspaceCard(workspace: Workspace) {
         description: workspace.workspaceDescription,
         visibility: workspace.visibility,
         visibilityLocalized: workspace.visibility,
-        image: "",
         profilePictureId: workspace.profilePictureId,
         ownerId: workspace.ownerId,
       };
