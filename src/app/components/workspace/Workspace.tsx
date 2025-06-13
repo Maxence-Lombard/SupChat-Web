@@ -413,10 +413,10 @@ function Workspace() {
               </div>
               <div className="w-[1px] h-full rounded-lg bg-[#ECECEC]"></div>
               <div className="flex items-center gap-6">
-                <i
-                  className="pi pi-info-circle text-xl cursor-pointer"
-                  style={{ color: "var(--main-color-500)" }}
-                />
+                {/*<i*/}
+                {/*  className="pi pi-info-circle text-xl cursor-pointer"*/}
+                {/*  style={{ color: "var(--main-color-500)" }}*/}
+                {/*/>*/}
                 <i
                   id="workspace-actions-button"
                   onClick={() =>
