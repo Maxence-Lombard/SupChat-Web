@@ -14,12 +14,9 @@ import { updateUser } from "../../store/slices/usersSlice.ts";
 import { InputText } from "primereact/inputtext";
 import UserParametersLayout from "../../layouts/UserParametersLayout.tsx";
 import { ErrorResponse } from "../../Models/Error.ts";
-import { useCreateBotMutation } from "../../api/bot/bot.api.ts";
-import { useNavigate } from "react-router-dom";
 
 function MyProfile() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const user = useSelector(
     (state: RootState) => state.users.byId[state.users.currentUserId!],
@@ -32,12 +29,10 @@ function MyProfile() {
   const [uploadProfilePictureRequest] = useUploadFileMutation();
   const [modifyUserProfilePicture] = useUpdateUserProfilePictureMutation();
   const [modifyUserInfos] = useUpdateUserInfosMutation();
-  const [createBotRequest] = useCreateBotMutation();
 
   // USER INPUTS
   const [userFirstName, setUserFirstName] = useState<string>("");
   const [userUserName, setUserUserName] = useState<string>("");
-  const [botUserName, setBotUserName] = useState<string>("");
   // ERROR MESSAGES
   const [inputErrorMessage, setInputErrorMessage] = useState<
     string | undefined
@@ -48,12 +43,7 @@ function MyProfile() {
   const [successMessage, setSuccessMessage] = useState<string | undefined>(
     undefined,
   );
-  const [botErrorMessage, setBotErrorMessage] = useState<string | undefined>(
-    undefined,
-  );
-  const [successBotMessage, setSuccessBotMessage] = useState<
-    string | undefined
-  >(undefined);
+
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [imageErrorMessage, setImageErrorMessage] = useState<
@@ -128,24 +118,6 @@ function MyProfile() {
     }
   };
 
-  const handleCreateBot = async () => {
-    if (!botUserName || botUserName.trim() === "") {
-      setBotErrorMessage("You must provide a username for your bot.");
-      return;
-    }
-    setBotErrorMessage("");
-    try {
-      const newBot = await createBotRequest(botUserName).unwrap();
-      setSuccessBotMessage("Bot created successfully!");
-      setBotUserName("");
-      navigate(`/privateMessage/${newBot.userId}`);
-    } catch (e) {
-      const error = e as ErrorResponse;
-      setBotErrorMessage(error.data.detail);
-      return error;
-    }
-  };
-
   useEffect(() => {
     if (user) {
       setUserFirstName(user.firstName || "");
@@ -211,72 +183,37 @@ function MyProfile() {
                   />
                 </div>
               </div>
-              {/* Buttons */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center self-end gap-4">
-                  {errorMessage ? (
-                    <p className="text-xs text-left text-red-500">
-                      {errorMessage}
-                    </p>
-                  ) : null}
-                  {successMessage ? (
-                    <p className="text-xs text-left text-green-600">
-                      {successMessage}
-                    </p>
-                  ) : null}
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
-                    onClick={resetUserInfos}
-                  >
-                    <i
-                      className="pi pi-times"
-                      style={{ color: "var(--main-color-500)" }}
-                    ></i>
-                    <p className="text-[#687BEC]"> Cancel </p>
-                  </button>
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
-                    onClick={modifyUser}
-                  >
-                    <i className="pi pi-save text-white"></i>
-                    <p className="text-white"> Save </p>
-                  </button>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-1 flex-col gap-1">
-                  <label className="flex" htmlFor="botUsername">
-                    Bot username
-                  </label>
-                  {botErrorMessage ? (
-                    <p className="text-xs text-left text-red-500">
-                      {botErrorMessage}
-                    </p>
-                  ) : null}
-                  <InputText
-                    name="botUsername"
-                    id="botUsername"
-                    className="border rounded border-black px-2 py-1"
-                    style={{ width: "50%" }}
-                    placeholder="Bot username"
-                    value={botUserName}
-                    onChange={(e) => setBotUserName(e.target.value ?? "")}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  {successBotMessage ? (
-                    <p className="text-xs text-left text-green-600">
-                      {successBotMessage}
-                    </p>
-                  ) : null}
-                  <button
-                    className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg text-white w-fit"
-                    onClick={handleCreateBot}
-                  >
-                    <i className="pi pi-plus "></i>
-                    <p> Create a new bot </p>
-                  </button>
-                </div>
+            </div>
+            {/* Buttons */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center self-end gap-4">
+                {errorMessage ? (
+                  <p className="text-xs text-left text-red-500">
+                    {errorMessage}
+                  </p>
+                ) : null}
+                {successMessage ? (
+                  <p className="text-xs text-left text-green-600">
+                    {successMessage}
+                  </p>
+                ) : null}
+                <button
+                  className="flex gap-2 px-2 py-1 items-center border border-[#687BEC] rounded-lg"
+                  onClick={resetUserInfos}
+                >
+                  <i
+                    className="pi pi-times"
+                    style={{ color: "var(--main-color-500)" }}
+                  ></i>
+                  <p className="text-[#687BEC]"> Cancel </p>
+                </button>
+                <button
+                  className="flex gap-2 px-2 py-1 items-center bg-[#687BEC] rounded-lg"
+                  onClick={modifyUser}
+                >
+                  <i className="pi pi-save text-white"></i>
+                  <p className="text-white"> Save </p>
+                </button>
               </div>
             </div>
           </div>

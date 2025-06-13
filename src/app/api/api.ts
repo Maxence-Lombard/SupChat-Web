@@ -13,7 +13,7 @@ const baseQuery = fetchBaseQuery({
     if (contentType && contentType.includes("application/json")) {
       return response.json();
     } else if (contentType && contentType.includes("text/plain")) {
-      return response.text(); // ✅ string supporté
+      return response.text();
     }
     return response.json();
   },
@@ -40,6 +40,7 @@ export const api = createApi({
     "Notifications",
     "WorkspaceRoleMembers",
     "WorkspaceRoleMembersCount",
+    "OwnedBots",
   ],
 
   endpoints: () => ({}),

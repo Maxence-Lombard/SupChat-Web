@@ -23,7 +23,7 @@ export const BotApi = api.injectEndpoints({
       }),
     }),
 
-    getOwnedBots: builder.query<BotDto, void>({
+    getOwnedBots: builder.query<BotDto[], void>({
       query: () => ({
         url: `/api/Bot/GetOwnedBots`,
         method: "GET",
@@ -31,6 +31,7 @@ export const BotApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["OwnedBots"],
     }),
 
     createBot: builder.mutation<BotDto, string>({
@@ -42,15 +43,17 @@ export const BotApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["OwnedBots"],
     }),
 
-    deleteFile: builder.mutation<boolean, number>({
+    deleteBot: builder.mutation<boolean, number>({
       query: (botId) => {
         return {
           url: `/api/Bot/${botId}`,
           method: "DELETE",
         };
       },
+      invalidatesTags: ["OwnedBots"],
     }),
   }),
 });
@@ -59,5 +62,5 @@ export const {
   useGetBotByIdQuery,
   useGetOwnedBotsQuery,
   useCreateBotMutation,
-  useDeleteFileMutation,
+  useDeleteBotMutation,
 } = BotApi;

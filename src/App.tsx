@@ -27,6 +27,7 @@ import SecuritySettings from "./app/components/securitySettings/SecuritySettings
 import { RootState } from "./app/store/store.ts";
 import RoleMembersListing from "./app/components/roleMembersListing/RoleMembersListing.tsx";
 import AcceptInvitationRedirect from "./app/components/acceptInvitationRedirect/AcceptInvitationRedirect.tsx";
+import BotParameters from "./app/components/botParameters/BotParameters.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -88,8 +89,8 @@ function App() {
                   path="/settings/security"
                   element={<SecuritySettings />}
                 />
+                <Route path="/settings/bots" element={<BotParameters />} />
               </Route>
-
               <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
               <Route path="/login/callback" element={<Callback />} />
 

@@ -23,6 +23,10 @@ function UserParametersLayout({ children }: ParametersLayoutProps) {
       name: "Security",
       urlToNavigate: `/settings/security`,
     },
+    {
+      name: "Bots",
+      urlToNavigate: `/settings/bots`,
+    },
   ];
 
   const handleLogout = () => {
