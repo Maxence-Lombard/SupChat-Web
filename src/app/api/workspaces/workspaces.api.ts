@@ -337,6 +337,43 @@ export const WorkspaceApi = api.injectEndpoints({
       ],
     }),
 
+    // INVITATIONS
+    createWorkspaceInvitation: builder.mutation<string, number>({
+      query: (workspaceId) => ({
+        url: `/api/Workspace/${workspaceId}/invitations/generate`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    sendWorkspaceInvitationByEmail: builder.mutation<
+      WorkspaceDto,
+      { workspaceId: number; userId: number }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/invitations/generate/${data.userId}/email`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    acceptWorkspaceInvitation: builder.mutation<
+      WorkspaceDto,
+      { workspaceId: number; token: string }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/invitations/accept?token=${data.token}`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     // PATCH
     modifyWorkspace: builder.mutation<WorkspaceDto, Partial<WorkspaceDto>>({
       query: (data) => ({
@@ -471,6 +508,9 @@ export const {
   useJoinWorkspaceMutation,
   useCreateWorkspaceRoleMutation,
   useAssignWorkspaceRoleGroupMutation,
+  useCreateWorkspaceInvitationMutation,
+  useSendWorkspaceInvitationByEmailMutation,
+  useAcceptWorkspaceInvitationMutation,
   // PATCH
   useModifyWorkspaceMutation,
   useModifyWorkspaceProfilePictureMutation,
