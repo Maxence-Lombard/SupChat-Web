@@ -2,10 +2,21 @@ import {
   useDeleteBotMutation,
   useGetOwnedBotsQuery,
 } from "../../api/bot/bot.api.ts";
+import { useState } from "react";
 
 function BotListing() {
   const { data: bots } = useGetOwnedBotsQuery();
   const [deleteBot] = useDeleteBotMutation();
+  const [visibleSecrets, setVisibleSecrets] = useState<{
+    [key: number]: boolean;
+  }>({});
+
+  const toggleSecret = (botId: number) => {
+    setVisibleSecrets((prev) => ({
+      ...prev,
+      [botId]: !prev[botId],
+    }));
+  };
 
   return (
     <>
@@ -27,7 +38,17 @@ function BotListing() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="font-semibold"> Client secret: </p>
-                  <p> {bot.clientSecret} </p>
+                  <div className="flex gap-4 items-center">
+                    <p>
+                      {visibleSecrets[bot.id]
+                        ? bot.clientSecret
+                        : "•".repeat(bot.clientSecret.length)}
+                    </p>
+                    <i
+                      className={`pi ${visibleSecrets[bot.id] ? "pi-eye-slash" : "pi-eye"} cursor-pointer`}
+                      onClick={() => toggleSecret(bot.id)}
+                    />
+                  </div>
                 </div>
                 <div
                   className="flex gap-1 text-red-500 items-center cursor-pointer"
