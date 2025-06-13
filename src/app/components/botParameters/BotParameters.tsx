@@ -2,12 +2,10 @@ import UserParametersLayout from "../../layouts/UserParametersLayout.tsx";
 import BotListing from "../botListing/BotListing.tsx";
 import { ErrorResponse } from "../../Models/Error.ts";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useCreateBotMutation } from "../../api/bot/bot.api.ts";
 import { InputText } from "primereact/inputtext";
 
 function BotParameters() {
-  const navigate = useNavigate();
   const [botUserName, setBotUserName] = useState<string>("");
 
   const [createBotRequest] = useCreateBotMutation();

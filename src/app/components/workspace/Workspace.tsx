@@ -29,6 +29,8 @@ import { useDebounce } from "use-debounce";
 import UserCard from "../shared/userCard/UserCard.tsx";
 import { removeWorkspace } from "../../store/slices/workspaceSlice.ts";
 import InvitationPopup from "../shared/popups/invitationPopup/InvitationPopup.tsx";
+import AddChannelMember from "../shared/popups/addChannelMember/AddChannelMember.tsx";
+import { visibility } from "../../Models/Enums.ts";
 
 function Workspace() {
   const dispatch = useDispatch();
@@ -42,6 +44,8 @@ function Workspace() {
   const [openQuickSearch, setOpenQuickSearch] = useState<boolean>(false);
 
   const [workspaceActionsVisible, setWorkspaceActionsVisible] =
+    useState<boolean>(false);
+  const [addChannelMemberVisible, setAddChannelMemberVisible] =
     useState<boolean>(false);
   const [createChannelVisible, setCreateChannelVisibleVisible] =
     useState<boolean>(false);
@@ -117,11 +121,41 @@ function Workspace() {
     navigate(`/workspace/settings/${workspaceId}`);
   };
 
+  useEffect(() => {
+    if (!workspaceActionsVisible) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const menu = document.getElementById("workspace-actions-menu");
+      const button = document.getElementById("workspace-actions-button");
+      if (
+        menu &&
+        !menu.contains(event.target as Node) &&
+        button &&
+        !button.contains(event.target as Node)
+      ) {
+        setWorkspaceActionsVisible(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setWorkspaceActionsVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [workspaceActionsVisible]);
+
   return (
     <>
       <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
         <div className="flex flex-col gap-8 w-[240px]">
-          {/* TODO: recherche unifiée */}
           <div className="relative">
             <div className="flex items-center gap-1 p-2 w-full border rounded-lg border-black">
               <i className="pi pi-search text-[#505050]/50"></i>
@@ -279,7 +313,7 @@ function Workspace() {
                               {channel.name}
                             </p>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="hidden group-hover:flex gap-2">
                             <i
                               className="pi pi-pencil text-black/50 cursor-pointer"
                               onClick={() => {
@@ -287,6 +321,15 @@ function Workspace() {
                                 setModifyChannelVisible(true);
                               }}
                             />
+                            {channel.visibility === visibility.private ? (
+                              <i
+                                className="pi pi-plus text-black/50 cursor-pointer"
+                                onClick={() => {
+                                  setCurrentChannelId(channel.id);
+                                  setAddChannelMemberVisible(true);
+                                }}
+                              />
+                            ) : null}
                             <i
                               className="pi pi-trash cursor-pointer text-red-500"
                               onClick={() => {
@@ -369,6 +412,7 @@ function Workspace() {
                   style={{ color: "var(--main-color-500)" }}
                 />
                 <i
+                  id="workspace-actions-button"
                   onClick={() =>
                     setWorkspaceActionsVisible(!workspaceActionsVisible)
                   }
@@ -380,7 +424,10 @@ function Workspace() {
             </div>
           </div>
           {workspaceActionsVisible ? (
-            <div className="fixed top-24 right-10 z-50 bg-white shadow-lg flex flex-col gap-2 p-2 border border-[#ECECEC] rounded-lg w-fit">
+            <div
+              id="workspace-actions-menu"
+              className="fixed top-24 right-10 z-50 bg-white shadow-lg flex flex-col gap-2 p-2 border border-[#ECECEC] rounded-lg w-fit"
+            >
               <div className="flex flex-col gap-2">
                 <div
                   className="flex items-center gap-2 text-[var(--main-color-500)] cursor-pointer"
@@ -478,6 +525,23 @@ function Workspace() {
         content={({ hide }) => (
           <InvitationPopup
             workspaceId={Number(workspaceId)}
+            hide={() => hide({} as React.SyntheticEvent)}
+          />
+        )}
+      ></Dialog>
+      {/* ADD CHANNEL MEMBERS POPUP */}
+      <Dialog
+        className="rounded-2xl"
+        visible={addChannelMemberVisible}
+        modal
+        onHide={() => {
+          if (!addChannelMemberVisible) return;
+          setAddChannelMemberVisible(false);
+        }}
+        content={({ hide }) => (
+          <AddChannelMember
+            channelId={currentChannelId}
+            channelName={channelInfo?.name || ""}
             hide={() => hide({} as React.SyntheticEvent)}
           />
         )}

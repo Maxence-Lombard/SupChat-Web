@@ -71,7 +71,6 @@ function InvitationPopup({ workspaceId, hide }: DeletePopupProps) {
     try {
       const response = await invitationLinkRequest(workspaceId).unwrap();
       setInvitationLink(response);
-      console.log("Invitation link generated:", response);
     } catch (e) {
       console.log("Error generating invitation link:", e);
       return e;

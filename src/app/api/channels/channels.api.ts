@@ -1,5 +1,6 @@
 import { api } from "../api";
-import { visibility } from "../../Models/Enums.ts"; //DTO
+import { visibility } from "../../Models/Enums.ts";
+import { ApplicationUser } from "../../Models/User.ts"; //DTO
 
 //DTO
 export type ChannelDto = {
@@ -46,6 +47,46 @@ export const ChannelsApi = api.injectEndpoints({
       }),
     }),
 
+    getChannelMembers: builder.query<
+      ApplicationUser[],
+      { channelId: number; pageNumber: number; pageSize: number }
+    >({
+      query: (data) => ({
+        url: `/api/Channel/${data.channelId}/Members?pageNumber=${data.pageNumber | 1}&pageSize=${data.pageSize | 20}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getChannelNotMembers: builder.query<
+      ApplicationUser[],
+      { channelId: number; pageNumber: number; pageSize: number }
+    >({
+      query: (data) => ({
+        url: `/api/Channel/${data.channelId}/NotMember?pageNumber=${data.pageNumber | 1}&pageSize=${data.pageSize | 20}`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    addMembersInChannel: builder.mutation<
+      boolean,
+      { channelId: number; usersId: number[] }
+    >({
+      query: (data) => ({
+        url: `/api/Channel/${data.channelId}/AddMembers`,
+        method: "POST",
+        body: JSON.stringify({ userIdList: data.usersId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
     modifyChannel: builder.mutation<GetChannelResponse, Partial<ChannelDto>>({
       query: (data) => ({
         url: `/api/Channel/${data.id}`,
@@ -72,6 +113,9 @@ export const ChannelsApi = api.injectEndpoints({
 export const {
   useGetChannelsQuery,
   useGetChannelByIdQuery,
+  useGetChannelMembersQuery,
+  useGetChannelNotMembersQuery,
+  useAddMembersInChannelMutation,
   useModifyChannelMutation,
   useDeleteChannelMutation,
 } = ChannelsApi;
