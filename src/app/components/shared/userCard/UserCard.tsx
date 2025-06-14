@@ -3,6 +3,8 @@ import { ApplicationUser } from "../../../Models/User.ts";
 import useProfilePicture from "../../../hooks/useProfilePicture.tsx";
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
 import { status } from "../../../Models/Enums.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/store.ts";
 
 interface UserCardProps {
   user: ApplicationUser;
@@ -12,20 +14,22 @@ interface UserCardProps {
 function UserCard({ user, imageSize }: UserCardProps) {
   const navigate = useNavigate();
   const userImage = useProfilePicture(user.profilePictureId);
+  const currentUserId = useSelector(
+    (state: RootState) => state.users.currentUserId,
+  );
 
   const handleNavigation = () => {
+    if (user.id === currentUserId) return;
     navigate(`/privateMessage/${user.id}`, {
-      state: {
-        user: user,
-      },
+      state: { user },
     });
   };
 
   return (
     <>
       <div
-        className="flex gap-3 cursor-pointer rounded-lg border border-[#ECECEC] p-1"
-        onClick={handleNavigation}
+        className={`flex gap-3 ${user.id === currentUserId ? "" : "cursor-pointer"} rounded-lg border border-[#ECECEC] p-1`}
+        onMouseDown={handleNavigation}
       >
         <div className="relative">
           <ProfilePictureAvatar

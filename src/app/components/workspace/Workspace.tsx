@@ -189,9 +189,15 @@ function Workspace() {
                 {unifiedSearchResults.userList.length > 0 && (
                   <div>
                     <h4 className="font-semibold"> Users </h4>
-                    {unifiedSearchResults.userList.map((user) => (
-                      <UserCard user={user} key={user.id} imageSize="xlarge" />
-                    ))}
+                    <div className="flex flex-col gap-2">
+                      {unifiedSearchResults.userList.map((user) => (
+                        <UserCard
+                          user={user}
+                          key={user.id}
+                          imageSize="xlarge"
+                        />
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -206,15 +212,17 @@ function Workspace() {
                 {unifiedSearchResults.channelList.length > 0 && (
                   <div>
                     <h4 className="font-semibold"> Channels </h4>
-                    {unifiedSearchResults.channelList.map((channel) => (
-                      <div
-                        key={channel.id}
-                        className="text-sm cursor-pointer"
-                        onMouseDown={() => handleChannelNavigate(channel.id)}
-                      >
-                        {channel.name}
-                      </div>
-                    ))}
+                    <div className="flex flex-col gap-2">
+                      {unifiedSearchResults.channelList.map((channel) => (
+                        <div
+                          key={channel.id}
+                          className="text-sm cursor-pointer"
+                          onMouseDown={() => handleChannelNavigate(channel.id)}
+                        >
+                          {channel.name}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -228,17 +236,19 @@ function Workspace() {
                 {unifiedSearchResults.messageList.length > 0 && (
                   <div>
                     <h4 className="font-semibold"> Messages </h4>
-                    {unifiedSearchResults.messageList.map((message) => (
-                      <div
-                        key={message.id}
-                        className="text-sm cursor-pointer"
-                        onMouseDown={() =>
-                          handleChannelNavigate(message.channelId)
-                        }
-                      >
-                        {message.content.slice(0, 20)}
-                      </div>
-                    ))}
+                    <div className="flex flex-col gap-2">
+                      {unifiedSearchResults.messageList.map((message) => (
+                        <div
+                          key={message.id}
+                          className="text-sm cursor-pointer"
+                          onMouseDown={() =>
+                            handleChannelNavigate(message.channelId)
+                          }
+                        >
+                          {message.content.slice(0, 20)}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -251,11 +261,13 @@ function Workspace() {
                 {unifiedSearchResults.attachmentList.length > 0 && (
                   <div>
                     <h4 className="font-semibold"> Files </h4>
-                    {unifiedSearchResults.attachmentList.map((file) => (
-                      <div key={file.id} className="text-sm">
-                        {file.name}
-                      </div>
-                    ))}
+                    <div className="flex flex-col gap-2">
+                      {unifiedSearchResults.attachmentList.map((file) => (
+                        <div key={file.id} className="text-sm">
+                          {file.name}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
