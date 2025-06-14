@@ -16,6 +16,7 @@ import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useUploadFileMutation } from "../../api/attachments/attachments.api.ts";
 import { attachmentType } from "../../Models/Enums.ts";
+import { format, isToday, isYesterday } from "date-fns";
 
 function Conversation() {
   const { id, channelId } = useParams();
@@ -273,14 +274,41 @@ function Conversation() {
         onScroll={handleScroll}
       >
         <div className="flex flex-col items-start gap-4">
-          {messages.map((message) => (
-            <MessageItem
-              key={message.id}
-              message={message}
-              currentUserId={userId!}
-              onReply={(msg) => setReplyToMessage(msg)}
-            />
-          ))}
+          {messages.map((message, index) => {
+            const currentDate = format(
+              new Date(message.sendDate),
+              "yyyy-MM-dd",
+            );
+            const previousMessage =
+              index > 0
+                ? format(new Date(messages[index - 1].sendDate), "yyyy-MM-dd")
+                : null;
+            const showDateSeparator =
+              index === 0 || currentDate !== previousMessage;
+            let dateLabel = format(currentDate, "dd MMMM yyyy");
+            if (isToday(currentDate)) dateLabel = "Today";
+            else if (isYesterday(currentDate)) dateLabel = "Yesterday";
+            return (
+              <>
+                {showDateSeparator && (
+                  <div
+                    className={`flex flex-col items-start w-full my-4 ${dateLabel === "Today" ? "text-[var(--main-color-500)]" : ""}`}
+                  >
+                    <span className="font-semibold text-xs">{dateLabel}</span>
+                    <hr
+                      className={`w-full border-t  ${dateLabel === "Today" ? "border-[var(--main-color-500)]" : "border-black"}`}
+                    />
+                  </div>
+                )}
+                <MessageItem
+                  key={message.id}
+                  message={message}
+                  currentUserId={userId!}
+                  onReply={(msg) => setReplyToMessage(msg)}
+                />
+              </>
+            );
+          })}
         </div>
         {!isAtBottom ? (
           <button
