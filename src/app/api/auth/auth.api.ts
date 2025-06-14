@@ -54,7 +54,7 @@ export const AuthApi = api.injectEndpoints({
         },
       }),
     }),
-    register: builder.mutation<RegisterResponse, RegisterDto>({
+    register: builder.mutation<void, RegisterDto>({
       query: (data: RegisterDto) => ({
         url: `/api/Account/register`,
         method: "POST",
@@ -63,6 +63,10 @@ export const AuthApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      transformResponse: (_response: void, meta?: { response?: Response }) => {
+        if (meta?.response?.status === 201) return;
+        return;
+      },
     }),
     confirmEmail: builder.mutation<LoginResponse, ConfirmEmailDto>({
       query: (data: ConfirmEmailDto) => ({

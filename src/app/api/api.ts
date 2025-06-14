@@ -6,6 +6,9 @@ const baseQuery = fetchBaseQuery({
   baseUrl: `http://localhost:5263`,
   mode: "cors",
   responseHandler: (response) => {
+    if ([201, 204].includes(response.status)) {
+      return Promise.resolve(undefined);
+    }
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/zip")) {
       return response.blob();

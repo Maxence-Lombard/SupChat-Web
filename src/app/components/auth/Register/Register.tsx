@@ -43,13 +43,13 @@ function Register() {
     };
 
     try {
-      const response = await register(body).unwrap();
-      if (response != null) {
-        setSuccessMessage(
-          "Registration successful, please check you mail to confirm your account",
-        );
-      }
+      await register(body).unwrap();
+      console.log("Registration successful");
+      setSuccessMessage(
+        "Registration successful, please check you mail to confirm your account",
+      );
     } catch (e) {
+      console.log(e);
       const error = e as ErrorResponse;
       setErrorMessage(error.data.detail);
     }
@@ -66,8 +66,7 @@ function Register() {
               </div>
               <div className="flex">
                 <p className="text-[#000000]/50">
-                  {" "}
-                  Please enter your register informations{" "}
+                  Please enter your register informations
                 </p>
               </div>
             </div>
@@ -78,10 +77,10 @@ function Register() {
                     onClick={() => navigate("/login")}
                     className="flex-1 p-2 bg-inherit text-black rounded-r-lg"
                   >
-                    Sign up
+                    Sign in
                   </button>
                   <button className="flex-1 p-2 bg-white rounded-lg">
-                    Sign in
+                    Sign up
                   </button>
                 </div>
               </div>

@@ -113,6 +113,24 @@ export const MessagesApi = api.injectEndpoints({
         };
       },
     }),
+
+    // DELETE
+    deleteUser: builder.mutation<void, number>({
+      query: (userId) => ({
+        url: `/api/User/${userId}`,
+        method: "DELETE",
+      }),
+      transformResponse: (response: void, meta) => {
+        if (meta?.response?.status === 204) return;
+        return response;
+      },
+      invalidatesTags: (_result, _error, arg) => [
+        {
+          type: "Users",
+          id: arg,
+        },
+      ],
+    }),
   }),
 });
 
@@ -125,4 +143,5 @@ export const {
   useUpdateUserInfosMutation,
   useUpdateUserProfilePictureMutation,
   useUpdateUserPasswordMutation,
+  useDeleteUserMutation,
 } = MessagesApi;

@@ -110,13 +110,13 @@ function Login() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-1 bg-[#EEEEEE] rounded-lg border border-[#EEEEEE] p-1">
                 <button className="flex-1 p-2 bg-white rounded-lg">
-                  Sign in
+                  Sign up
                 </button>
                 <button
                   onClick={() => navigate("/register")}
                   className="flex-1 p-2 bg-inherit text-black rounded-r-lg"
                 >
-                  Sign up
+                  Sign in
                 </button>
               </div>
               <form className="flex flex-col gap-10" onSubmit={handleLogin}>

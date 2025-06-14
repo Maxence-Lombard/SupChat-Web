@@ -31,7 +31,6 @@ function ParametersLeftPanel({
           <div className="flex flex-col gap-2">
             {navigationItems.map((item) => {
               const isCurrent = location.pathname === item.urlToNavigate;
-              // .startsWith(item.urlToNavigate) use this instead if dynamic url
               return (
                 <p
                   key={item.name}

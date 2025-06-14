@@ -1,17 +1,22 @@
 import ParametersLeftPanel from "../components/shared/parametersLeftPanel/ParametersLeftPanel.tsx";
 import { useNavigate } from "react-router-dom";
-import React from "react";
+import { ReactNode } from "react";
 import { useAuth } from "../hooks/useAuth.tsx";
+import { useDeleteUserMutation } from "../api/user/user.api.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store.ts";
 
 type ParametersLayoutProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function UserParametersLayout({ children }: ParametersLayoutProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  // const [deleteAccount] = ();
+  const userId = useSelector((state: RootState) => state.users.currentUserId);
+
+  const [deleteAccount] = useDeleteUserMutation();
 
   // NAVIGATION ITEMS
   const navigationItems = [
@@ -34,30 +39,33 @@ function UserParametersLayout({ children }: ParametersLayoutProps) {
     navigate("/login");
   };
 
-  const handleDeleteAccount = async () => {
-    // try {
-    //   deleteWorkspace(workspaceId).unwrap();
-    //   dispatch(removeWorkspace(workspaceId));
-    //   navigate("/");
-    // } catch (e) {
-    //   console.log(e);
-    // }
+  const handleDeleteAccount = async (): Promise<void> => {
+    if (!userId) return;
+
+    try {
+      await deleteAccount(userId).unwrap();
+      handleLogout();
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+    }
   };
 
   return (
-    <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
-      <div className="flex flex-col flex-1 gap-10">
-        <div className="flex h-full min-h-0 bg-[#F9FAFC] rounded-3xl py-8 px-6 gap-4">
-          <ParametersLeftPanel
-            navigationItems={navigationItems}
-            deleteAction={() => handleDeleteAccount()}
-            itemToDelete={"account"}
-            logoutAction={() => handleLogout()}
-          />
-          {children}
+    <>
+      <div className="flex gap-10 bg-white w-full rounded-l-[40px] px-4 py-8">
+        <div className="flex flex-col flex-1 gap-10">
+          <div className="flex h-full min-h-0 bg-[#F9FAFC] rounded-3xl py-8 px-6 gap-4">
+            <ParametersLeftPanel
+              navigationItems={navigationItems}
+              deleteAction={() => handleDeleteAccount()}
+              itemToDelete={"account"}
+              logoutAction={() => handleLogout()}
+            />
+            {children}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
