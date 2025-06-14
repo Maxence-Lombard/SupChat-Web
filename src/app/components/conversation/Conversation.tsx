@@ -40,22 +40,36 @@ function Conversation() {
   const pickerRef = useRef<HTMLDivElement>(null);
   const [messageInput, setMessageInput] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const previousMessagesLength = useRef(0);
   const [isSending, setIsSending] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<
     { file: File; url: string }[]
   >([]);
   const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // REFERENCES
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
+
+  // SCROLLING REFERENCES
+  const isLoadingRef = useRef(false);
+  const isInitialLoad = useRef(true);
+  const previousMessagesCount = useRef(0);
+  const shouldScrollToBottom = useRef(false);
+  const scrollPositionBeforeLoad = useRef<{
+    scrollTop: number;
+    scrollHeight: number;
+  } | null>(null);
+
   const handlersRef = useRef({
     handleReceiveMessage: (...args: unknown[]) => {
       const message = args[0] as Message;
       dispatch(addMessage(message));
+      if (isAtBottom) {
+        shouldScrollToBottom.current = true;
+      }
     },
     handleMessageUpdated: (...args: unknown[]) => {
       const message = args[0] as Message;
@@ -88,7 +102,7 @@ function Conversation() {
         "SignalR is not connected. Message will be sent when connection is restored.",
       );
     }
-
+    shouldScrollToBottom.current = true;
     setIsSending(true);
     try {
       const attachmentIds: string[] = [];
@@ -142,14 +156,29 @@ function Conversation() {
 
   const handleScroll = () => {
     const scrollElement = scrollableRef.current;
-    if (!scrollElement) return;
+    if (!scrollElement || isLoadingRef.current) return;
 
-    if (scrollElement.scrollTop === 0) {
-      loadMore();
+    if (scrollElement.scrollTop <= 10) {
+      scrollPositionBeforeLoad.current = {
+        scrollTop: scrollElement.scrollTop,
+        scrollHeight: scrollElement.scrollHeight,
+      };
+
+      setLoadingMore(true);
+
+      loadMore().finally(() => {
+        setTimeout(() => {
+          isLoadingRef.current = false;
+        }, 100);
+      });
     }
+
+    const threshold = 50;
     const isAtBottomNow =
-      scrollElement.scrollHeight - scrollElement.scrollTop ===
-      scrollElement.clientHeight;
+      scrollElement.scrollHeight -
+        scrollElement.scrollTop -
+        scrollElement.clientHeight <
+      threshold;
     setIsAtBottom(isAtBottomNow);
   };
 
@@ -159,33 +188,53 @@ function Conversation() {
 
   // SCROLLING EFFECTS
   useEffect(() => {
-    if (messageInput && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+    if (messages.length > 0 && isInitialLoad.current) {
+      isInitialLoad.current = false;
+      setTimeout(() => {
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+        }
+      }, 100);
     }
-  }, [messageInput]);
+  }, [messages.length]);
+
+  useEffect(() => {
+    const scrollElement = scrollableRef.current;
+    if (!scrollElement) return;
+
+    const currentMessagesCount = messages.length;
+    const hasNewMessages = currentMessagesCount > previousMessagesCount.current;
+    const messagesAdded = currentMessagesCount - previousMessagesCount.current;
+
+    if (hasNewMessages) {
+      if (loadingMore && scrollPositionBeforeLoad.current) {
+        requestAnimationFrame(() => {
+          const { scrollHeight: oldScrollHeight } =
+            scrollPositionBeforeLoad.current!;
+          const newScrollHeight = scrollElement.scrollHeight;
+          scrollElement.scrollTop = newScrollHeight - oldScrollHeight;
+
+          scrollPositionBeforeLoad.current = null;
+          setLoadingMore(false);
+        });
+      } else if (shouldScrollToBottom.current && messagesEndRef.current) {
+        shouldScrollToBottom.current = false;
+        messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+      } else if (isAtBottom && messagesAdded === 1 && messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+      }
+    }
+
+    previousMessagesCount.current = currentMessagesCount;
+  }, [messages.length, loadingMore, isAtBottom]);
 
   useEffect(() => {
     const el = scrollableRef.current;
     if (!el) return;
-    const handleScroll = () => {
-      const threshold = 50;
-      setIsAtBottom(
-        el.scrollHeight - el.scrollTop - el.clientHeight < threshold,
-      );
-    };
 
     el.addEventListener("scroll", handleScroll);
     return () => el.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    const hasNewMessage = messages.length > previousMessagesLength.current;
-    previousMessagesLength.current = messages.length;
-
-    if (hasNewMessage && isAtBottom && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "auto" });
-    }
-  }, [messages, isAtBottom]);
 
   // SIGNALR EVENT EFFECT
   useEffect(() => {
@@ -313,6 +362,7 @@ function Conversation() {
         {!isAtBottom ? (
           <button
             onClick={() => {
+              shouldScrollToBottom.current = true;
               messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
             }}
             className="fixed py-1 px-2 bottom-40 right-6 bg-[#F3F3F3] rounded-full"
