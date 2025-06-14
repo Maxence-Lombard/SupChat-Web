@@ -55,6 +55,7 @@ export const ChannelsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["ChannelMembersCount"],
     }),
 
     getChannelMembers: builder.query<
@@ -68,6 +69,7 @@ export const ChannelsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["ChannelMembers"],
     }),
 
     getChannelNotMembers: builder.query<
@@ -95,6 +97,7 @@ export const ChannelsApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["ChannelMembers", "ChannelMembersCount"],
     }),
 
     modifyChannel: builder.mutation<GetChannelResponse, Partial<ChannelDto>>({

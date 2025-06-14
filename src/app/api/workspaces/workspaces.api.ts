@@ -279,6 +279,7 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["ChannelMembers", "ChannelMembersCount"],
     }),
 
     addMemberInWorkspace: builder.mutation<GetWorkspaceResponse, addMemberDto>({

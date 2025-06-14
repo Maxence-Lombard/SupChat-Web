@@ -380,8 +380,7 @@ function Workspace() {
                 </p>
                 <div className="flex items-center gap-2">
                   <p className="text-black/50 text-xs">
-                    {" "}
-                    {membersCount} members{" "}
+                    {membersCount} members
                   </p>
                   {/*<div className="w-1 h-1 bg-[#D9D9D9] rounded-full"></div>*/}
                   {/*<p className="text-[#00A000] text-xs"> 2 online </p>*/}

@@ -41,6 +41,8 @@ export const api = createApi({
     "WorkspaceRoleMembers",
     "WorkspaceRoleMembersCount",
     "OwnedBots",
+    "ChannelMembers",
+    "ChannelMembersCount",
   ],
 
   endpoints: () => ({}),
