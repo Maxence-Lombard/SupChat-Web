@@ -26,8 +26,9 @@ import { loginSuccess } from "./app/store/slices/authSlice.ts";
 import SecuritySettings from "./app/components/securitySettings/SecuritySettings.tsx";
 import { RootState } from "./app/store/store.ts";
 import RoleMembersListing from "./app/components/roleMembersListing/RoleMembersListing.tsx";
-import AcceptInvitationRedirect from "./app/components/acceptInvitationRedirect/AcceptInvitationRedirect.tsx";
 import BotParameters from "./app/components/botParameters/BotParameters.tsx";
+import AcceptInvitationRedirect from "./app/components/acceptInvitationRedirect/AcceptInvitationRedirect.tsx";
+import Page404 from "./app/components/page404/Page404.tsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -52,6 +53,17 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
               </Route>
+
+              <Route
+                path="/invitation/accept/:workspaceId"
+                element={<AcceptInvitationRedirect />}
+              />
+
+              {/*<Route path="/404" element={<Page404 />} />*/}
+              {/*<Route path="*" element={<Navigate to="/404" replace />} />*/}
+
+              <Route path="*" element={<Page404 />} />
+
               <Route element={token && userToken ? <MainLayout /> : null}>
                 <Route path="/" element={<Home />} />
                 <Route
@@ -61,10 +73,6 @@ function App() {
                 <Route
                   path="/workspace/:workspaceId/channel/:channelId"
                   element={<Workspace />}
-                />
-                <Route
-                  path="/api/workspace/:workspaceId/invitations/accept"
-                  element={<AcceptInvitationRedirect />}
                 />
                 <Route path="/joinWorkspaces" element={<JoinWorkspaces />} />
                 <Route
@@ -93,8 +101,6 @@ function App() {
               </Route>
               <Route path="/login/confirmEmail" element={<ConfirmEmail />} />
               <Route path="/login/callback" element={<Callback />} />
-
-              <Route path="*" element={<h1>404</h1>} />
             </Routes>
           </BrowserRouter>
         </SignalRProvider>

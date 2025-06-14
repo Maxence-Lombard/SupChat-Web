@@ -79,6 +79,7 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["WorkspacesJoined"],
     }),
 
     getWorkspaceById: builder.query<GetWorkspaceResponse, number>({
@@ -130,6 +131,23 @@ export const WorkspaceApi = api.injectEndpoints({
     getWorkspaceMembersCount: builder.query<number, number>({
       query: (workspaceId) => ({
         url: `/api/Workspace/${workspaceId}/MembersCount`,
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    getWorkspaceNonMembers: builder.query<
+      ApplicationUser[],
+      {
+        workspaceId: number;
+        pageNumber?: number;
+        pageSize?: number;
+      }
+    >({
+      query: (data) => ({
+        url: `/api/Workspace/${data.workspaceId}/NonMembers?pageNumber=${data.pageNumber || 1}&pageSize=${data.pageSize || 10}`,
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -372,6 +390,7 @@ export const WorkspaceApi = api.injectEndpoints({
           "Content-Type": "application/json",
         },
       }),
+      invalidatesTags: ["WorkspacesJoined"],
     }),
 
     // PATCH
@@ -495,6 +514,7 @@ export const {
   useGetFirstChannelMutation,
   useGetChannelsByWorkspaceIdQuery,
   useGetWorkspaceMembersCountQuery,
+  useGetWorkspaceNonMembersQuery,
   useGetWorkspaceRolesQuery,
   useGetWorkspaceRolesPermissionsQuery,
   useGetWorkspaceRoleMembersQuery,

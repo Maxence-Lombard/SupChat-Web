@@ -1,10 +1,11 @@
-import { useGetAllUsersInfosQuery } from "../../../../api/user/user.api.ts";
 import CheckUserCard from "../../checkUserCard/CheckUserCard.tsx";
 import { useEffect, useState } from "react";
 import {
   useCreateWorkspaceInvitationMutation,
+  useGetWorkspaceNonMembersQuery,
   useSendWorkspaceInvitationByEmailMutation,
 } from "../../../../api/workspaces/workspaces.api.ts";
+import { ErrorResponse } from "../../../../Models/Error.ts";
 
 interface DeletePopupProps {
   workspaceId: number;
@@ -12,7 +13,8 @@ interface DeletePopupProps {
 }
 
 function InvitationPopup({ workspaceId, hide }: DeletePopupProps) {
-  const { data: users } = useGetAllUsersInfosQuery({
+  const { data: users } = useGetWorkspaceNonMembersQuery({
+    workspaceId: workspaceId,
     pageNumber: 1,
     pageSize: 20,
   });
@@ -49,10 +51,12 @@ function InvitationPopup({ workspaceId, hide }: DeletePopupProps) {
             setSuccessMessage("Invitations sent successfully");
             setTimeout(() => {
               setSuccessMessage(undefined);
+              hide();
             }, 3000);
           })
-          .catch((error) => {
-            setErrorMessage("Failed to send invitations");
+          .catch((e) => {
+            const error = e as ErrorResponse;
+            setErrorMessage(error.data.detail);
             setTimeout(() => {
               setErrorMessage(undefined);
             }, 3000);

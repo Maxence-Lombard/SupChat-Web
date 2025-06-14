@@ -100,7 +100,7 @@ export const SignalRProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const connect = async () => {
       const connection = new HubConnectionBuilder()
-        .withUrl("http://localhost:5263/chatHub", {
+        .withUrl(`${import.meta.env.VITE_API_URL}/chatHub`, {
           accessTokenFactory: () => token,
         })
         .configureLogging(LogLevel.Information)

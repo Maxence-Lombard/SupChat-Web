@@ -7,14 +7,18 @@ import { InputText } from "primereact/inputtext";
 import { useState } from "react";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   RegisterDto,
   useRegisterMutation,
 } from "../../../api/auth/auth.api.ts";
 import { ErrorResponse } from "../../../Models/Error.ts";
+import { useInvitationHandler } from "../../../hooks/useInvitationHandler.ts";
 
 function Register() {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
   const [email, setEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -24,6 +28,17 @@ function Register() {
 
   const [register] = useRegisterMutation();
   const navigate = useNavigate();
+  const { hasPendingInvitation } = useInvitationHandler();
+
+  const returnUrl = searchParams.get("returnUrl");
+  const invitationMessage =
+    location.state?.message ||
+    (returnUrl?.includes("/invitation/accept")
+      ? "Please sign in to accept this invitation"
+      : "") ||
+    (hasPendingInvitation()
+      ? "Sign in to accept your workspace invitation"
+      : "");
 
   const handleRegister = async (event?: React.FormEvent) => {
     if (event) event.preventDefault();
@@ -69,6 +84,11 @@ function Register() {
                   Please enter your register informations
                 </p>
               </div>
+              {invitationMessage && (
+                <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-700 text-sm">
+                  {invitationMessage}
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-4">

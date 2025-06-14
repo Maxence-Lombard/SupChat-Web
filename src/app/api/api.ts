@@ -3,7 +3,7 @@ import { RootState } from "../store/store.ts";
 import { selectAccessToken } from "../store/slices/authSlice.ts";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: `http://localhost:5263`,
+  baseUrl: import.meta.env.VITE_API_URL,
   mode: "cors",
   responseHandler: (response) => {
     if ([201, 204].includes(response.status)) {
@@ -46,6 +46,7 @@ export const api = createApi({
     "OwnedBots",
     "ChannelMembers",
     "ChannelMembersCount",
+    "WorkspacesJoined",
   ],
 
   endpoints: () => ({}),

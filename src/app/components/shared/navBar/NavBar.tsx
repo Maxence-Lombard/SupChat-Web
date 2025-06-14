@@ -5,7 +5,10 @@ import React, { useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import NewWorkspaceActionsPopup from "../popups/newWorkSpaceActions/NewWorkspaceActionsPopup.tsx";
 import CreateWorkspacePopup from "../popups/createWorkspace/CreateWorkspacePopup.tsx";
-import { useGetFirstChannelMutation } from "../../../api/workspaces/workspaces.api.ts";
+import {
+  useGetFirstChannelMutation,
+  useGetWorkspacesJoinedQuery,
+} from "../../../api/workspaces/workspaces.api.ts";
 import { useDownloadFileMutation } from "../../../api/attachments/attachments.api.ts";
 import { setAttachment } from "../../../store/slices/attachmentSlice.ts";
 import ProfilePictureAvatar from "../profilePictureAvatar/ProfilePictureAvatar.tsx";
@@ -21,7 +24,7 @@ function NavBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const workspaces = useSelector((state: RootState) => state.workspaces.list);
+  const { data: workspaces = [] } = useGetWorkspacesJoinedQuery(undefined);
   const profilePictureUrls = useSelector(
     (state: RootState) => state.attachments,
   );

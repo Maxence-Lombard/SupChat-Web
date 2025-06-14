@@ -4,7 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import GitHubIcon from "../../../../assets/icons/github.svg";
 import googleIcon from "../../../../assets/icons/google.svg";
 import microsoftIcon from "../../../../assets/icons/microsoft.svg";
@@ -15,6 +15,7 @@ import { loginSuccess } from "../../../store/slices/authSlice.ts";
 import { useGetUserInfosQuery } from "../../../api/user/user.api.ts";
 import { addUser, setCurrentUserId } from "../../../store/slices/usersSlice.ts";
 import { ErrorResponse } from "../../../Models/Error.ts";
+import { useInvitationHandler } from "../../../hooks/useInvitationHandler.ts";
 
 enum Providers {
   GOOGLE = "google",
@@ -24,6 +25,7 @@ enum Providers {
 
 function Login() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -39,6 +41,17 @@ function Login() {
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { hasPendingInvitation } = useInvitationHandler();
+
+  const returnUrl = searchParams.get("returnUrl");
+  const invitationMessage =
+    location.state?.message ||
+    (returnUrl?.includes("/invitation/accept")
+      ? "Please sign in to accept this invitation"
+      : "") ||
+    (hasPendingInvitation()
+      ? "Sign in to accept your workspace invitation"
+      : "");
 
   useEffect(() => {
     const state = location.state as { email?: string };
@@ -46,6 +59,24 @@ function Login() {
       setEmail(state.email);
     }
   }, [location]);
+
+  const handlePostLoginRedirection = () => {
+    if (returnUrl) {
+      navigate(returnUrl, { replace: true });
+      return;
+    }
+
+    if (location.state?.from) {
+      navigate(location.state.from);
+      return;
+    }
+
+    if (hasPendingInvitation()) {
+      return;
+    }
+
+    navigate("/");
+  };
 
   const handleLogin = async (event?: React.FormEvent) => {
     if (event) event.preventDefault();
@@ -72,7 +103,7 @@ function Login() {
           dispatch(setCurrentUserId(userInfos.applicationUser.id));
           dispatch(addUser(userInfos.applicationUser));
         }
-        navigate("/");
+        handlePostLoginRedirection();
       } else {
         setFormStatus("error");
         setErrorMessage("Invalid email or password");
@@ -86,10 +117,27 @@ function Login() {
   };
 
   const HandleProviderLogin = (provider: string) => {
-    const returnUrl = encodeURIComponent(
-      "http://localhost:5173/login/callback",
-    );
-    window.location.href = `http://localhost:5263/api/authorization/login/${provider}?returnUrl=${returnUrl}`;
+    let callbackUrl = `${import.meta.env.VITE_FRONTEND_URL}/login/callback`;
+    const callbackParams = new URLSearchParams();
+
+    if (returnUrl) {
+      callbackParams.set("returnUrl", returnUrl);
+    }
+
+    const pendingInvitation = sessionStorage.getItem("pendingInvitation");
+    const pendingWorkspaceId = sessionStorage.getItem("pendingWorkspaceId");
+
+    if (pendingInvitation && pendingWorkspaceId) {
+      callbackParams.set("pendingInvitation", pendingInvitation);
+      callbackParams.set("pendingWorkspaceId", pendingWorkspaceId);
+    }
+
+    if (callbackParams.toString()) {
+      callbackUrl += `?${callbackParams.toString()}`;
+    }
+
+    const finalReturnUrl = encodeURIComponent(callbackUrl);
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/authorization/login/${provider}?returnUrl=${finalReturnUrl}`;
   };
 
   return (
@@ -106,17 +154,22 @@ function Login() {
                   Sign in to your account to continue
                 </p>
               </div>
+              {invitationMessage && (
+                <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-700 text-sm">
+                  {invitationMessage}
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-1 bg-[#EEEEEE] rounded-lg border border-[#EEEEEE] p-1">
                 <button className="flex-1 p-2 bg-white rounded-lg">
-                  Sign up
+                  Sign in
                 </button>
                 <button
                   onClick={() => navigate("/register")}
                   className="flex-1 p-2 bg-inherit text-black rounded-r-lg"
                 >
-                  Sign in
+                  Sign up
                 </button>
               </div>
               <form className="flex flex-col gap-10" onSubmit={handleLogin}>

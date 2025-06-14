@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../store/slices/authSlice.ts";
 import { useConfirmEmailMutation } from "../../api/auth/auth.api.ts";
@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 import { cookieConstants } from "../../constants/cookieConstants.ts";
 
 function ConfirmEmail() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const code = searchParams.get("code");
@@ -31,7 +32,7 @@ function ConfirmEmail() {
       path: "/",
     });
     dispatch(loginSuccess());
-    // navigate("/");
+    navigate("/");
     window.location.replace("/");
   };
 

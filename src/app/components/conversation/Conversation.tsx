@@ -338,7 +338,7 @@ function Conversation() {
             if (isToday(currentDate)) dateLabel = "Today";
             else if (isYesterday(currentDate)) dateLabel = "Yesterday";
             return (
-              <>
+              <div className="flex flex-col w-full" key={message.id}>
                 {showDateSeparator && (
                   <div
                     className={`flex flex-col items-start w-full my-4 ${dateLabel === "Today" ? "text-[var(--main-color-500)]" : ""}`}
@@ -350,12 +350,11 @@ function Conversation() {
                   </div>
                 )}
                 <MessageItem
-                  key={message.id}
                   message={message}
                   currentUserId={userId!}
                   onReply={(msg) => setReplyToMessage(msg)}
                 />
-              </>
+              </div>
             );
           })}
         </div>
