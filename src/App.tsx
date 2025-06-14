@@ -1,5 +1,5 @@
 import "primeicons/primeicons.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./app/components/auth/Login/Login.tsx";
 import Register from "./app/components/auth/Register/Register.tsx";
@@ -59,10 +59,8 @@ function App() {
                 element={<AcceptInvitationRedirect />}
               />
 
-              {/*<Route path="/404" element={<Page404 />} />*/}
-              {/*<Route path="*" element={<Navigate to="/404" replace />} />*/}
-
-              <Route path="*" element={<Page404 />} />
+              <Route path="/404" element={<Page404 />} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
 
               <Route element={token && userToken ? <MainLayout /> : null}>
                 <Route path="/" element={<Home />} />

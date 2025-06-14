@@ -183,8 +183,8 @@ function AcceptInvitationRedirect() {
       return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
           <div className="max-w-md mx-auto text-center p-8 bg-white rounded-lg shadow-lg">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <i className="pi pi-users text-2xl text-[var(--main-color-500)]"></i>
+            <div className="w-16 h-16 bg-[var(--main-color-500)] rounded-full flex items-center justify-center mx-auto mb-6">
+              <i className="pi pi-users text-2xl text-white"></i>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Invitation to the workspace
@@ -202,12 +202,12 @@ function AcceptInvitationRedirect() {
               <Button
                 label="Sign in"
                 onClick={handleLoginRedirect}
-                className="w-full bg-[var(--main-color-500)] text-white border-none"
+                className="w-full px-2 py-1 bg-[var(--main-color-500)] text-white border-none"
               />
               <Button
                 label="Sign up"
                 onClick={handleRegisterRedirect}
-                className="w-full"
+                className="w-full px-2 py-1"
                 outlined
               />
             </div>
