@@ -99,11 +99,6 @@ function Login() {
         setFormStatus("submitted");
         dispatch(loginSuccess());
         setFetchUserInfos(false);
-        if (userInfos) {
-          dispatch(setCurrentUserId(userInfos.applicationUser.id));
-          dispatch(addUser(userInfos.applicationUser));
-        }
-        handlePostLoginRedirection();
       } else {
         setFormStatus("error");
         setErrorMessage("Invalid email or password");
@@ -139,6 +134,14 @@ function Login() {
     const finalReturnUrl = encodeURIComponent(callbackUrl);
     window.location.href = `${import.meta.env.VITE_API_URL}/api/authorization/login/${provider}?returnUrl=${finalReturnUrl}`;
   };
+
+  useEffect(() => {
+    if (userInfos) {
+      dispatch(setCurrentUserId(userInfos.applicationUser.id));
+      dispatch(addUser(userInfos.applicationUser));
+      handlePostLoginRedirection();
+    }
+  }, [userInfos]);
 
   return (
     <>
